@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-
+import router from '@/router/index'
 import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
 interface RuleForm {
   username: string    // 用户名必须是字符串
-  password: string    // 密码必须是字符串  
-  repassword: string  // 确认密码必须是字符串
-  newpassword: string // 新密码必须是字符串
-  nickname:string
-  address:string
-  avatar:string
-  sex: number              // 添加可选属性
-  age: string      // 添加可选属性
-  oldpassword: string // 添加可选属性
+  password?: string    // 密码必须是字符串  
+  repassword?: string  // 确认密码必须是字符串
+  newpassword?: string // 新密码必须是字符串
+  nickname?:string
+  address?:string
+  avatar?:string
+  sex?: number              // 添加可选属性
+  age?: string      // 添加可选属性
+  oldpassword?: string // 添加可选属性
 }
 //创建一个空的引用，稍后会指向表单组件, 告诉 TypeScript：这个引用将来会指向一个 Element Plus 的表单实例
 const loginFormRef = ref<FormInstance>()
@@ -112,6 +112,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       console.log('submit!')
       console.log(ruleFormLogin)
+      router.push('/FirstPage')
     } else {
       console.log('error submit!', fields)
     }
@@ -225,7 +226,6 @@ const exchangeTabs=(tab:any)=>{
         v-model="ruleFormRegister.age"
         type="date"
         placeholder="选择出生日期"
-        :size="size"
       />
       </el-form-item>
       <el-form-item>
