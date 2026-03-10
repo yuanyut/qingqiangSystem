@@ -5,7 +5,7 @@ const props = defineProps<{
     current: number
 }>()
 const menuLists = reactive([
-    '首页', '秦腔剧目', '名家介绍', '秦腔资讯/新闻', '戏曲文化', '交流区', '个人中心'
+    '首页', '秦腔剧目', '名家介绍', '秦腔资讯', '戏曲文化', '交流区', '个人中心'
 ])
 </script>
 <template>
