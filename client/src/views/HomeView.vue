@@ -112,7 +112,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       console.log('submit!')
       console.log(ruleFormLogin)
-      router.push('/FirstPage')
+      router.push('/user')
     } else {
       console.log('error submit!', fields)
     }
