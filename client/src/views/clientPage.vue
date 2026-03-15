@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import headers from '@/layouts/header.vue';
+import headers from '@/layouts/show/header.vue';
 import {ref,watch} from 'vue';
 import {useRouter,useRoute} from 'vue-router'
-//获取路由实例（用来跳转）
+import {ElMessage} from 'element-plus'
+import {useUserInfoStore}  from '@/stores/userInfo'
+const userInfoStore = useUserInfoStore()
+//获取路由实例（用来跳转）  
 const router=useRouter();
 //获取当前路由信息（只读）
 const route=useRoute();
@@ -33,7 +36,21 @@ const changeTab =(n:number)=>{
     current.value=n;
     //路由跳转
     const routes=['home','drama','actorInfo','communicate','knowledge','news','profile'];
-    router.push(`/user/${routes[current.value]}`);
+    // 如果用户未登录，且点击的不是登录/注册页面，跳转到登录/注册页面
+    if (!userInfoStore.UserInfos.isLogin && current.value == 6) {
+        // console.log("未登录");
+        // router.push('/login');
+        // 显示未登录提示
+        ElMessage({
+            message: '请先登录',
+            type: 'warning',
+        })
+        return;
+    }
+    else{
+      router.push(`/${routes[current.value]}`);
+    }
+    
 }
 </script>
 <template>
@@ -45,7 +62,6 @@ const changeTab =(n:number)=>{
         <router-view/>
       </el-main>
     </el-container>
-
 </template>
 <style scoped>
 
