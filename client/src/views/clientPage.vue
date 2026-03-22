@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import headers from '@/layouts/show/header.vue';
+import headers from '@/layouts/client/header.vue';
 import {ref,watch} from 'vue';
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from 'element-plus'
@@ -58,10 +58,11 @@ const changeTab =(n:number)=>{
       <el-header>
         <headers :current=current @changeTabs="changeTab"/>
       </el-header>
-      <el-main>
+      <el-main style="padding: 0;">
         <router-view/>
       </el-main>
     </el-container>
+
 </template>
 <style scoped>
 
