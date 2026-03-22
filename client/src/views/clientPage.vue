@@ -65,5 +65,7 @@ const changeTab =(n:number)=>{
 
 </template>
 <style scoped>
-
+:deep(.el-header){
+  padding: 0;
+}
 </style>
