@@ -14,11 +14,11 @@ const props = defineProps<{
 const currentTab = ref<number>(props.current);
 const menuLists = reactive([
     '首页',
-    '秦腔剧目',
+    '秦腔剧目','名家介绍','推荐广场',
     '秦腔文化',
-    '名家介绍',
     '秦腔资讯',
-    '推荐广场',
+    
+    
     '个人中心'
 ])
 
