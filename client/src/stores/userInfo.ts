@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { UserInfo } from '@/types/user'
-import { reactive } from 'vue'
+import { reactive,ref } from 'vue'
 export const useUserInfoStore = defineStore('userInfo',()=>{
     
     const UserInfos = reactive<UserInfo>({
@@ -18,6 +18,7 @@ export const useUserInfoStore = defineStore('userInfo',()=>{
     return {
         UserInfos,
         // 方法
-        setUserInfo
+        setUserInfo,
+        
     }
 })

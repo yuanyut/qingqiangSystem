@@ -38,7 +38,7 @@ const handleTabClick = (index: number): void => {
     }
     else{
         currentTab.value = index
-    emit('changeTabs', index)
+        emit('changeTabs', index)
     }
     
 }

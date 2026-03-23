@@ -9,35 +9,34 @@ const userInfoStore = useUserInfoStore()
 const router=useRouter();
 //获取当前路由信息（只读）
 const route=useRoute();
+console.log(route.path);
 //route的改变会影响current，所以需要监听
 watch(()=>route.path,(newPath)=>{
   console.log(newPath);
   //根据路由路径判断当前选中的tab
   if(newPath.includes('home')){
-    current.value=0;
+    current=0;
   }else if(newPath.includes('drama')){
-    current.value=1;
+    current=1;
   }else if(newPath.includes('actorInfo')){
-    current.value=2;
+    current=2;
   }else if(newPath.includes('communicate')){
-    current.value=3;
+    current=3;
   }else if(newPath.includes('knowledge')){
-    current.value=4;
+    current=4;
   }else if(newPath.includes('news')){
-    current.value=5;
+    current=5;
   }else if(newPath.includes('profile')&&userInfoStore.UserInfos.isLogin){
-    current.value=6;
+    current=6;
   }
 })
-let current=ref(0);
+const routes=['home','drama','actorInfo','communicate','knowledge','news','profile'];
+let current=routes.indexOf(route.path.replace('/',''));
 //父组件收到通知
 const changeTab =(n:number)=>{
     console.log("点击",n);
-    current.value=n;
-    //路由跳转
-    const routes=['home','drama','actorInfo','communicate','knowledge','news','profile'];
-    // 如果用户未登录，且点击的不是登录/注册页面，跳转到登录/注册页面
-    router.push(`/${routes[current.value]}`);
+    current=n;
+    router.push(`/${routes[current]}`);
     
 }
 </script>
