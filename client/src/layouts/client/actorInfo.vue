@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
 import actor_card from '@/components/client/actor_card.vue';
-import { rongYu, juZhong, diYu, years, paiXu } from '@/types/actor';
+import { rongYu, years, paiXu } from '@/types/actor';
 const totalcount = ref(0)
 const search = () => {
   totalcount.value = 35
@@ -26,8 +26,6 @@ const currentPaixu = ref(0);
 
     <div class="filter-wrapper">
       <shai-xuan-h v-model:cate-list="rongYu"></shai-xuan-h>
-      <shai-xuan-h v-model:cate-list="juZhong"></shai-xuan-h>
-      <shai-xuan-h v-model:cate-list="diYu"></shai-xuan-h>
       <shai-xuan-h v-model:cate-list="years"></shai-xuan-h>
       <shai-xuan-h v-model:cate-list="paiXu"></shai-xuan-h>
     </div>
