@@ -3,14 +3,12 @@ import { ref,reactive } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import cardHome from '@/components/client/card_home.vue';
 import { cate,years,paixu } from '@/types/darams';
+import shaiXuanH from '@/components/client/shaiXuanH.vue';
 const totalcount = ref(0)
 const search=()=>{
   totalcount.value=35
 }
 const input3 = ref('')
-const currentCate=ref(0);
-const currentYears=ref(0);
-const currentPaixu=ref(0);
 </script>
 <template>
   <!-- 搜索框 -->
@@ -29,7 +27,7 @@ const currentPaixu=ref(0);
     
     <div class="filter-wrapper">
       <!-- 分类 -->
-      <div class="filter-item">
+      <!-- <div class="filter-item">
         <div class="filter-label">
           <span class="label-text">分类</span>
         </div>
@@ -44,43 +42,12 @@ const currentPaixu=ref(0);
             {{ item.name }}
           </span>
         </div>
-      </div>
-      
+      </div> -->
+      <shai-xuan-h v-model:cate-list="cate"></shai-xuan-h>
       <!-- 年代 -->
-      <div class="filter-item">
-        <div class="filter-label">
-          <span class="label-text">年代</span>
-        </div>
-        <div class="filter-options">
-          <span 
-            v-for="(item,index) in years" 
-            :key="index"
-            @click="currentYears=index" 
-            :class="{active:currentYears==index}" 
-            class="filter-tag"
-          >
-            {{ item.name }}
-          </span>
-        </div>
-      </div>
-      
+      <shai-xuan-h v-model:cate-list="years"></shai-xuan-h>
       <!-- 排序 -->
-      <div class="filter-item">
-        <div class="filter-label">
-          <span class="label-text">排序</span>
-        </div>
-        <div class="filter-options">
-          <span 
-            v-for="(item,index) in paixu" 
-            :key="index"
-            @click="currentPaixu=index" 
-            :class="{active:currentPaixu==index}" 
-            class="filter-tag sort-tag"
-          >
-            {{ item.name }}
-          </span>
-        </div>
-      </div>
+      <shai-xuan-h v-model:cate-list="paixu"></shai-xuan-h>
     </div>
   </div>
    <div class="playlist-container">
