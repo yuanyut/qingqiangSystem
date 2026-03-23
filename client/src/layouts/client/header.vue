@@ -3,7 +3,7 @@ import { reactive, ref, watch } from 'vue';
 import { useUserInfoStore } from '@/stores/userInfo'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-
+import {ElMessage} from 'element-plus'
 const router = useRouter()
 const userInfoStore = useUserInfoStore()
 
@@ -17,8 +17,6 @@ const menuLists = reactive([
     '秦腔剧目','名家介绍','推荐广场',
     '秦腔文化',
     '秦腔资讯',
-    
-    
     '个人中心'
 ])
 
@@ -31,8 +29,18 @@ watch(() => props.current, (newVal) => {
 })
 
 const handleTabClick = (index: number): void => {
-    currentTab.value = index
+    if(index == 6 && !userInfoStore.UserInfos.isLogin){
+         ElMessage({
+            message: '请先登录',
+            type: 'warning',
+        })
+        return 
+    }
+    else{
+        currentTab.value = index
     emit('changeTabs', index)
+    }
+    
 }
 
 onMounted(() => {

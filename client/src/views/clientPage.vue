@@ -25,7 +25,7 @@ watch(()=>route.path,(newPath)=>{
     current.value=4;
   }else if(newPath.includes('news')){
     current.value=5;
-  }else if(newPath.includes('profile')){
+  }else if(newPath.includes('profile')&&userInfoStore.UserInfos.isLogin){
     current.value=6;
   }
 })
@@ -37,19 +37,7 @@ const changeTab =(n:number)=>{
     //路由跳转
     const routes=['home','drama','actorInfo','communicate','knowledge','news','profile'];
     // 如果用户未登录，且点击的不是登录/注册页面，跳转到登录/注册页面
-    if (!userInfoStore.UserInfos.isLogin && current.value == 6) {
-        // console.log("未登录");
-        // router.push('/login');
-        // 显示未登录提示
-        ElMessage({
-            message: '请先登录',
-            type: 'warning',
-        })
-        return;
-    }
-    else{
-      router.push(`/${routes[current.value]}`);
-    }
+    router.push(`/${routes[current.value]}`);
     
 }
 </script>
