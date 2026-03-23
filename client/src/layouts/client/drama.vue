@@ -88,6 +88,8 @@ const input3 = ref('')
 /* 搜索框样式 */
 .search-wrapper {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .custom-search-input {
@@ -187,7 +189,7 @@ const input3 = ref('')
 }
 
 .playlist-container {
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   border-radius: 16px;
   padding: 20px;
 }

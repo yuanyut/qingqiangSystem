@@ -9,9 +9,7 @@ const search = () => {
   totalcount.value = 35
 }
 const input3 = ref('')
-const currentCate = ref(0);
-const currentYears = ref(0);
-const currentPaixu = ref(0);
+
 </script>
 <template>
   <!-- 搜索框 -->
@@ -66,6 +64,8 @@ const currentPaixu = ref(0);
 /* 搜索框样式 */
 .search-wrapper {
   margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
 }
 
 .custom-search-input {
@@ -165,7 +165,7 @@ const currentPaixu = ref(0);
 }
 
 .playlist-container {
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   border-radius: 16px;
   padding: 20px;
 }
