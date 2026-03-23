@@ -2,7 +2,6 @@
 import headers from '@/layouts/client/header.vue';
 import {ref,watch} from 'vue';
 import {useRouter,useRoute} from 'vue-router'
-import {ElMessage} from 'element-plus'
 import {useUserInfoStore}  from '@/stores/userInfo'
 const userInfoStore = useUserInfoStore()
 //获取路由实例（用来跳转）  
