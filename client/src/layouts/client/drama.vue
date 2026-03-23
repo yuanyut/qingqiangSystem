@@ -56,12 +56,6 @@ const input3 = ref('')
         <span class="title-text">剧目列表</span>
         <span class="title-count">共 {{ totalcount }} 部剧目</span>
       </div>
-      <div class="header-actions">
-        <span class="view-mode">
-          <span class="mode-icon">📋</span>
-          <span class="mode-text">列表模式</span>
-        </span>
-      </div>
     </div>
     
     <div class="playlist-grid">
@@ -274,7 +268,7 @@ const input3 = ref('')
 .playlist-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
+  gap: 60px;
   margin-top: 8px;
 }
 

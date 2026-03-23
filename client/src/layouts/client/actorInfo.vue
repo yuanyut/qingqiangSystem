@@ -1,33 +1,29 @@
 <script setup lang="ts">
-import { ref,reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-import cardHome from '@/components/client/card_home.vue';
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
-import { hangDang,rongYu,juZhong,diYu,years,paiXu } from '@/types/actor';
+import actor_card from '@/components/client/actor_card.vue';
+import { rongYu, juZhong, diYu, years, paiXu } from '@/types/actor';
 const totalcount = ref(0)
-const search=()=>{
-  totalcount.value=35
+const search = () => {
+  totalcount.value = 35
 }
 const input3 = ref('')
-const currentCate=ref(0);
-const currentYears=ref(0);
-const currentPaixu=ref(0);
+const currentCate = ref(0);
+const currentYears = ref(0);
+const currentPaixu = ref(0);
 </script>
 <template>
   <!-- 搜索框 -->
   <div class="search-container">
     <div class="search-wrapper">
-      <el-input 
-        v-model="input3" 
-        placeholder="搜索名家..." 
-        class="custom-search-input"
-      >
+      <el-input v-model="input3" placeholder="搜索名家..." class="custom-search-input">
         <template #append>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="search" class="search-button" />
         </template>
       </el-input>
     </div>
-    
+
     <div class="filter-wrapper">
       <shai-xuan-h v-model:cate-list="rongYu"></shai-xuan-h>
       <shai-xuan-h v-model:cate-list="juZhong"></shai-xuan-h>
@@ -36,35 +32,27 @@ const currentPaixu=ref(0);
       <shai-xuan-h v-model:cate-list="paiXu"></shai-xuan-h>
     </div>
   </div>
-   <div class="playlist-container">
+  <div class="playlist-container">
     <div class="playlist-header">
       <div class="header-title">
         <span class="title-text">剧目列表</span>
         <span class="title-count">共 {{ totalcount }} 部剧目</span>
       </div>
-      <div class="header-actions">
-        <span class="view-mode">
-          <span class="mode-icon">📋</span>
-          <span class="mode-text">列表模式</span>
-        </span>
-      </div>
     </div>
-    
+
     <div class="playlist-grid">
-      <div v-for="i in 10" :key="i" class="playlist-item">
-        <card-home 
-          image="/home/banner1.png" 
-          name="白蛇传" 
-          desc="这是白蛇传" 
-          cate="传统剧目" 
-          act="演唱者" 
-          watch-people="观看人数"
-          love-people="喜爱人数" 
-        />
+      <div v-for="i in 10" :key="i">
+        <actor_card image="/home/banner1.png" name="李淑芬" desc="国家一级演员"  act="三滴血" watch-people="观看人数"
+          love-people="喜爱人数">
+
+        </actor_card>
+
       </div>
+
+
     </div>
     <div class="playlist-footer">
-       <el-pagination background layout="prev, pager, next" :total="1000" />
+      <el-pagination background layout="prev, pager, next" :total="1000" />
     </div>
   </div>
 </template>
@@ -272,22 +260,53 @@ const currentPaixu=ref(0);
 .playlist-item:hover {
   transform: translateY(-4px);
 }
-.playlist-footer{
+
+.playlist-footer {
   display: flex;
   justify-content: center;
   margin-top: 30px;
 }
+
 /* 为每个卡片添加延迟动画 */
-.playlist-item:nth-child(1) { animation-delay: 0s; }
-.playlist-item:nth-child(2) { animation-delay: 0.05s; }  
-.playlist-item:nth-child(3) { animation-delay: 0.1s; }
-.playlist-item:nth-child(4) { animation-delay: 0.15s; }
-.playlist-item:nth-child(5) { animation-delay: 0.2s; }
-.playlist-item:nth-child(6) { animation-delay: 0.25s; }
-.playlist-item:nth-child(7) { animation-delay: 0.3s; }
-.playlist-item:nth-child(8) { animation-delay: 0.35s; }
-.playlist-item:nth-child(9) { animation-delay: 0.4s; }
-.playlist-item:nth-child(10) { animation-delay: 0.45s; }
+.playlist-item:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.playlist-item:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.playlist-item:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.playlist-item:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.playlist-item:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+.playlist-item:nth-child(6) {
+  animation-delay: 0.25s;
+}
+
+.playlist-item:nth-child(7) {
+  animation-delay: 0.3s;
+}
+
+.playlist-item:nth-child(8) {
+  animation-delay: 0.35s;
+}
+
+.playlist-item:nth-child(9) {
+  animation-delay: 0.4s;
+}
+
+.playlist-item:nth-child(10) {
+  animation-delay: 0.45s;
+}
 
 /* 动画 */
 @keyframes fadeInUp {
@@ -295,6 +314,7 @@ const currentPaixu=ref(0);
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -328,23 +348,23 @@ const currentPaixu=ref(0);
   .playlist-container {
     padding: 16px;
   }
-  
+
   .playlist-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
-  
+
   .playlist-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 20px;
   }
-  
+
   .title-text {
     font-size: 18px;
   }
-  
+
   .title-count {
     font-size: 12px;
   }
@@ -356,28 +376,29 @@ const currentPaixu=ref(0);
     gap: 16px;
   }
 }
+
 /* 响应式 */
 @media (max-width: 768px) {
   .search-container {
     padding: 16px;
   }
-  
+
   .filter-item {
     flex-direction: column;
     margin-bottom: 12px;
     padding-bottom: 12px;
   }
-  
+
   .filter-label {
     margin-bottom: 8px;
     line-height: 1.5;
   }
-  
+
   .filter-tag {
     padding: 4px 12px;
     font-size: 12px;
   }
-  
+
   .custom-search-input {
     max-width: 100%;
   }
