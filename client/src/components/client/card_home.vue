@@ -14,9 +14,9 @@ const props = defineProps<{
   <div class="card">
     <div class="card_header">
       <image :src="props.images" size="100%" class="card_image" />
-      <div class="card_overlay">
+      <!-- <div class="card_overlay">
         <div class="badge">热门</div>
-      </div>
+      </div> -->
     </div>
     
     <div class="card_content">

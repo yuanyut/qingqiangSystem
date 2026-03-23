@@ -326,7 +326,7 @@ const currentPaixu=ref(0);
 }
 /* 为每个卡片添加延迟动画 */
 .playlist-item:nth-child(1) { animation-delay: 0s; }
-.playlist-item:nth-child(2) { animation-delay: 0.05s; }
+.playlist-item:nth-child(2) { animation-delay: 0.05s; }  
 .playlist-item:nth-child(3) { animation-delay: 0.1s; }
 .playlist-item:nth-child(4) { animation-delay: 0.15s; }
 .playlist-item:nth-child(5) { animation-delay: 0.2s; }
