@@ -54,8 +54,8 @@ const change = () => { showedit.value = !showedit.value
         <div style="padding:0 20px;color: #a1a1a180;">
             <span> (基于你的浏览记录，我们为你推荐以下内容) </span>
         </div>
-    </div>
-    <!-- 编辑偏好弹窗 -->
+    </div> 
+    <!-- 编辑偏好弹窗    -->
     <div 
   :class="{ active:showedit }" 
   class="edit-dialog"
