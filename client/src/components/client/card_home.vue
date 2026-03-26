@@ -12,21 +12,20 @@ const props = defineProps<{
   isFavorited?:number |boolean
   favoriteCount?:string | number
 }>()
-const isLiked=ref(false)
+const isLike=ref(false)
 const emit =defineEmits<{
-  (e:'changeLike',isLiked:boolean):void
+  (e:'changeLike',isLike:boolean):void
+  (e: 'changeFavorite'): void
 }>()
 const changeLike=()=>{
-  isLiked.value=!props.isLiked
-  console.log('这是'+typeof(isLiked.value))
-  emit('changeLike',isLiked.value)
+  isLike.value=!props.isLiked
+  console.log('这是'+typeof(isLike.value))
+  emit('changeLike',isLike.value)
 }
-watch(()=>{
-  props.isLiked,
-  props.isFavorited
-},(newValue)=>{
-  console.log(newValue)
-})
+const changeFavorite = () => {
+  emit('changeFavorite')
+}
+
 </script>
 
 <template>
@@ -84,7 +83,7 @@ watch(()=>{
        
        
       >
-        <span class="icon">{{props.isFavorited ? '⭐' : '☆' }}</span>
+        <span class="icon" @click.stop="changeFavorite">{{props.isFavorited ? '⭐' : '☆' }}</span>
         <span class="count">{{props.favoriteCount }}</span>
       </div>
       

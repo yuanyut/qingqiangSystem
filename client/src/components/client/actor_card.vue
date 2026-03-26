@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref ,watch} from 'vue';
 const props = defineProps<{
   images?: string
   name?: string
@@ -7,7 +8,23 @@ const props = defineProps<{
   act?: string
   watchPeople?: string | number
   lovePeople?: string | number
+  isLiked?:number | boolean
+  isFavorited?:number |boolean
+  favoriteCount?:string | number
 }>()
+const isLike=ref(false)
+const emit =defineEmits<{
+  (e:'changeLike',isLike:boolean):void
+  (e: 'changeFavorite'): void
+}>()
+const changeLike=()=>{
+  isLike.value=!props.isLiked
+  console.log('这是'+typeof(isLike.value))
+  emit('changeLike',isLike.value)
+}
+const changeFavorite = () => {
+  emit('changeFavorite')
+}
 </script>
 
 <template>
@@ -42,6 +59,27 @@ const props = defineProps<{
           <span class="attr_icon">❤️</span>
           <span class="attr_value">{{ props.lovePeople }}</span>
         </div>
+      </div>
+      <div class="card_footer">
+        
+        <div 
+          class="action-btn like-btn"
+         
+        >
+          <span class="icon" @click.stop="changeLike">{{ props.isLiked ? '❤️' : '🤍' }}</span>
+  
+        </div>
+        
+        <div 
+          class="action-btn favorite-btn"
+         
+         
+        >
+          <span class="icon" @click.stop="changeFavorite">{{props.isFavorited ? '⭐' : '☆' }}</span>
+          <span class="count">{{props.favoriteCount }}</span>
+        </div>
+        
+        
       </div>
     </div>
   </div>
@@ -195,7 +233,7 @@ const props = defineProps<{
 
 .card_footer {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 
 .watch_btn {

@@ -8,7 +8,14 @@ const swiperList = reactive<string[]>([
   '/home/banner3.png',
 ])
 const youStatus = ref(false)
-
+const isLiked=ref(true)
+const isFavorited=ref(true)
+const changeLike=(index:boolean)=>{
+  isLiked.value=index
+}
+const changeFav=()=>{
+  isFavorited.value=!isFavorited.value
+}
 </script>
 <template>
   <div>
@@ -27,7 +34,9 @@ const youStatus = ref(false)
       <div class="hot_centent" @mouseover="youStatus = true" @mouseleave="youStatus = false">
         <div v-for="i in 9" :key="i">
           <card-home image="/home/banner1.png" name="白蛇传" desc="这是白蛇传" cate="传统剧目" act="演唱者" watch-people="观看人数"
-            love-people="喜爱人数" />
+            love-people="喜爱人数" @change-like="changeLike" :is-liked= isLiked 
+            :is-favorited= isFavorited favorite-count="16"
+            @change-favorite="changeFav"/>
         </div>
         <span class="you" :class="{ active: youStatus, inactive: !youStatus }">右向箭头</span>
       </div>
@@ -50,7 +59,9 @@ const youStatus = ref(false)
       <div class="hot_centent " style="gap:60px">
         <div v-for="i in 5" :key="i">
           <card-home image="/home/banner1.png" name="白蛇传" desc="这是白蛇传" cate="传统剧目" act="演唱者" watch-people="观看人数"
-            love-people="喜爱人数" />
+            love-people="喜爱人数" @change-like="changeLike" :is-liked= isLiked 
+            :is-favorited= isFavorited
+            @change-favorite="changeFav"/>
 
         </div>
 

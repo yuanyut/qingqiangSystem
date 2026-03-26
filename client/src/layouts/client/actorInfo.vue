@@ -9,7 +9,14 @@ const search = () => {
   totalcount.value = 35
 }
 const input3 = ref('')
-
+const isLiked=ref(true)
+const isFavorited=ref(true)
+const changeLike=(index:boolean)=>{
+  isLiked.value=index
+}
+const changeFav=()=>{
+  isFavorited.value=!isFavorited.value
+}
 </script>
 <template>
   <!-- 搜索框 -->
@@ -39,7 +46,11 @@ const input3 = ref('')
     <div class="playlist-grid">
       <div v-for="i in 10" :key="i">
         <actor_card image="/home/banner1.png" name="李淑芬" desc="国家一级演员"  act="三滴血" watch-people="观看人数"
-          love-people="喜爱人数">
+          love-people="喜爱人数" favorite-count="16"
+          @change-like="changeLike" :is-liked= isLiked 
+            :is-favorited= isFavorited
+            @change-favorite="changeFav"
+          >
 
         </actor_card>
 

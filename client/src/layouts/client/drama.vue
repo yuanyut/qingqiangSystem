@@ -10,8 +10,12 @@ const search=()=>{
 }
 const input3 = ref('')
 const isLiked=ref(true)
+const isFavorited=ref(true)
 const changeLike=(index:boolean)=>{
   isLiked.value=index
+}
+const changeFav=()=>{
+  isFavorited.value=!isFavorited.value
 }
 </script>
 <template>
@@ -57,8 +61,9 @@ const changeLike=(index:boolean)=>{
           love-people="喜爱人数" 
           favorite-count="16"
           :is-liked= isLiked 
-          :is-favorited= 0
+          :is-favorited= isFavorited
           @change-like="changeLike"
+          @change-favorite="changeFav"
         />
       </div>
     </div>
