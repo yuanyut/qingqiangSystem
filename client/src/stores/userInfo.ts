@@ -13,7 +13,7 @@ export const useUserInfoStore = defineStore('userInfo',()=>{
         UserInfos.username=userInfo.username
         UserInfos.nickname=userInfo.nickname
         UserInfos.avatar=userInfo.avatar
-        UserInfos.isLogin=userInfo.isLogin
+        UserInfos.isLogin=true
     }
     return {
         UserInfos,
