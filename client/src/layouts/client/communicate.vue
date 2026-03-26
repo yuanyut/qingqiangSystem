@@ -82,7 +82,23 @@
     </div>
     <div class="trend-list">
       <div v-for="i in 5" :key="i" class="trend-item">
-        <card-tend :id="i" title="《三滴血》全新复排版" desc="李淑芳领衔主演" up=95 now-hot=50 fenshu="分数" />
+        <card-tend :id="i" title="《三滴血》全新复排版" desc="李淑芳领衔主演" up=95 now-hot=50 fenshu="分数" >
+          <template #footer>
+            <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">热度指数</span>
+          <span class="progress-value">50%</span>
+        </div>
+        <el-progress 
+          :percentage="Number(50) || 0" 
+          :stroke-width="8"
+          :show-text="false"
+          class="custom-progress"
+        />
+      </div>
+          </template>
+        </card-tend>
+
       </div>
     </div>
   </div>
@@ -142,7 +158,6 @@ import { ref, reactive } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import cardTend from '@/components/client/cardTend.vue';
 import Card_tuijian from '@/components/client/card_tuijian.vue';
-import tuijian_bigCard from '@/components/client/tuijian_bigCard.vue';
 import Tuijian_bigCard from '@/components/client/tuijian_bigCard.vue';
 
 const totalcount = ref(0)
@@ -183,7 +198,7 @@ const activeTab = ref(0)
 
 /* 搜索框区域 */
 .search-container {
-  background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%);
+  /* background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%); */
   border-radius: 24px;
   padding: 24px 20px;
   margin-bottom: 20px;
@@ -520,7 +535,61 @@ const activeTab = ref(0)
   opacity: 0;
   transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
+.progress-section {
+  margin-top: 8px;
+}
 
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9b8e7e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #b87c4e;
+}
+
+/* 自定义进度条样式 */
+:deep(.custom-progress .el-progress-bar__outer) {
+  background-color: #f0e8df;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:deep(.custom-progress .el-progress-bar__inner) {
+  background: linear-gradient(90deg, #e6b17e 0%, #b87c4e 100%);
+  border-radius: 20px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.custom-progress .el-progress-bar__inner::after) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
 .edit-dialog.active {
   visibility: visible;
   opacity: 1;

@@ -4,7 +4,7 @@ defineProps<{
   title?: string
   desc?: string
   up?: string | number
-  nowHot?: string | number
+  
 }>()
 </script>
 
@@ -30,18 +30,10 @@ defineProps<{
       <p class="card-desc">{{ desc || '精彩内容正在热播' }}</p>
       
       <!-- 热度进度条 -->
-      <div class="progress-section">
-        <div class="progress-header">
-          <span class="progress-label">热度指数</span>
-          <span class="progress-value">{{ nowHot || 0 }}%</span>
-        </div>
-        <el-progress 
-          :percentage="Number(nowHot) || 0" 
-          :stroke-width="8"
-          :show-text="false"
-          class="custom-progress"
-        />
-      </div>
+       <slot name="footer">
+
+       </slot>
+     
     </div>
   </div>
 </template>
@@ -158,62 +150,7 @@ defineProps<{
   white-space: nowrap;
 }
 
-/* 进度条区域 */
-.progress-section {
-  margin-top: 8px;
-}
 
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-
-.progress-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #9b8e7e;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.progress-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: #b87c4e;
-}
-
-/* 自定义进度条样式 */
-:deep(.custom-progress .el-progress-bar__outer) {
-  background-color: #f0e8df;
-  border-radius: 20px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-:deep(.custom-progress .el-progress-bar__inner) {
-  background: linear-gradient(90deg, #e6b17e 0%, #b87c4e 100%);
-  border-radius: 20px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-:deep(.custom-progress .el-progress-bar__inner::after) {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  animation: shimmer 2s infinite;
-}
 
 @keyframes shimmer {
   0% {
