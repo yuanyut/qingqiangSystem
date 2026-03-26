@@ -9,6 +9,10 @@ const search=()=>{
   totalcount.value=35
 }
 const input3 = ref('')
+const isLiked=ref(true)
+const changeLike=(index:boolean)=>{
+  isLiked.value=index
+}
 </script>
 <template>
   <!-- 搜索框 -->
@@ -26,23 +30,6 @@ const input3 = ref('')
     </div>
     
     <div class="filter-wrapper">
-      <!-- 分类 -->
-      <!-- <div class="filter-item">
-        <div class="filter-label">
-          <span class="label-text">分类</span>
-        </div>
-        <div class="filter-options">
-          <span 
-            v-for="(item,index) in cate" 
-            :key="index"
-            @click="currentCate=index" 
-            :class="{active:currentCate==index}" 
-            class="filter-tag"
-          >
-            {{ item.name }}
-          </span>
-        </div>
-      </div> -->
       <shai-xuan-h v-model:cate-list="cate"></shai-xuan-h>
       <!-- 年代 -->
       <shai-xuan-h v-model:cate-list="years"></shai-xuan-h>
@@ -68,6 +55,10 @@ const input3 = ref('')
           act="演唱者" 
           watch-people="观看人数"
           love-people="喜爱人数" 
+          favorite-count="16"
+          :is-liked= isLiked 
+          :is-favorited= 0
+          @change-like="changeLike"
         />
       </div>
     </div>

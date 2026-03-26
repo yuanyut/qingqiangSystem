@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref ,watch} from 'vue';
 const props = defineProps<{
   images?: string
   name?: string
@@ -7,7 +8,25 @@ const props = defineProps<{
   act?: string
   watchPeople?: string | number
   lovePeople?: string | number
+  isLiked?:number | boolean
+  isFavorited?:number |boolean
+  favoriteCount?:string | number
 }>()
+const isLiked=ref(false)
+const emit =defineEmits<{
+  (e:'changeLike',isLiked:boolean):void
+}>()
+const changeLike=()=>{
+  isLiked.value=!props.isLiked
+  console.log('这是'+typeof(isLiked.value))
+  emit('changeLike',isLiked.value)
+}
+watch(()=>{
+  props.isLiked,
+  props.isFavorited
+},(newValue)=>{
+  console.log(newValue)
+})
 </script>
 
 <template>
@@ -51,11 +70,31 @@ const props = defineProps<{
       </div>
       
       <div class="card_footer">
-        <!-- <button size="small" class="watch_btn">立即观看</button> -->
-         <svg t="1774168305873" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1653" width="20" height="20"><path d="M510.7 962.4c-60.7 0-119.5-11.9-175-35.3-53.5-22.6-101.6-55-142.9-96.3-41.3-41.3-73.7-89.3-96.3-142.9-23.4-55.4-35.3-114.3-35.3-175s11.9-119.5 35.3-175c22.6-53.5 55-101.6 96.3-142.9 41.3-41.3 89.3-73.7 142.9-96.3 55.4-23.4 114.3-35.3 175-35.3s119.5 11.9 175 35.3c53.5 22.6 101.6 55 142.9 96.3 41.3 41.3 73.7 89.3 96.3 142.9 23.4 55.4 35.3 114.3 35.3 175s-11.9 119.5-35.3 175c-22.6 53.5-55 101.6-96.3 142.9-41.3 41.3-89.3 73.7-142.9 96.3-55.5 23.4-114.3 35.3-175 35.3z m0-854.9c-223.5 0-405.4 181.9-405.4 405.4s181.9 405.4 405.4 405.4 405.4-181.9 405.4-405.4-181.9-405.4-405.4-405.4z" fill="#231815" p-id="1654"></path><path d="M404.9 336.3v352.6l305.4-176.3z" fill="#231815" p-id="1655"></path></svg>
+        
+      <div 
+        class="action-btn like-btn"
+       
+      >
+        <span class="icon" @click.stop="changeLike">{{ props.isLiked ? '❤️' : '🤍' }}</span>
+
       </div>
+      
+      <div 
+        class="action-btn favorite-btn"
+       
+       
+      >
+        <span class="icon">{{props.isFavorited ? '⭐' : '☆' }}</span>
+        <span class="count">{{props.favoriteCount }}</span>
+      </div>
+      
+      <svg t="1774168305873" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1653" width="20" height="20"><path d="M510.7 962.4c-60.7 0-119.5-11.9-175-35.3-53.5-22.6-101.6-55-142.9-96.3-41.3-41.3-73.7-89.3-96.3-142.9-23.4-55.4-35.3-114.3-35.3-175s11.9-119.5 35.3-175c22.6-53.5 55-101.6 96.3-142.9 41.3-41.3 89.3-73.7 142.9-96.3 55.4-23.4 114.3-35.3 175-35.3s119.5 11.9 175 35.3c53.5 22.6 101.6 55 142.9 96.3 41.3 41.3 73.7 89.3 96.3 142.9 23.4 55.4 35.3 114.3 35.3 175s-11.9 119.5-35.3 175c-22.6 53.5-55 101.6-96.3 142.9-41.3 41.3-89.3 73.7-142.9 96.3-55.5 23.4-114.3 35.3-175 35.3z m0-854.9c-223.5 0-405.4 181.9-405.4 405.4s181.9 405.4 405.4 405.4 405.4-181.9 405.4-405.4-181.9-405.4-405.4-405.4z" fill="#231815" p-id="1654"></path><path d="M404.9 336.3v352.6l305.4-176.3z" fill="#231815" p-id="1655"></path></svg>
+   
     </div>
-  </div>
+        <!-- <button size="small" class="watch_btn">立即观看</button> -->
+            </div>
+    </div>
+ 
 </template>
 
 <style scoped>
@@ -206,7 +245,7 @@ const props = defineProps<{
 
 .card_footer {
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 
 .watch_btn {
