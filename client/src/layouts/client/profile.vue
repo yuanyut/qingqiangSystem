@@ -7,7 +7,7 @@ import history from '@/components/client/profile/history.vue';
 import favorite from '@/components/client/profile/favorite.vue';
 import like from '@/components/client/profile/like.vue';
 import setting from '@/components/client/profile/setting.vue';
-
+//组件映射表--使用Record类型
 const componentMap: Record<string, Component> = {
   data: data,
   favorite: favorite,
@@ -16,7 +16,7 @@ const componentMap: Record<string, Component> = {
   communication: communication,
   setting: setting
 }
-
+//定义侧边的类型
 interface SideListItem {
   name: string;
   component: string;
@@ -33,27 +33,17 @@ const sideList = reactive<SideListItem[]>([
 
 const currentTab = ref<number>(0)
 
-// 使用 computed 自动处理组件获取
+// 使用 computed 自动处理组件获取,这里监听currentTab
 const currentComponent = computed<Component>(() => {
-  const componentKey = sideList[currentTab.value]?.component
-  if (!componentKey) {
-    console.warn('未找到组件key，使用默认组件')
-    return data
-  }
-  
+  const componentKey:string = sideList[currentTab.value]!.component
+  console.log(typeof(componentKey))
   const component = componentMap[componentKey]
-  if (!component) {
-    console.warn(`组件 "${componentKey}" 未找到，使用默认组件`)
-    return data
-  }
-  
-  return component
+   return component!
 })
 
 // 简化 change 函数
 const change = (item: SideListItem, index: number) => {
   currentTab.value = index
-  console.log('切换到:', item.name)
 }
 </script>
 
