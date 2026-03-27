@@ -41,11 +41,6 @@
             </div>
           </div>
         </div>
-        
-        <!-- 空状态 -->
-        <div v-if="filteredHistory.length === 0" class="empty-state">
-          <span>暂无浏览记录</span>
-        </div>
       </div>
     </div>
   </template>
