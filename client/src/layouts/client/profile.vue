@@ -128,7 +128,7 @@ const change = (item: SideItem, index: number) => {
 
 /* 头部个人信息卡片 */
 .profile-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   border-radius: 20px;
   padding: 32px 40px;
   margin-bottom: 24px;
