@@ -189,7 +189,7 @@ const goToRecommend = () => {
 
 <style scoped>
 .my-likes {
-    max-width: 1200px;
+    
     margin: 0 auto;
     padding: 32px 24px;
     background: linear-gradient(135deg, #fefaf5 0%, #fff9f2 100%);

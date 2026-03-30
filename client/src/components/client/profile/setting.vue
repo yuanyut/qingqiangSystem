@@ -464,8 +464,10 @@ const openEditDialog = (field: string, currentValue: string) => {
   if (field === 'region') {
     // 解析当前地区值，例如 "浙江省-杭州市-西湖区" 转换为 ["浙江省", "杭州市", "西湖区"]
     if (currentValue && currentValue !== '未设置') {
+      console.log('本来的地址',currentValue)
       const regionParts = currentValue.split('-')
       editFormData.regionValue = regionParts
+      console.log('现在的地址',editFormData.regionValue)
     } else {
       editFormData.regionValue = []
     }
@@ -579,7 +581,7 @@ const handleSaveAll = async () => {
 </script>
 <style scoped>
 .account-settings {
-  max-width: 900px;
+  /* max-width: 900px; */
   margin: 0 auto;
   padding: 32px 28px;
   background: linear-gradient(135deg, #fefaf5 0%, #fff9f2 100%);
@@ -871,7 +873,7 @@ input:focus + .slider {
 }
 
 :deep(.el-dialog__header) {
-  background: linear-gradient(135deg, #fefaf5, #fff9f2);
+  /* background: linear-gradient(135deg, #fefaf5, #fff9f2); */
   padding: 20px 24px;
   margin: 0;
   border-bottom: 1px solid #f0e2d0;
@@ -890,7 +892,7 @@ input:focus + .slider {
 
 :deep(.el-dialog__footer) {
   padding: 16px 24px;
-  background: #fefaf5;
+  /* background: #fefaf5; */
   border-top: 1px solid #f0e2d0;
 }
 
