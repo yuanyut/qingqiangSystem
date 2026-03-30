@@ -30,7 +30,7 @@ const input = ref('')
     <!-- 文化分类导航 -->
     <section class="section">
       <div class="section-header">
-        <h2 class="section-title">文化分类导航</h2>
+        <h2 class="section-title">总览</h2>
         <span class="section-subtitle">探寻文化脉络</span>
       </div>
       <div class="nav-grid">

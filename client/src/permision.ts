@@ -8,16 +8,16 @@ const userInfo =useUserInfoStore();
  const isLogin = userInfo.UserInfos.isLogin;
     //没登录
    console.log('导航守卫')
-    if(!isLogin){
-        if(to.path.includes('profile')){
-            next('/login')
-        }
-        else{
-            next();
-        }
-    }
-    else{
-        next()
-    }
-    
+    // if(!isLogin){
+    //     if(to.path.includes('profile')){
+    //         next('/login')
+    //     }
+    //     else{
+    //         next();
+    //     }
+    // }
+    // else{
+    //     next()
+    // }
+    next()
 })

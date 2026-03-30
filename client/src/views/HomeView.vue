@@ -159,121 +159,614 @@ const exchangeTabs=(tab:any)=>{
 </script>
 
 <template>
-  <header style="max-width:200px">
-    <h2>
-      <template v-show="currentTab === 'login'">
-        登陆
-      </template>
-      <template v-show="currentTab === 'register'">
-        注册
-      </template>
-      <template v-show="currentTab === 'findPassword'">
-        找回账号
-      </template>
-    </h2>
-  </header>
-  <el-form
-    ref="loginFormRef"
-    style="max-width: 600px;"
-    :model="ruleFormLogin"
-    :rules="rules1"
-    label-width="auto"
-    v-show="currentTab === 'login'"
-  >
-    <el-form-item label="账号" prop="username">
-      <el-input v-model="ruleFormLogin.username" />
-    </el-form-item>
-    <el-form-item label="密码" prop="password">
-      <el-input v-model="ruleFormLogin.password" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="submitLoginForm(loginFormRef)">
-        登录
-      </el-button>
-      <el-button type="primary" @click="exchangeTabs('register')">
-        注册
-      </el-button>
-    </el-form-item>
-    <el-form-item @click="exchangeTabs('findPassword')">
-        忘记密码？？？
-      </el-form-item>
-  </el-form>
-  
-    <el-form
-      ref="registerFormRef"
-      style="max-width: 600px;"
-      :model="ruleFormRegister"
-      :rules="rules2"
-      label-width="auto"
-       v-show="currentTab === 'register'"
-    >
-      <el-form-item label="账号" prop="username">
-        <el-input v-model="ruleFormRegister.username" />
-      </el-form-item>
-      <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="ruleFormRegister.nickname" />
-      </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input v-model="ruleFormRegister.password" />
-      </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-select v-model="ruleFormRegister.sex" placeholder="请选择性别">
-          
-          <el-option label="女" :value="0" /><el-option label="男" :value=1 /><el-option label="不愿透露" :value="2" /><!-- 使用 :value 绑定数字 -->
-        </el-select>
-      </el-form-item>
+  <div class="auth-container">
+    <!-- 左侧装饰区域 -->
+    <div class="auth-decoration">
+      <div class="decoration-content">
+        <div class="logo-wrapper">
+          <div class="logo-icon">🎭</div>
+          <h1 class="logo-text">秦韵雅集</h1>
+        </div>
+        <p class="decoration-slogan">传承经典 · 品味秦腔</p>
+        <div class="decoration-quote">
+          <span class="quote-mark">“</span>
+          <p>秦腔一声吼，千古风流尽在喉</p>
+          <span class="quote-mark-right">”</span>
+        </div>
+        <div class="decoration-features">
+          <div class="feature-item">
+            <span class="feature-icon">🎵</span>
+            <span>经典剧目</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">👤</span>
+            <span>名家荟萃</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-icon">📰</span>
+            <span>资讯动态</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <el-form-item label="出生日期" prop="age">
-        <!-- <el-input v-model="ruleFormRegister.age" type="number" /> -->
-        <el-date-picker
-        v-model="ruleFormRegister.age"
-        type="date"
-        placeholder="选择出生日期"
-      />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitRegForm(registerFormRef)">
-          注册
-        </el-button>
-        <el-button type="primary" @click="exchangeTabs('login')">
-          返回登陆
-        </el-button>
-      </el-form-item>
-      
-    </el-form>
-    <el-form
-    ref="findFormRef"
-    style="max-width: 600px;"
-    :model="ruleFormFind"
-    :rules="rules3"
-    label-width="auto"
-    v-show="currentTab === 'findPassword'"
-  >
-    <el-form-item label="账号" prop="username">
-      <el-input v-model="ruleFormFind.username" />
-    </el-form-item>
-    <el-form-item label="旧密码" prop="oldpassword">
-      <el-input v-model="ruleFormFind.oldpassword" />
-    </el-form-item>
-    <el-form-item label="新密码" prop="newpassword">
-      <el-input v-model="ruleFormFind.newpassword" />
-    </el-form-item>
-    <el-form-item label="再次确认密码" prop="repassword">
-      <el-input v-model="ruleFormFind.repassword" />
-    </el-form-item>
-    
-    <el-form-item>
-      <el-button type="primary" @click="submitFindForm(findFormRef)">
-          提交
-        </el-button>
-      <el-button type="primary" @click="exchangeTabs('login')">
-        返回登录
-      </el-button>
-    </el-form-item>
-  </el-form>
+    <!-- 右侧表单区域 -->
+    <div class="auth-form-container">
+      <div class="form-card">
+        <!-- 头部标题区域 -->
+        <div class="form-header">
+          <div class="tab-buttons">
+            <button 
+              class="tab-btn" 
+              :class="{ active: currentTab === 'login' }"
+              @click="exchangeTabs('login')"
+            >
+              登录
+            </button>
+            <button 
+              class="tab-btn" 
+              :class="{ active: currentTab === 'register' }"
+              @click="exchangeTabs('register')"
+            >
+              注册
+            </button>
+            <button 
+              class="tab-btn" 
+              :class="{ active: currentTab === 'findPassword' }"
+              @click="exchangeTabs('findPassword')"
+            >
+              找回密码
+            </button>
+          </div>
+          <div class="header-subtitle">
+            <template v-if="currentTab === 'login'">欢迎回来，请登录您的账号</template>
+            <template v-else-if="currentTab === 'register'">加入我们，开启戏曲之旅</template>
+            <template v-else>重置您的密码，安全找回账号</template>
+          </div>
+        </div>
+
+        <!-- 登录表单 -->
+        <el-form
+          ref="loginFormRef"
+          class="auth-form"
+          :model="ruleFormLogin"
+          :rules="rules1"
+          label-width="0"
+          v-show="currentTab === 'login'"
+        >
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormLogin.username" 
+              placeholder="请输入账号"
+              class="custom-input"
+            />
+          </div>
+          
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormLogin.password" 
+              type="password"
+              placeholder="请输入密码"
+              class="custom-input"
+              show-password
+            />
+          </div>
+
+          <div class="form-options">
+            <div class="remember-me">
+              <el-checkbox>记住密码</el-checkbox>
+            </div>
+            <div class="forgot-password" @click="exchangeTabs('findPassword')">
+              忘记密码？
+            </div>
+          </div>
+
+          <el-form-item class="submit-item">
+            <el-button type="primary" class="submit-btn" @click="submitLoginForm(loginFormRef)">
+              登录
+            </el-button>
+          </el-form-item>
+
+          <div class="form-footer">
+            <span>还没有账号？</span>
+            <span class="footer-link" @click="exchangeTabs('register')">立即注册</span>
+          </div>
+        </el-form>
+
+        <!-- 注册表单 -->
+        <el-form
+          ref="registerFormRef"
+          class="auth-form"
+          :model="ruleFormRegister"
+          :rules="rules2"
+          label-width="0"
+          v-show="currentTab === 'register'"
+        >
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <el-input v-model="ruleFormRegister.username" placeholder="请输入账号" class="custom-input" />
+          </div>
+
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <el-input v-model="ruleFormRegister.nickname" placeholder="请输入昵称" class="custom-input" />
+          </div>
+
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormRegister.password" 
+              type="password"
+              placeholder="请输入密码"
+              class="custom-input"
+              show-password
+            />
+          </div>
+
+          <div class="form-field-row">
+            <div class="form-field half">
+              <el-select v-model="ruleFormRegister.sex" placeholder="性别" class="custom-select">
+                <el-option label="女" :value="0" />
+                <el-option label="男" :value="1" />
+                <el-option label="不愿透露" :value="2" />
+              </el-select>
+            </div>
+            <div class="form-field half">
+              <el-date-picker
+                v-model="ruleFormRegister.age"
+                type="date"
+                placeholder="出生日期"
+                class="custom-date"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+              />
+            </div>
+          </div>
+
+          <el-form-item class="submit-item">
+            <el-button type="primary" class="submit-btn" @click="submitRegForm(registerFormRef)">
+              注册
+            </el-button>
+          </el-form-item>
+
+          <div class="form-footer">
+            <span>已有账号？</span>
+            <span class="footer-link" @click="exchangeTabs('login')">返回登录</span>
+          </div>
+        </el-form>
+
+        <!-- 找回密码表单 -->
+        <el-form
+          ref="findFormRef"
+          class="auth-form"
+          :model="ruleFormFind"
+          :rules="rules3"
+          label-width="0"
+          v-show="currentTab === 'findPassword'"
+        >
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <el-input v-model="ruleFormFind.username" placeholder="请输入账号" class="custom-input" />
+          </div>
+
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormFind.oldpassword" 
+              type="password"
+              placeholder="请输入旧密码"
+              class="custom-input"
+              show-password
+            />
+          </div>
+
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormFind.newpassword" 
+              type="password"
+              placeholder="请输入新密码"
+              class="custom-input"
+              show-password
+            />
+          </div>
+
+          <div class="form-field">
+            <div class="field-icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <el-input 
+              v-model="ruleFormFind.repassword" 
+              type="password"
+              placeholder="请再次确认密码"
+              class="custom-input"
+              show-password
+            />
+          </div>
+
+          <el-form-item class="submit-item">
+            <el-button type="primary" class="submit-btn" @click="submitFindForm(findFormRef)">
+              确认修改
+            </el-button>
+          </el-form-item>
+
+          <div class="form-footer">
+            <span>想起密码了？</span>
+            <span class="footer-link" @click="exchangeTabs('login')">返回登录</span>
+          </div>
+        </el-form>
+      </div>
+    </div>
+  </div>
 </template>
+
 <style scoped>
-  .active{
-    display:block;
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* 左侧装饰区域 */
+.auth-decoration {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-decoration::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path fill="white" d="M20,30 L30,20 L40,30 L30,40 Z M60,70 L70,60 L80,70 L70,80 Z M40,80 L45,75 L50,80 L45,85 Z M10,10 L15,5 L20,10 L15,15 Z"/></svg>') repeat;
+  opacity: 0.1;
+  animation: float 20s linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-10%, -10%) rotate(360deg); }
+}
+
+.decoration-content {
+  text-align: center;
+  color: white;
+  z-index: 1;
+  padding: 40px;
+}
+
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.logo-icon {
+  font-size: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.logo-text {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.decoration-slogan {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 48px;
+}
+
+.decoration-quote {
+  background: rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 24px;
+  margin: 32px 0;
+  position: relative;
+}
+
+.quote-mark {
+  font-size: 48px;
+  opacity: 0.5;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+}
+
+.quote-mark-right {
+  font-size: 48px;
+  opacity: 0.5;
+  position: absolute;
+  bottom: -30px;
+  right: 10px;
+}
+
+.decoration-quote p {
+  font-size: 20px;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.decoration-features {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.feature-icon {
+  font-size: 24px;
+}
+
+/* 右侧表单区域 */
+.auth-form-container {
+  width: 520px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+}
+
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 48px 32px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 8px;
+  background: #f5f7fa;
+  padding: 4px;
+  border-radius: 40px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 36px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #64748b;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+}
+
+.header-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* 表单样式 */
+.auth-form {
+  margin-top: 8px;
+}
+
+.form-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: #94a3b8;
+}
+
+.field-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.custom-input :deep(.el-input__wrapper) {
+  padding-left: 44px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.custom-input :deep(.el-input__wrapper:hover) {
+  border-color: #667eea;
+}
+
+.custom-input :deep(.el-input__wrapper.is-focus) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.form-field-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.form-field.half {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.custom-select {
+  width: 100%;
+}
+
+.custom-select :deep(.el-input__wrapper) {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.custom-date {
+  width: 100%;
+}
+
+.custom-date :deep(.el-input__wrapper) {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  font-size: 14px;
+}
+
+.forgot-password {
+  color: #667eea;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.forgot-password:hover {
+  color: #764ba2;
+}
+
+.submit-item {
+  margin-bottom: 20px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+}
+
+.form-footer {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.footer-link {
+  color: #667eea;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #764ba2;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
   }
+  
+  .auth-decoration {
+    padding: 40px 20px;
+    min-height: 280px;
+  }
+  
+  .auth-form-container {
+    width: 100%;
+  }
+  
+  .form-card {
+    padding: 32px 24px;
+  }
+  
+  .decoration-quote p {
+    font-size: 16px;
+  }
+  
+  .decoration-features {
+    gap: 20px;
+  }
+}
 </style>
