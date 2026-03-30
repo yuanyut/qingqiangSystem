@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed ,reactive} from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 // 浏览历史数据
-const browseHistory = ref([
+const browseHistory = reactive([
   {
     id: 1,
     type: 'drama',
@@ -75,7 +75,7 @@ const browseHistory = ref([
 ])
 
 // 筛选选项
-const filterOptions = ref([
+const filterOptions = reactive([
   { value: 'all', label: '全部' },
   { value: 'drama', label: '剧目' },
   { value: 'artist', label: '名家' },
@@ -83,16 +83,52 @@ const filterOptions = ref([
   { value: 'news', label: '资讯' }
 ])
 
+const currentTab=ref('all')
+// const filterList=reactive([])
+const filterLists=(value)=>{
+  // filterList.length = 0;
+  
+  currentTab.value=value
+  console.log(currentTab.value)
+}
+const filterList=computed(()=>{
+  
+    if(currentTab.value==='all'){
+      return browseHistory
+    }
+    else{
+      return browseHistory.filter(item => item.type === currentTab.value)
+    }
+  })
+console.log('这是筛选'+filterList)
+const lableChange=(value)=>{
+  if(value==='drama')
+    return '剧目'
+  if(value ==='artist')
+  return '名家'
+   if(value==='video')
+    return '视频'
+  if(value ==='news')
+  return '资讯'
+}
+const clearBtn=()=>{
+  browseHistory.length=0
+}
+const deleteBtn=(id)=>{
+  console.log(id)
+  const index = browseHistory.findIndex(item => item.id === id)
+  if (index !== -1) {
+    browseHistory.splice(index, 1)
+  }
 
-
-
+}
 </script>
 <template>
   <div class="browse-history">
     <!-- 头部 -->
     <div class="history-header">
       <h3>👁️ 浏览历史</h3>
-      <button class="clear-btn">清空历史</button>
+      <button class="clear-btn" @click="clearBtn">清空历史</button>
     </div>
     
     <!-- 筛选栏 -->
@@ -101,7 +137,7 @@ const filterOptions = ref([
         v-for="filter in filterOptions"
         :key="filter.value"
         class="filter-btn"
-        
+        @click="filterLists(filter.value)"
       >
         {{ filter.label }}
       </button>
@@ -109,15 +145,13 @@ const filterOptions = ref([
     
     <!-- 历史列表 -->
     <div class="history-list">
-      <div v-for="group in browseHistory" :key="group.dateGroup" class="date-group">
-        <div class="date-title">{{ group.dateGroup }}</div>
-        
+      <div v-for="item in filterList" :key="item.id" class="date-group">
         <div class="history-items">
-          <div v-for="item in group.list" :key="item.id" class="history-item">
+          <div class="history-item">
             <div class="item-cover">
               <img :src="item.coverUrl" :alt="item.title">
               <div class="cover-type" :class="item.type">
-                {{ getTypeName(item.type) }}
+                {{ lableChange(item.type)}}
               </div>
             </div>
             
@@ -131,10 +165,13 @@ const filterOptions = ref([
             </div>
             
             <div class="item-actions">
-              <button class="action-btn">删除</button>
+              <button class="action-btn" @click="deleteBtn(item.id)">删除</button>
             </div>
           </div>
         </div>
+      </div>
+      <div v-if="filterList==0">
+        <el-empty description="暂无数据" />
       </div>
     </div>
   </div>
