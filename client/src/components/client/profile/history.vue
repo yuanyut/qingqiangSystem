@@ -127,7 +127,7 @@ const deleteBtn=(id)=>{
   <div class="browse-history">
     <!-- 头部 -->
     <div class="history-header">
-      <h3>👁️ 浏览历史</h3>
+      
       <button class="clear-btn" @click="clearBtn">清空历史</button>
     </div>
     

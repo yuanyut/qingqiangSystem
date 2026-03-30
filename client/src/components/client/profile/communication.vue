@@ -2,10 +2,7 @@
   <div class="my-comments">
     <!-- 头部 -->
     <div class="comments-header">
-      <h3 class="header-title">
-        <span class="title-icon">💬</span>
-        我的评论
-      </h3>
+      
       
       <!-- 普通模式：管理按钮 -->
       <button v-if="!isManageMode" class="manage-btn" @click="enterManageMode">

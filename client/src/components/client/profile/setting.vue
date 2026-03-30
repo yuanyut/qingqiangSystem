@@ -2,10 +2,7 @@
   <div class="account-settings">
     <!-- 头部 -->
     <div class="settings-header">
-      <h3 class="header-title">
-        <span class="title-icon">⚙️</span>
-        账户设置
-      </h3>
+      
       <button class="save-all-btn" @click="handleSaveAll">保存全部设置</button>
     </div>
 

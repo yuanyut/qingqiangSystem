@@ -2,8 +2,8 @@
     <div class="my-favorites">
         <!-- 头部 -->
         <div class="section-header">
-            <h3>⭐ 我的收藏</h3>
-            <span class="favorites-count">{{ chuliList.length }} 件藏品</span>
+            
+            <span class="favorites-count">{{ chuliList.length }} 件</span>
         </div>
 
         <!-- 筛选栏 -->

@@ -2,11 +2,10 @@
     <div class="my-likes">
         <!-- 头部 -->
         <div class="section-header">
-            <h3>
-                <span class="header-icon">⭐</span>
-                我的点赞
+            
+               
                 <span class="likes-count">{{ chuliList.length }} 个赞</span>
-            </h3>
+            
         </div>
 
         <!-- 筛选栏 -->
