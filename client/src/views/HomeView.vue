@@ -234,35 +234,41 @@ const exchangeTabs=(tab:any)=>{
           label-width="0"
           v-show="currentTab === 'login'"
         >
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
+          <!-- 账号 -->
+          <el-form-item prop="username">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormLogin.username" 
+                placeholder="请输入账号"
+                class="custom-input"
+              />
             </div>
-            <el-input 
-              v-model="ruleFormLogin.username" 
-              placeholder="请输入账号"
-              class="custom-input"
-            />
-          </div>
+          </el-form-item>
           
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <!-- 密码 -->
+          <el-form-item prop="password">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormLogin.password" 
+                type="password"
+                placeholder="请输入密码"
+                class="custom-input"
+                show-password
+              />
             </div>
-            <el-input 
-              v-model="ruleFormLogin.password" 
-              type="password"
-              placeholder="请输入密码"
-              class="custom-input"
-              show-password
-            />
-          </div>
+          </el-form-item>
 
           <div class="form-options">
             <div class="remember-me">
@@ -294,51 +300,62 @@ const exchangeTabs=(tab:any)=>{
           label-width="0"
           v-show="currentTab === 'register'"
         >
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
+          <!-- 账号 -->
+          <el-form-item prop="username">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <el-input v-model="ruleFormRegister.username" placeholder="请输入账号" class="custom-input" />
             </div>
-            <el-input v-model="ruleFormRegister.username" placeholder="请输入账号" class="custom-input" />
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
+          <!-- 昵称 -->
+          <el-form-item prop="nickname">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <el-input v-model="ruleFormRegister.nickname" placeholder="请输入昵称" class="custom-input" />
             </div>
-            <el-input v-model="ruleFormRegister.nickname" placeholder="请输入昵称" class="custom-input" />
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <!-- 密码 -->
+          <el-form-item prop="password">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormRegister.password" 
+                type="password"
+                placeholder="请输入密码"
+                class="custom-input"
+                show-password
+              />
             </div>
-            <el-input 
-              v-model="ruleFormRegister.password" 
-              type="password"
-              placeholder="请输入密码"
-              class="custom-input"
-              show-password
-            />
-          </div>
+          </el-form-item>
 
           <div class="form-field-row">
-            <div class="form-field half">
+            <!-- 性别 -->
+            <el-form-item prop="sex" class="half">
               <el-select v-model="ruleFormRegister.sex" placeholder="性别" class="custom-select">
                 <el-option label="女" :value="0" />
                 <el-option label="男" :value="1" />
                 <el-option label="不愿透露" :value="2" />
               </el-select>
-            </div>
-            <div class="form-field half">
+            </el-form-item>
+            <!-- 年龄 -->
+            <el-form-item prop="age" class="half">
               <el-date-picker
                 v-model="ruleFormRegister.age"
                 type="date"
@@ -347,7 +364,7 @@ const exchangeTabs=(tab:any)=>{
                 format="YYYY-MM-DD"
                 value-format="YYYY-MM-DD"
               />
-            </div>
+            </el-form-item>
           </div>
 
           <el-form-item class="submit-item">
@@ -371,63 +388,75 @@ const exchangeTabs=(tab:any)=>{
           label-width="0"
           v-show="currentTab === 'findPassword'"
         >
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
+          <!-- 账号 -->
+          <el-form-item prop="username">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <el-input v-model="ruleFormFind.username" placeholder="请输入账号" class="custom-input" />
             </div>
-            <el-input v-model="ruleFormFind.username" placeholder="请输入账号" class="custom-input" />
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <!-- 旧密码 -->
+          <el-form-item prop="oldpassword">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormFind.oldpassword" 
+                type="password"
+                placeholder="请输入旧密码"
+                class="custom-input"
+                show-password
+              />
             </div>
-            <el-input 
-              v-model="ruleFormFind.oldpassword" 
-              type="password"
-              placeholder="请输入旧密码"
-              class="custom-input"
-              show-password
-            />
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <!-- 新密码 -->
+          <el-form-item prop="newpassword">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormFind.newpassword" 
+                type="password"
+                placeholder="请输入新密码"
+                class="custom-input"
+                show-password
+              />
             </div>
-            <el-input 
-              v-model="ruleFormFind.newpassword" 
-              type="password"
-              placeholder="请输入新密码"
-              class="custom-input"
-              show-password
-            />
-          </div>
+          </el-form-item>
 
-          <div class="form-field">
-            <div class="field-icon">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-              </svg>
+          <!-- 确认密码 -->
+          <el-form-item prop="repassword">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input 
+                v-model="ruleFormFind.repassword" 
+                type="password"
+                placeholder="请再次确认密码"
+                class="custom-input"
+                show-password
+              />
             </div>
-            <el-input 
-              v-model="ruleFormFind.repassword" 
-              type="password"
-              placeholder="请再次确认密码"
-              class="custom-input"
-              show-password
-            />
-          </div>
+          </el-form-item>
 
           <el-form-item class="submit-item">
             <el-button type="primary" class="submit-btn" @click="submitFindForm(findFormRef)">
@@ -624,6 +653,7 @@ const exchangeTabs=(tab:any)=>{
 .form-field {
   position: relative;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .field-icon {
