@@ -6,7 +6,7 @@ import content from '@/layouts/content.vue';
 <template>
   <div class="common-layout">
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="150px">
         <side></side>
       </el-aside>
       <el-container>
