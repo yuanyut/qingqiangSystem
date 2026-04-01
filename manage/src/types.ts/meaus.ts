@@ -39,38 +39,38 @@ export const mockMenu = [
   },
   {
     "name": "内容管理",
-    "path": "/content",
+    "path": "/contents",
     "icon": "Document",
     "children": [
       {
         "name": "剧目管理",
-        "path": "/content/drama",
-        "component": "Content/Drama/index.vue",
-        "permission": "content:drama:list"
+        "path": "/contents/drama",
+        "component": "Contents/Drama/index.vue",
+        "permission": "contents:drama:list"
       },
       {
         "name": "文章管理",
-        "path": "/content/article",
-        "component": "Content/Article/index.vue",
-        "permission": "content:article:list"
+        "path": "/contents/article",
+        "component": "Contents/Article/index.vue",
+        "permission": "contents:article:list"
       },
       {
         "name": "图片资源管理",
-        "path": "/content/image",
-        "component": "Content/Image/index.vue",
-        "permission": "content:image:list"
+        "path": "/contents/image",
+        "component": "Contents/Image/index.vue",
+        "permission": "contents:image:list"
       },
       {
         "name": "视频资源管理",
-        "path": "/content/video",
-        "component": "Content/Video/index.vue",
-        "permission": "content:video:list"
+        "path": "/contents/video",
+        "component": "Contents/Video/index.vue",
+        "permission": "contents:video:list"
       },
       {
         "name": "轮播图管理",
-        "path": "/content/banner",
-        "component": "Content/Banner/index.vue",
-        "permission": "content:banner:list"
+        "path": "/contents/banner",
+        "component": "Contents/Banner/index.vue",
+        "permission": "contents:banner:list"
       }
     ]
   },

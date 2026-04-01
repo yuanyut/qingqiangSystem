@@ -2,9 +2,12 @@
 import home from '@/components/home.vue';
 </script>
 <template>
-    <router-view>
-        <KeepAlive>
-            <component :is="home"></component>
-        </KeepAlive>
-    </router-view>
+    <div>
+        <router-view>
+            <KeepAlive>
+                <component :is="home"></component>
+            </KeepAlive>
+        </router-view>
+    </div>
+
 </template>
