@@ -52,27 +52,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
       <div class="decoration-content">
         <div class="logo-wrapper">
           <div class="logo-icon">🎭</div>
-          <h1 class="logo-text">秦韵雅集</h1>
-        </div>
-        <p class="decoration-slogan">传承经典 · 品味秦腔</p>
-        <div class="decoration-quote">
-          <span class="quote-mark">“</span>
-          <p>秦腔一声吼，千古风流尽在喉</p>
-          <span class="quote-mark-right">”</span>
-        </div>
-        <div class="decoration-features">
-          <div class="feature-item">
-            <span class="feature-icon">🎵</span>
-            <span>经典剧目</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">👤</span>
-            <span>名家荟萃</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">📰</span>
-            <span>资讯动态</span>
-          </div>
+          <h1 class="logo-text">秦腔宣传管理系统</h1>
         </div>
       </div>
     </div>
