@@ -8,6 +8,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'login', component: login },
+
     {
       path: '/manage',
       name: 'manage',
@@ -15,6 +16,11 @@ const router = createRouter({
       component: manage,
       children: [
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/view/404.vue')
     }
   ]
 })

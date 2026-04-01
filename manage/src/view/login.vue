@@ -35,7 +35,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       console.log('submit!')
       console.log(ruleFormLogin)
-      router.push('/manage/home')
+      router.push('/manage/system/user')
     } else {
       console.log('error submit!', fields)
     }
