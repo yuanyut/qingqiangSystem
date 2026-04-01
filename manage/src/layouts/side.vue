@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 import {
-    Document,
     Menu as IconMenu,
-    Location,
     Setting,
 } from '@element-plus/icons-vue'
+import router from '@/router'
 import { mockMenu } from '@/types.ts/meaus'
-const handleOpen = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
+// const handleOpen = (key: string, keyPath: string[]) => {
+//     console.log(key, keyPath)
+// }
+// const handleClose = (key: string, keyPath: string[]) => {
+//     console.log(key, keyPath)
+// }
+const changPage=(path:string)=>{
+  console.log("点击的",path)
+  router.push('/manage/'+path)
 }
 </script>
 <template>
@@ -18,8 +21,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     <el-menu
       default-active="2"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
+      style="height: 100vh;overflow: auto;"
     >
       <!-- 遍历菜单 -->
       <template v-for="item in mockMenu" :key="item.path">
@@ -27,7 +29,7 @@ const handleClose = (key: string, keyPath: string[]) => {
         <!-- 如果有子菜单 -->
         <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
           <template #title>
-            <el-icon><icon-menu /></el-icon>
+            <!-- <el-icon>{{ item.icon }}</el-icon> -->
             <span>{{ item.name }}</span>
           </template>
 
@@ -35,6 +37,7 @@ const handleClose = (key: string, keyPath: string[]) => {
             v-for="child in item.children"
             :key="child.path"
             :index="child.path"
+            @click="changPage(child.path)"
           >
             {{ child.name }}
           </el-menu-item>

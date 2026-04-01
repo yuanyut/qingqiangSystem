@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
 import login from '@/view/login.vue'
 import manage from '@/view/manage.vue'
 import { mockMenu } from '@/types.ts/meaus'
@@ -15,7 +14,6 @@ const router = createRouter({
       redirect: '/manage/home',
       component: manage,
       children: [
-        { path: 'home', name: 'home', component: () => import('@/components/home.vue') }
       ]
     }
   ]
@@ -37,9 +35,10 @@ interface MenuItem {
 // 4. 递归添加路由
 function addRoutes(menuList: MenuItem[]) {
   menuList.forEach(item => {
+    
     // 只有当 component 存在时才添加路由
     if (item.component) {
-      const componentLoader = modules['/src/components/'+item.component]
+      const componentLoader = modules[item.component]
       
       if (componentLoader) {
         router.addRoute('manage', {
@@ -65,5 +64,9 @@ function addRoutes(menuList: MenuItem[]) {
 
 // 5. 执行添加路由
 addRoutes(mockMenu)
-
+// 打印所有路由
+console.log('=== 所有路由路径 ===')
+router.getRoutes().forEach(route => {
+  console.log(route)
+})
 export default router
