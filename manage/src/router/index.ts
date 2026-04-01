@@ -4,7 +4,7 @@ import { reactive } from 'vue'
 import login from '@/view/login.vue'
 import manage from '@/view/manage.vue'
 import { mockMenu } from '@/types.ts/meaus'
-
+import type { DefineComponent } from 'vue'
 // 1. 基础静态路由
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,26 +40,35 @@ const routes = reactive<RouteRecordRaw[]>([])
 // 5. 递归函数：把菜单转成 RouteRecordRaw 并 push 到 routes
 function addRoutesFun(menuList: MenuItem[], parentName = 'manage') {
   menuList.forEach(item => {
+    // 如果有子菜单，但没有 component，设置 redirect
+    if (item.children && item.children.length > 0 && !item.component) {
+      router.addRoute(parentName, {
+        path: item.path.replace(/^\//, ''), // 去掉前导 /
+        name: item.name,
+        redirect: item.children[0]!.path.replace(/^\//, ''),
+      })
+    }
+
+    // 如果有 component，动态加载
+    // 有 children，没 component → 只做菜单分组 + redirect
+    // 有 component → 点击直接渲染页面
+    // 没有 children，必须有 component → 点击直接渲染页面
     if (item.component) {
       const mod = modules[`/src/components/${item.component}`]
       if (mod) {
-        routes.push({
-          path: item.path,
+        router.addRoute(parentName, {
+          path: item.path.replace(/^\//, ''),
           name: item.name,
-          // 强制懒加载类型
-          component: mod as unknown as () => Promise<any>
+          component: () => (mod() as Promise<{ default: DefineComponent }>)
+            .then(m => m.default)
         })
       }
     }
 
+    // 递归处理子菜单
     if (item.children && item.children.length > 0) {
       addRoutesFun(item.children, parentName)
     }
-  })
-
-  // push 完所有动态路由再添加到 router
-  routes.forEach(route => {
-    router.addRoute(parentName, route)
   })
 }
 
