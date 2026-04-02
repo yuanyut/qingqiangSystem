@@ -1,6 +1,31 @@
 //这里应该是api获取数据
 export const mockMenu = [
   {
+    "name": "统计分析",
+    "path": "analysis",
+    "icon": "DataAnalysis",
+    "children": [
+      {
+        "name": "剧目热度分析",
+        "path": "analysis/drama",
+        "component": "/src/components/Analysis/Drama/index.vue",
+        "permission": "analysis:drama:list"
+      },
+      {
+        "name": "用户画像分析",
+        "path": "analysis/user",
+        "component": "/src/components/Analysis/User/index.vue",
+        "permission": "analysis:user:list"
+      },
+      {
+        "name": "PV/UV 数据",
+        "path": "analysis/pvuv",
+        "component": "/src/components/Analysis/PVUV/index.vue",
+        "permission": "analysis:pvuv:list"
+      }
+    ]
+  },
+  {
     "name": "系统管理",
     "path": "/system",
     "icon": "Setting",
@@ -93,31 +118,7 @@ export const mockMenu = [
       }
     ]
   },
-  {
-    "name": "统计分析",
-    "path": "analysis",
-    "icon": "DataAnalysis",
-    "children": [
-      {
-        "name": "剧目热度分析",
-        "path": "analysis/drama",
-        "component": "/src/components/Analysis/Drama/index.vue",
-        "permission": "analysis:drama:list"
-      },
-      {
-        "name": "用户画像分析",
-        "path": "analysis/user",
-        "component": "/src/components/Analysis/User/index.vue",
-        "permission": "analysis:user:list"
-      },
-      {
-        "name": "PV/UV 数据",
-        "path": "analysis/pvuv",
-        "component": "/src/components/Analysis/PVUV/index.vue",
-        "permission": "analysis:pvuv:list"
-      }
-    ]
-  },
+  
   {
     "name": "推荐系统",
     "path": "/recommend",
