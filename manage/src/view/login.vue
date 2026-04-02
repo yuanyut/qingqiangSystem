@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, } from 'vue'
 import router from '@/router/index'
+import { mockMenu } from '@/types.ts/meaus'
 import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
 interface ruleForm{
@@ -33,9 +34,9 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      console.log(ruleFormLogin)
-      router.push('/manage/system/user')
+      // console.log('submit!')
+      // console.log(ruleFormLogin)
+       router.push(`/manage/${mockMenu[0]?.children[0]?.path}`)
     } else {
       console.log('error submit!', fields)
     }
