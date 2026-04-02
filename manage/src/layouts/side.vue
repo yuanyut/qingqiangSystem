@@ -8,52 +8,20 @@ const router = useRouter()
 
 // 手动控制激活的菜单项
 const activeMenu = ref('')
-
-// 更新激活菜单的函数
-const updateActiveMenu = () => {
-  const currentPath = route.path
-  console.log('更新激活菜单，当前路径:', currentPath)
-  
-  if (currentPath === '/manage' || currentPath === '/manage/') {
-    // 如果在根路径，激活第一个菜单
-    const firstMenu = mockMenu[0]?.children?.[0]?.path
-    activeMenu.value = firstMenu || ''
-    console.log('根路径，激活第一个菜单:', activeMenu.value)
-  } else if (currentPath.startsWith('/manage/')) {
-    // 提取子路径
-    const subPath = currentPath.replace('/manage/', '')
-    activeMenu.value = subPath
-    console.log('子路径，激活菜单:', activeMenu.value)
-  } else {
-    activeMenu.value = ''
-    console.log('其他路径，激活空')
-  }
-}
-
-// 监听路由变化 - 使用多种方式确保能捕获到浏览器前进后退
-// 方式1: 使用 watch 监听 route.path
-watch(() => route.path, () => {
-  console.log('watch 监听到路由变化')
-  updateActiveMenu()
-}, { immediate: true, deep: true })
-
-// 页面跳转
-const changPage = (path: string) => {
-  console.log("点击菜单:", path)
-  
-  // 先更新激活状态
-  activeMenu.value = path
-  
-  // 如果当前已经在目标页面，不重复跳转
-  if (route.path === `/manage/${path}`) {
-    console.log('已在当前页面，只更新高亮')
+const changPage=(path:string) =>{
+  if(route.path === `/manage/${path}`){
     return
   }
-  
-  // 跳转路由
-  router.push('/manage/' + path)
+  activeMenu.value=path
+  router.push('/manage/'+path)
+  console.log('点击跳转activeMenu改变了',activeMenu.value)
 }
 
+watch(()=>route.path,(newRoutePath)=>{
+  console.log('watch监听到路变化',newRoutePath)
+  activeMenu.value=newRoutePath.replace('/manage/','')
+  console.log('这是url退出的新活动侧边',activeMenu.value)
+}, { immediate: true, deep: true })
 </script>
 
 <template>
