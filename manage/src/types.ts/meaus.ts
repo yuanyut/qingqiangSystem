@@ -1,6 +1,13 @@
 //这里应该是api获取数据
 export const mockMenu = [
   {
+    "name": "数据大屏",
+    "path": "home",
+    "component": "/src/components/home.vue",
+    "permission": "home:home:list"
+  },
+
+  {
     "name": "统计分析",
     "path": "analysis",
     "icon": "DataAnalysis",
@@ -118,7 +125,7 @@ export const mockMenu = [
       }
     ]
   },
-  
+
   {
     "name": "推荐系统",
     "path": "/recommend",

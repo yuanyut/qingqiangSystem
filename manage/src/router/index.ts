@@ -42,7 +42,7 @@ interface MenuItem {
 function addRoutes(menuList: MenuItem[]) {
   menuList.forEach(item => {
     
-    // 只有当 component 存在时才添加路由
+    // 只有当 component 存在时才添加路由,这里只有一级菜单
     if (item.component) {
       const componentLoader = modules[item.component]
       
