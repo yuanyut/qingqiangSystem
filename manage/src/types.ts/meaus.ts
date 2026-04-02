@@ -6,13 +6,13 @@ export const mockMenu = [
     "icon": "DataAnalysis",
     "children": [
       {
-        "name": "剧目热度分析",
+        "name": "剧目热度",
         "path": "analysis/drama",
         "component": "/src/components/Analysis/Drama/index.vue",
         "permission": "analysis:drama:list"
       },
       {
-        "name": "用户画像分析",
+        "name": "用户画像",
         "path": "analysis/user",
         "component": "/src/components/Analysis/User/index.vue",
         "permission": "analysis:user:list"
