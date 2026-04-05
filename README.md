@@ -18,7 +18,7 @@
 1.npm install
 2.npm install element-plus --save
 3.npm i element-china-area-data
-
+4.npm install echarts
 #### 参与贡献
 
 1.  Fork 本仓库
