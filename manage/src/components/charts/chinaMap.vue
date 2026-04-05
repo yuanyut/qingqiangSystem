@@ -76,8 +76,9 @@ const renderChart = () => {
             bottom: 'bottom',
             text: ['高', '低'],
             calculable: true,
-            inRange: { color: ['#e0ffff', '#006edd'] }
+            inRange: { color: ['#fff', '#edd'] }
         },
+
         //核心解决“双地图问题”的关键
         geo: {
             map: 'china',
@@ -90,6 +91,7 @@ const renderChart = () => {
                 borderColor: '#333'
             },
         },
+        zoom:1.8,
         series: [
             {
                 name: '散点',
@@ -99,7 +101,7 @@ const renderChart = () => {
                 symbolSize: 12,//散点大小
                 showEffectOn: 'render',
                 rippleEffect: { brushType: 'stroke' },
-                itemStyle: { color: '#ffde00' }//散点颜色
+                itemStyle: { color: '#fff' }//散点颜色
             }
         ]
     }

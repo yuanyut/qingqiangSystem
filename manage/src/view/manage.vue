@@ -20,4 +20,7 @@ import content from '@/layouts/content.vue';
 
 
 <style scoped>
+:deep(.el-main){
+  --el-main-padding: 0px;
+}
 </style>

@@ -32,7 +32,7 @@ interface qualityScore {
         contentCount: number
     }
     radar: {
-        indicator: { name: string; max: number }[]  // 改这里
+        indicator: { name: string; max: number }[]
         value: number[]
     }
 }
@@ -56,117 +56,47 @@ const qualityScoreData = reactive<qualityScore>({
 })
 
 const total = reactive<totalItem[]>([
-
-    {
-        name: '今日访问量',
-        data: 10
-    },
-    {
-        name: '剧目总数',
-        data: 50
-    },
-    {
-        name: '用户总数',
-        data: 50,
-        status: 'up',
-        changeNum: 5
-    },
-    {
-        name: 'pv(页面浏览量)',
-        data: 100,
-        status: 'up',
-        changeNum: 5,
-        changeWeiDu: '较昨天比较'
-    }, {
-        name: 'pv(页面浏览量)',
-        data: 100,
-        status: 'up',
-        changeNum: 5,
-        changeWeiDu: '较上一月比较'
-    }, {
-        name: 'uv(独立访客)',
-        data: 100,
-        status: 'down',
-        changeNum: 5,
-        changeWeiDu: '较昨天比较'
-    },
-    {
-        name: 'uv(独立访客)',
-        data: 100,
-        status: 'equal',
-        changeNum: 0,
-        changeWeiDu: '较上一月比较'
-    }
+    { name: '今日访问量', data: 10 },
+    { name: '剧目总数', data: 50 },
+    { name: '用户总数', data: 50, status: 'up', changeNum: 5 },
+    { name: 'pv(页面浏览量)', data: 100, status: 'up', changeNum: 5, changeWeiDu: '较昨天比较' },
+    { name: 'uv(独立访客)', data: 100, status: 'down', changeNum: 5, changeWeiDu: '较昨天比较' },
 ])
 const cateJumu = reactive<PieItem[]>([{
-    value: 50,
-    name: '传统剧目'
+    value: 50, name: '传统剧目'
+}, {
+    value: 50, name: '现代剧目'
+}, {
+    value: 20, name: '经典折子戏'
+}, {
+    value: 10, name: '新编历史剧'
+}])
 
-},
-{
-    value: 50,
-    name: '现代剧目'
-
-},
-{
-    value: 20,
-    name: '经典折子戏'
-
-},
-{
-    value: 10,
-    name: '新编历史剧'
-}
-])
-
-const everyDram = reactive<daramValue>(
-    {
-        "time": [
-            "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-            "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-            "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-        ],
-        "dramaCount": [3, 4, 5, 2, 6, 4, 3, 8, 7, 6, 9, 5, 7, 8],
-        "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
-    }
-)
-const weekDram = reactive<daramValue>(
-    {
-        "time": [
-            "2024-W01", "2024-W02", "2024-W03", "2024-W04", "2024-W05",
-            "2024-W06", "2024-W07", "2024-W08", "2024-W09", "2024-W10"
-        ],
-        "dramaCount": [21, 18, 25, 28, 32, 30, 27, 35, 31, 29],
-        "articleCount": [6, 5, 7, 8, 9, 7, 6, 10, 8, 7]
-    }
-)
-const monthDram = reactive<daramValue>(
-    {
-        "time": [
-            "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10",
-            "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04"
-        ],
-        "dramaCount": [90, 102, 96, 110, 121, 125, 130, 138, 145, 122, 150, 160],
-        "articleCount": [28, 34, 29, 31, 36, 38, 42, 45, 48, 40, 52, 55]
-    }
-)
-const Dram = reactive<daramValue>({
-
-    "time": [
-        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-    ],
+const everyDram = reactive<daramValue>({
+    "time": ["2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24", "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29", "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"],
     "dramaCount": [3, 4, 5, 2, 6, 4, 3, 8, 7, 6, 9, 5, 7, 8],
     "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
-
+})
+const weekDram = reactive<daramValue>({
+    "time": ["2024-W01", "2024-W02", "2024-W03", "2024-W04", "2024-W05", "2024-W06", "2024-W07", "2024-W08", "2024-W09", "2024-W10"],
+    "dramaCount": [21, 18, 25, 28, 32, 30, 27, 35, 31, 29],
+    "articleCount": [6, 5, 7, 8, 9, 7, 6, 10, 8, 7]
+})
+const monthDram = reactive<daramValue>({
+    "time": ["2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04"],
+    "dramaCount": [90, 102, 96, 110, 121, 125, 130, 138, 145, 122, 150, 160],
+    "articleCount": [28, 34, 29, 31, 36, 38, 42, 45, 48, 40, 52, 55]
+})
+const Dram = reactive<daramValue>({
+    "time": ["2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24", "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29", "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"],
+    "dramaCount": [3, 4, 5, 2, 6, 4, 3, 8, 7, 6, 9, 5, 7, 8],
+    "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
 })
 
 const change = (daram: daramValue) => {
     Dram.time = daram.time
     Dram.dramaCount = daram.dramaCount
     Dram.articleCount = daram.articleCount
-    console.log('这是', Dram)
 }
 interface trendIntergace {
     time: string[],
@@ -175,39 +105,25 @@ interface trendIntergace {
     shareCount: number[]
 }
 const everyTrend = reactive<trendIntergace>({
-    "time": [
-        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-    ],
+    "time": ["2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24", "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29", "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"],
     "visitCount": [120, 135, 150, 110, 145, 160, 155, 170, 180, 165, 175, 190, 200, 185],
     "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
     "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
 })
 const weekTrend = reactive<trendIntergace>({
-    "time": [
-        "2024-W01", "2024-W02", "2024-W03", "2024-W04", "2024-W05",
-        "2024-W06", "2024-W07", "2024-W08", "2024-W09", "2024-W10"
-    ],
+    "time": ["2024-W01", "2024-W02", "2024-W03", "2024-W04", "2024-W05", "2024-W06", "2024-W07", "2024-W08", "2024-W09", "2024-W10"],
     "visitCount": [820, 900, 950, 870, 920, 980, 1020, 1100, 1050, 1075],
     "collectCount": [210, 220, 230, 200, 215, 240, 245, 260, 250, 255],
     "shareCount": [75, 80, 78, 70, 82, 90, 92, 100, 95, 97]
 })
 const monthTrend = reactive<trendIntergace>({
-    "time": [
-        "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10",
-        "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04"
-    ],
+    "time": ["2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04"],
     "visitCount": [3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400],
     "collectCount": [800, 850, 880, 900, 950, 980, 1000, 1020, 1050, 1080, 1100, 1150],
     "shareCount": [250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360]
 })
 const trend = reactive<trendIntergace>({
-    "time": [
-        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-    ],
+    "time": ["2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24", "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29", "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"],
     "visitCount": [120, 135, 150, 110, 145, 160, 155, 170, 180, 165, 175, 190, 200, 185],
     "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
     "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
@@ -231,11 +147,7 @@ const topDrama = reactive([
     { name: "长生殿", clicks: 830 }
 ])
 const crt = reactive({
-    "time": [
-        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-    ],
+    "time": ["2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24", "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29", "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"],
     "exposure": [1200, 1350, 1500, 1100, 1450, 1600, 1550, 1700, 1800, 1650, 1750, 1900, 2000, 1850],
     "click": [240, 270, 300, 220, 290, 320, 310, 340, 360, 330, 350, 380, 400, 370],
     "ctr": [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
@@ -251,147 +163,336 @@ const ageData = reactive([
     { name: "35-50", clicks: 2100 },
     { name: "50+", clicks: 800 }
 ])
-const mapValue=reactive([
+const mapValue = reactive([
     { name: '北京', value: 300 },
-      { name: '上海', value: 500 }
+    { name: '上海', value: 500 }
 ])
-const currentTime=ref('')
-const updataTime=()=>{
-    const now =new Date()
-    currentTime.value=now.toLocaleString()
-    // console.log(currentTime.value)
+const currentTime = ref('')
+const updataTime = () => {
+    const now = new Date()
+    currentTime.value = now.toLocaleString()
 }
-const timer=ref<number>(0)
-onMounted(()=>{
+const timer = ref<number>(0)
+onMounted(() => {
     updataTime()
-    
-    timer.value = setInterval(updataTime, 1000) // 每秒更新
+    timer.value = setInterval(updataTime, 1000)
 })
 onUnmounted(() => {
-  if (timer.value) clearInterval(timer.value) // 组件销毁时清除定时器
+    if (timer.value) clearInterval(timer.value)
 })
 </script>
+
 <template>
-    <div>
-        <div>
-            {{ currentTime }}
-        </div>
-        <div class="header">
-            <div v-for="(item, index) in total" :key="index">
-                <div>{{ item.name }}</div>
-                <div>{{ item.data }}</div>
-                <div v-if="item.status">
-                    <div v-if="item.changeNum! > 0">
+    <div class="dashboard-page">
+        <!-- 实时时间 -->
+        <div class="current-time">{{ currentTime }}</div>
+
+        <!-- 数据概览卡片 —— 类似标题栏 -->
+        <div class="header-cards">
+            <div v-for="(item, index) in total" :key="index" class="stat-card">
+                <div class="stat-name">{{ item.name }}</div>
+                <div class="stat-data">{{ item.data }}</div>
+                <div v-if="item.status" class="stat-change">
+                    <span v-if="item.changeNum! > 0" :class="item.status">
+                        <svg v-if="item.status === 'up'" width="12" height="12" viewBox="0 0 1024 1024">
+                            <path d="M508.8 64l188.8 316.8-156.288-84.672v673.92h-64V296L320 380.8 508.8 64z" fill="#00b42a"></path>
+                        </svg>
+                        <svg v-else-if="item.status === 'down'" width="12" height="12" viewBox="0 0 1024 1024">
+                            <path d="M512 960L320 640h128V64h64v576h128z" fill="#ff4d4f"></path>
+                        </svg>
                         {{ item.changeNum }}
-                        <div v-if="item.status === 'up'">
-                            <svg t="1775129532245" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="4894" width="10" height="10">
-                                <path d="M508.8 64l188.8 316.8-156.288-84.672v673.92h-64V296L320 380.8 508.8 64z"
-                                    fill="#FF5050" p-id="4895"></path>
-                            </svg>
-                        </div>
-                        <div v-if="item.status === 'equal'">
-                            <span>较之前相比没变化</span>
-                        </div>
-                        <div v-if="item.status === 'down'">
-                            <svg t="1775130098502" class="icon" viewBox="0 0 1025 1024" version="1.1"
-                                xmlns="http://www.w3.org/2000/svg" p-id="5861" width="10" height="10">
-                                <path
-                                    d="M467.985218 937.525717c0.122866 0.124914 0.24778 0.248804 0.372694 0.370646 11.174684 10.873662 25.852081 16.831651 41.412066 16.831651 0.277473 0 0.554946-0.001024 0.832419-0.005119 15.837458-0.217064 30.643864-6.574368 41.702849-17.905707l334.741901-339.769178c9.525205-9.667525 9.408482-25.226487-0.259043-34.750668-9.666501-9.524181-25.227511-9.408482-34.750668 0.259043l-315.80719 320.551874L536.230246 88.475979c0-13.5716-11.001648-24.573248-24.573248-24.573248-13.5716 0-24.573248 11.001648-24.573248 24.573248l0 798.397108L166.360888 561.132161c-9.52111-9.670597-25.080071-9.791415-34.750668-0.269282-9.670597 9.52111-9.791415 25.080071-0.270306 34.750668L467.985218 937.525717z"
-                                    fill="#353535" p-id="5862"></path>
-                            </svg>
-                        </div>
-                    </div>
-
-
+                    </span>
+                    <span v-else-if="item.changeNum === 0" class="equal">无变化</span>
+                    <span v-if="item.changeWeiDu" class="change-desc">{{ item.changeWeiDu }}</span>
                 </div>
             </div>
         </div>
-        <div class="contents">
-            <!-- 左侧 -->
-            <div class="content">
-                <div class="con">
-                    <div>剧目分类占比</div>
-                    <div>
-                        <pie :datas="cateJumu" wd="500px" ht="500px"></pie>
-                    </div>
+
+        <!-- 重新布局：左侧上方突出地图卡片 -->
+        <div class="new-layout">
+            <!-- 左侧突出区域：用户地域分布地图 -->
+            <div class="left-highlight">
+                <div class="chart-card map-highlight">
+                    <div class="chart-title">用户地域分布地图</div>
+                    <chinaMap :datas="mapValue" wd="100%" ht="100%"></chinaMap>
                 </div>
-                <div class="con">
-                    <div>内容发布趋势</div>
-                    <div>
+            </div>
+
+            <!-- 右侧辅助信息区（性别+年龄） -->
+            <div class="right-side">
+                
+                <div class="chart-card">
+                    <div class="chart-title">热门剧目TOP10</div>
+                    <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">内容发布趋势</div>
+                    <div class="chart-tabs">
                         <div @click="change(everyDram)">每日</div>
                         <div @click="change(weekDram)">每周</div>
                         <div @click="change(monthDram)">每月</div>
                     </div>
-                    <div>
-                        <Line :datas="Dram" wd="500px" ht="500px"></Line>
-
-                    </div>
-                </div>
-                <div class="con">
-                    <div>内容质量评分</div>
-                    <div>
-                        <Radar :datas="qualityScoreData" wd="500px" ht="500px" name="内容质量评分"></Radar>
-                    </div>
+                    <Line :datas="Dram" wd="100%" ht="320px"></Line>
                 </div>
             </div>
-            <!-- 中间 -->
-            <div class="content">
-                <div class="con">
-                    <div>剧目热度趋势</div>
-                    <div>
+        </div>
+
+        <!-- 下方图表内容区 - 保持原有网格布局 -->
+        <div class="chart-container">
+            <!-- 左侧列 -->
+            <div style="display: flex;gap:1%">
+                 <div class="chart-card" style="width: 33%;">
+                    <div class="chart-title">剧目分类占比</div>
+                    <pie :datas="cateJumu" wd="100%" ht="320px"></pie>
+                </div>
+                <div class="chart-card"  style="width: 33%;">
+                    <div class="chart-title">用户年龄段分布</div>
+                    <Bar :datas="ageData" wd="100%" ht="280px"></Bar>
+                </div>
+                <div class="chart-card"  style="width: 33%;">
+                    <div class="chart-title">内容质量评分</div>
+                    <Radar :datas="qualityScoreData" wd="100%" ht="320px" name="内容质量评分"></Radar>
+                </div>
+            </div>
+               
+            
+
+            <!-- 中间列 -->
+            
+                <!-- <div class="chart-card">
+                    <div class="chart-title">剧目热度趋势</div>
+                    <div class="chart-tabs">
                         <div @click="changeTrend(everyTrend)">每日</div>
                         <div @click="changeTrend(weekTrend)">每周</div>
                         <div @click="changeTrend(monthTrend)">每月</div>
                     </div>
-                    <div>
-                        <threeLine :datas="trend" wd="500px" ht="500px" name1="访问量" name2="收藏" name3="分享"></threeLine>
-                    </div>
+                    <threeLine :datas="trend" wd="100%" ht="320px" name1="访问量" name2="收藏" name3="分享"></threeLine>
                 </div>
-                <div class="con">
-                    <div>热门剧目TOP10</div>
-                    <div>
-                        <Bar :datas="topDrama" wd="500px" ht="500px"></Bar>
-                    </div>
+               <div class="chart-card">
+                    <div class="chart-title">用户性别占比</div>
+                    <pie :datas="sex" wd="100%" ht="280px"></pie>
                 </div>
-                <div class="con">
-                    <div>推荐系统命中率</div>
-                    <div>
-                        <doubleBar :datas="crt" wd="500px" ht="500px" name1="曝光量" name2="点击量" name3="CTR"></doubleBar>
-                    </div>
-                </div>
+                <div class="chart-card">
+                    <div class="chart-title">推荐系统命中率</div>
+                    <doubleBar :datas="crt" wd="100%" ht="320px" name1="曝光量" name2="点击量" name3="CTR"></doubleBar>
+                </div> -->
             </div>
-            <!-- 右侧 -->
-            <div class="content">
-                <div class="con">
-                    <div>用户地域分布地图</div>
-                    
-                    <div>
-                        <chinaMap :datas="mapValue" wd="500px" ht="500px"></chinaMap>
-                    </div>
-                </div>
-                <div class="con">
-                    <div>用户性别占比</div>
-                    <div>
-                        <pie :datas="sex" wd="500px" ht="500px"></pie>
-                    </div>
-                </div>
-                <div class="con">
-                    <div>用户年龄段分布</div>
-                    <div>
-                        <Bar :datas="ageData" wd="500px" ht="500px"></Bar>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+            
+        
     </div>
 </template>
+
 <style lang="css" scoped>
-.header {
-    display: flex;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.contents {
-    display: flex;
+/* 整体页面背景 */
+.dashboard-page {
+  background: #f0f2f5;
+  overflow: auto;
+  max-height: 100vh;
+  padding: 0 20px 20px 20px;
+}
+
+/* 时间 */
+.current-time {
+  text-align: right;
+  font-size: 14px;
+  color: #666;
+  padding: 12px 0;
+  background: transparent;
+}
+
+/* 头部卡片 - 像图片中的数值标题栏 */
+.header-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 160px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+  border: 1px solid #eef2f6;
+}
+
+.stat-name {
+  font-size: 14px;
+  color: #8a8f99;
+  margin-bottom: 8px;
+}
+
+.stat-data {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2f3d;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.stat-change {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.up {
+  color: #00b42a;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.down {
+  color: #ff4d4f;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.equal {
+  color: #86909c;
+}
+
+.change-desc {
+  color: #86909c;
+  margin-left: 4px;
+}
+
+/* ========== 新布局：左侧突出地图 ========== */
+.new-layout {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.left-highlight {
+  flex: 2;
+  /* 地图区域占比更大，更突出 */
+  min-width: 0;
+}
+
+.right-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* 地图卡片突出样式 */
+.map-highlight {
+    height: 100%;
+  background: linear-gradient(135deg, #ffffff 0%, #fafcff 100%);
+  border: 1px solid #d9e8ff;
+  box-shadow: 0 8px 20px rgba(22, 119, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+
+
+/* 原有图表容器样式 */
+.chart-container {
+  display: grid;
+  
+  gap: 20px;
+}
+
+.chart-column {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eaecf0;
+  transition: all 0.2s;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1e2a3a;
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 3px solid #1677ff;
+}
+
+.chart-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-tabs div {
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f5f7fa;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chart-tabs div:hover {
+  background: #e6f4ff;
+  color: #1677ff;
+}
+
+/* 确保所有图表组件自适应宽度 */
+:deep(.chart-card > div:last-child) {
+  width: 100% !important;
+}
+
+/* 响应式 */
+@media (max-width: 1000px) {
+  .new-layout {
+    flex-direction: column;
+  }
+  .left-highlight,
+  .right-side {
+    flex: auto;
+  }
+  .right-side {
+    flex-direction: row;
+    gap: 20px;
+  }
+  .right-side .chart-card {
+    flex: 1;
+  }
+  .chart-container {
+    flex-direction: column;
+  }
+  .header-cards {
+    gap: 12px;
+  }
+  .stat-card {
+    min-width: calc(50% - 12px);
+  }
+}
+
+@media (max-width: 640px) {
+  .stat-card {
+    min-width: 100%;
+  }
+  .right-side {
+    flex-direction: column;
+  }
 }
 </style>
