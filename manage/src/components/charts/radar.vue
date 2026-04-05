@@ -22,7 +22,8 @@ interface qualityScore {
 const props = defineProps<{
     datas: qualityScore,
     wd: string,
-    ht: string
+    ht: string,
+    name:string
 }>()
 
 const radarData=reactive<number[]>([])
@@ -35,6 +36,7 @@ onMounted(() => {
     const radarChart = echarts.init(chartRef.value)
     const option = reactive({
         tooltip: {
+            
             trigger: 'item'//显示数据
         },
         legend: {
@@ -49,7 +51,8 @@ onMounted(() => {
                 type: 'radar',
                 data: [
                     {
-                        value:radarData
+                        value:radarData,
+                       name:props.name
                     }
                 ],
                 emphasis: {
@@ -64,6 +67,7 @@ onMounted(() => {
         ]
     })
     radarChart.setOption(option)
+    console.log(option)
 })
 
 </script>

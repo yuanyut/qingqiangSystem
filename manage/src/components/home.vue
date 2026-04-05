@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import pie from '@/components/charts/pie.vue'
 import Line from '@/components/charts/barAndLine.vue'
 import Radar from '@/components/charts/radar.vue'
+import threeLine from '@/components/charts/threeLine.vue'
+import Bar from '@/components/charts/Bar.vue'
+import doubleBar from '@/components/charts/doubleBar.vue'
+import { number } from 'echarts'
 interface totalItem {
     name: string,
     data: number,
@@ -33,22 +37,22 @@ interface qualityScore {
     }
 }
 const qualityScoreData = reactive<qualityScore>({
-  overview: {
-    avgUserRating: 4.3,
-    avgCommentQuality: 76,
-    highQualityContentRate: 0.61,
-    activeContentCount: 289,
-    contentCount: 356
-  },
-  radar: {
-    indicator: [
-      { name: '用户评分', max: 5 },
-      { name: '点赞热度', max: 5 },
-      { name: '收藏热度', max: 5 },
-      { name: '评论质量', max: 5 }
-    ],
-    value: [4.3, 4.1, 3.6, 3.8]
-  }
+    overview: {
+        avgUserRating: 4.3,
+        avgCommentQuality: 76,
+        highQualityContentRate: 0.61,
+        activeContentCount: 289,
+        contentCount: 356
+    },
+    radar: {
+        indicator: [
+            { name: '用户评分', max: 5 },
+            { name: '点赞热度', max: 5 },
+            { name: '收藏热度', max: 5 },
+            { name: '评论质量', max: 5 }
+        ],
+        value: [4.3, 4.1, 3.6, 3.8]
+    }
 })
 
 const total = reactive<totalItem[]>([
@@ -147,15 +151,15 @@ const monthDram = reactive<daramValue>(
     }
 )
 const Dram = reactive<daramValue>({
-    
-        "time": [
-            "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
-            "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
-            "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
-        ],
-        "dramaCount": [3, 4, 5, 2, 6, 4, 3, 8, 7, 6, 9, 5, 7, 8],
-        "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
-    
+
+    "time": [
+        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
+        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
+        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
+    ],
+    "dramaCount": [3, 4, 5, 2, 6, 4, 3, 8, 7, 6, 9, 5, 7, 8],
+    "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
+
 })
 
 const change = (daram: daramValue) => {
@@ -164,10 +168,110 @@ const change = (daram: daramValue) => {
     Dram.articleCount = daram.articleCount
     console.log('这是', Dram)
 }
-
+interface trendIntergace {
+    time: string[],
+    visitCount: number[],
+    collectCount: number[],
+    shareCount: number[]
+}
+const everyTrend = reactive<trendIntergace>({
+    "time": [
+        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
+        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
+        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
+    ],
+    "visitCount": [120, 135, 150, 110, 145, 160, 155, 170, 180, 165, 175, 190, 200, 185],
+    "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
+    "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
+})
+const weekTrend = reactive<trendIntergace>({
+    "time": [
+        "2024-W01", "2024-W02", "2024-W03", "2024-W04", "2024-W05",
+        "2024-W06", "2024-W07", "2024-W08", "2024-W09", "2024-W10"
+    ],
+    "visitCount": [820, 900, 950, 870, 920, 980, 1020, 1100, 1050, 1075],
+    "collectCount": [210, 220, 230, 200, 215, 240, 245, 260, 250, 255],
+    "shareCount": [75, 80, 78, 70, 82, 90, 92, 100, 95, 97]
+})
+const monthTrend = reactive<trendIntergace>({
+    "time": [
+        "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10",
+        "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04"
+    ],
+    "visitCount": [3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400],
+    "collectCount": [800, 850, 880, 900, 950, 980, 1000, 1020, 1050, 1080, 1100, 1150],
+    "shareCount": [250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360]
+})
+const trend = reactive<trendIntergace>({
+    "time": [
+        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
+        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
+        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
+    ],
+    "visitCount": [120, 135, 150, 110, 145, 160, 155, 170, 180, 165, 175, 190, 200, 185],
+    "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
+    "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
+})
+const changeTrend = (trendValue: trendIntergace) => {
+    trend.time = trendValue.time
+    trend.collectCount = trendValue.collectCount
+    trend.shareCount = trendValue.shareCount
+    trend.visitCount = trendValue.visitCount
+}
+const topDrama = reactive([
+    { name: "三滴血", clicks: 1520 },
+    { name: "白蛇传", clicks: 1380 },
+    { name: "周仁回府", clicks: 1265 },
+    { name: "霸王别姬", clicks: 1190 },
+    { name: "红楼梦", clicks: 1105 },
+    { name: "杨家将", clicks: 1050 },
+    { name: "牡丹亭", clicks: 980 },
+    { name: "西厢记", clicks: 910 },
+    { name: "西游记", clicks: 870 },
+    { name: "长生殿", clicks: 830 }
+])
+const crt = reactive({
+    "time": [
+        "2024-03-20", "2024-03-21", "2024-03-22", "2024-03-23", "2024-03-24",
+        "2024-03-25", "2024-03-26", "2024-03-27", "2024-03-28", "2024-03-29",
+        "2024-03-30", "2024-03-31", "2024-04-01", "2024-04-02"
+    ],
+    "exposure": [1200, 1350, 1500, 1100, 1450, 1600, 1550, 1700, 1800, 1650, 1750, 1900, 2000, 1850],
+    "click": [240, 270, 300, 220, 290, 320, 310, 340, 360, 330, 350, 380, 400, 370],
+    "ctr": [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
+})
+const sex = reactive<PieItem[]>([
+    { "name": "男", "value": 5400 },
+    { "name": "女", "value": 4600 },
+    { "name": "未知", "value": 200 }
+])
+const ageData = reactive([
+    { name: "18-25", clicks: 1200 },
+    { name: "25-35", clicks: 3400 },
+    { name: "35-50", clicks: 2100 },
+    { name: "50+", clicks: 800 }
+])
+const currentTime=ref('')
+const updataTime=()=>{
+    const now =new Date()
+    currentTime.value=now.toLocaleString()
+    // console.log(currentTime.value)
+}
+const timer=ref<number>(0)
+onMounted(()=>{
+    updataTime()
+    
+    timer.value = setInterval(updataTime, 1000) // 每秒更新
+})
+onUnmounted(() => {
+  if (timer.value) clearInterval(timer.value) // 组件销毁时清除定时器
+})
 </script>
 <template>
     <div>
+        <div>
+            {{ currentTime }}
+        </div>
         <div class="header">
             <div v-for="(item, index) in total" :key="index">
                 <div>{{ item.name }}</div>
@@ -200,6 +304,7 @@ const change = (daram: daramValue) => {
             </div>
         </div>
         <div class="contents">
+            <!-- 左侧 -->
             <div class="content">
                 <div class="con">
                     <div>剧目分类占比</div>
@@ -216,13 +321,65 @@ const change = (daram: daramValue) => {
                     </div>
                     <div>
                         <Line :datas="Dram" wd="500px" ht="500px"></Line>
-                      
+
                     </div>
                 </div>
                 <div class="con">
                     <div>内容质量评分</div>
                     <div>
-                        <Radar :datas="qualityScoreData" wd="500px" ht="500px"></Radar>
+                        <Radar :datas="qualityScoreData" wd="500px" ht="500px" name="内容质量评分"></Radar>
+                    </div>
+                </div>
+            </div>
+            <!-- 中间 -->
+            <div class="content">
+                <div class="con">
+                    <div>剧目热度趋势</div>
+                    <div>
+                        <div @click="changeTrend(everyTrend)">每日</div>
+                        <div @click="changeTrend(weekTrend)">每周</div>
+                        <div @click="changeTrend(monthTrend)">每月</div>
+                    </div>
+                    <div>
+                        <threeLine :datas="trend" wd="500px" ht="500px" name1="访问量" name2="收藏" name3="分享"></threeLine>
+                    </div>
+                </div>
+                <div class="con">
+                    <div>热门剧目TOP10</div>
+                    <div>
+                        <Bar :datas="topDrama" wd="500px" ht="500px"></Bar>
+                    </div>
+                </div>
+                <div class="con">
+                    <div>推荐系统命中率</div>
+                    <div>
+                        <doubleBar :datas="crt" wd="500px" ht="500px" name1="曝光量" name2="点击量" name3="CTR"></doubleBar>
+                    </div>
+                </div>
+            </div>
+            <!-- 右侧 -->
+            <div class="content">
+                <div class="con">
+                    <div>用户地域分布地图</div>
+                    <div>
+                        <div @click="changeTrend(everyTrend)">每日</div>
+                        <div @click="changeTrend(weekTrend)">每周</div>
+                        <div @click="changeTrend(monthTrend)">每月</div>
+                    </div>
+                    <div>
+                        <threeLine :datas="trend" wd="500px" ht="500px" name1="访问量" name2="收藏" name3="分享"></threeLine>
+                    </div>
+                </div>
+                <div class="con">
+                    <div>用户性别占比</div>
+                    <div>
+                        <pie :datas="sex" wd="500px" ht="500px"></pie>
+                    </div>
+                </div>
+                <div class="con">
+                    <div>用户年龄段分布</div>
+                    <div>
+                        <Bar :datas="ageData" wd="500px" ht="500px"></Bar>
                     </div>
                 </div>
             </div>

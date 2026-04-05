@@ -71,8 +71,8 @@ function addRoutes(menuList: MenuItem[]) {
 // 5. 执行添加路由
 addRoutes(mockMenu)
 // 打印所有路由
-console.log('=== 所有路由路径 ===')
-router.getRoutes().forEach(route => {
-  console.log(route)
-})
+// console.log('=== 所有路由路径 ===')
+// router.getRoutes().forEach(route => {
+//   console.log(route)
+// })
 export default router
