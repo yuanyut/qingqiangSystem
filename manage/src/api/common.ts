@@ -1,35 +1,47 @@
-// 写这个 Vue 3 + TypeScript + Axios 的通用请求工具，主要目的是为了 
-// 在项目中统一管理接口请求逻辑，避免每个组件都重复写 axios.get 或 axios.post。
+// common.ts
 import axios from 'axios'
-import type { InternalAxiosRequestConfig } from 'axios'
+import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 
-// 创建实例
+// 创建 Axios 实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 5000,
 })
 
-// 请求拦截器
+// 请求拦截器：统一加 token
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // 如果你有 token，可以这样加：
-    // const token = localStorage.getItem('token')
-    // if (token) config.headers.Authorization = `Bearer ${token}`
+    const token = localStorage.getItem('token')
+
+    // Axios 1.x + TS5.x 正确初始化 headers
+    if (!config.headers) config.headers = axios.AxiosHeaders.from({})
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
     return config
   },
   (error) => Promise.reject(error)
 )
 
-// 响应拦截器
+// 响应拦截器：统一处理错误
 service.interceptors.response.use(
-  (response) => response.data,
-  (error) => Promise.reject(error)
+  (response: AxiosResponse) => response.data, // 直接返回 data
+  (error) => {
+    console.error('请求失败:', error)
+    return Promise.reject(error)
+  }
 )
 
-export const get = <T = any>(url: string, params?: object): Promise<T> => {
-  return service.get(url, { params })
+// 封装 api 对象
+const api = {
+  get: <T = any>(url: string, params?: object): Promise<T> => {
+    return service.get(url, { params })
+  },
+  post: <T = any>(url: string, data?: object): Promise<T> => {
+    return service.post(url, data)
+  },
+  // 可以扩展 put / delete / patch
 }
 
-export const post = <T = any>(url: string, data?: object): Promise<T> => {
-  return service.post(url, data)
-}
+export default api
