@@ -6,7 +6,7 @@ import Radar from '@/components/charts/radar.vue'
 import threeLine from '@/components/charts/threeLine.vue'
 import Bar from '@/components/charts/Bar.vue'
 import doubleBar from '@/components/charts/doubleBar.vue'
-import { number } from 'echarts'
+import chinaMap from '@/components/charts/chinaMap.vue'
 interface totalItem {
     name: string,
     data: number,
@@ -251,6 +251,10 @@ const ageData = reactive([
     { name: "35-50", clicks: 2100 },
     { name: "50+", clicks: 800 }
 ])
+const mapValue=reactive([
+    { name: '北京', value: 300 },
+      { name: '上海', value: 500 }
+])
 const currentTime=ref('')
 const updataTime=()=>{
     const now =new Date()
@@ -361,13 +365,9 @@ onUnmounted(() => {
             <div class="content">
                 <div class="con">
                     <div>用户地域分布地图</div>
+                    
                     <div>
-                        <div @click="changeTrend(everyTrend)">每日</div>
-                        <div @click="changeTrend(weekTrend)">每周</div>
-                        <div @click="changeTrend(monthTrend)">每月</div>
-                    </div>
-                    <div>
-                        <threeLine :datas="trend" wd="500px" ht="500px" name1="访问量" name2="收藏" name3="分享"></threeLine>
+                        <chinaMap :datas="mapValue" wd="500px" ht="500px"></chinaMap>
                     </div>
                 </div>
                 <div class="con">

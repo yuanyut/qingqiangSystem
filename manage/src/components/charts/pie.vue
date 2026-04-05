@@ -27,7 +27,6 @@ const option=reactive({
     },
     series:[
        {
-        name:'1',
         type:'pie',
         radius:'50%',
         data:props.datas,
