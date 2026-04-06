@@ -93,10 +93,12 @@ const Dram = reactive<daramValue>({
     "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
 })
 
-const change = (daram: daramValue) => {
+const change = (daram: daramValue,index:number) => {
     Dram.time = daram.time
     Dram.dramaCount = daram.dramaCount
     Dram.articleCount = daram.articleCount
+    activeDaram.value=index
+    console.log(activeDaram.value)
 }
 interface trendIntergace {
     time: string[],
@@ -180,6 +182,7 @@ onMounted(() => {
 onUnmounted(() => {
     if (timer.value) clearInterval(timer.value)
 })
+const activeDaram=ref(0)
 </script>
 
 <template>
@@ -228,9 +231,9 @@ onUnmounted(() => {
                 <div class="chart-card">
                     <div class="chart-title">内容发布趋势</div>
                     <div class="chart-tabs">
-                        <div @click="change(everyDram)">每日</div>
-                        <div @click="change(weekDram)">每周</div>
-                        <div @click="change(monthDram)">每月</div>
+                        <div @click="change(everyDram,0)" :class="{active:activeDaram==0}">每日</div>
+                        <div @click="change(weekDram,1)" :class="{active:activeDaram==1}">每周</div>
+                        <div @click="change(monthDram,2)" :class="{active:activeDaram==2}">每月</div>
                     </div>
                     <Line :datas="Dram" wd="100%" ht="320px"></Line>
                 </div>
@@ -432,7 +435,7 @@ onUnmounted(() => {
   color: #1e2a3a;
   margin-bottom: 16px;
   padding-left: 8px;
-  border-left: 3px solid #1677ff;
+  /* border-left: 3px solid #1677ff; */
 }
 
 .chart-tabs {
@@ -449,7 +452,10 @@ onUnmounted(() => {
   cursor: pointer;
   transition: all 0.2s;
 }
-
+.chart-tabs .active{
+    background: #e6f4ff;
+  color: #1677ff;
+}
 .chart-tabs div:hover {
   background: #e6f4ff;
   color: #1677ff;
