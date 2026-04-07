@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
+import type { FormInstance } from 'element-plus'
 
+const formRef = ref<FormInstance>()
 // 修正类型定义
 interface FormItemUser {
     username: string
@@ -8,6 +10,7 @@ interface FormItemUser {
     phone: string
     role: string[]
     status: string
+    createdAt: string
 }
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
@@ -17,6 +20,7 @@ const formLabelWidth = '140px'
 
 // 初始化 form
 const form = reactive<FormItemUser>({
+    createdAt: '',
     username: '',
     nickname: '',
     phone: '',
@@ -41,24 +45,30 @@ const handleConfirm = () => {
     dialogFormVisible.value = false
 }
 
-const handleCancel = () => {
+const handleCancel = (formEl: FormInstance | undefined) => {
     dialogFormVisible.value = false
+    if (!formEl) return
+    formEl.resetFields()
+
 }
 </script>
 
 <template>
-    <el-dialog v-model="dialogFormVisible" title="编辑" width="500">
-        <el-form :model="form">
-            <el-form-item label="用户名" :label-width="formLabelWidth">
+    <el-dialog v-model="dialogFormVisible" :show-close="false" title="编辑" width="500">
+        <el-form :model="form" ref="formRef">
+            <el-form-item label="创建时间" :label-width="formLabelWidth" prop="createdAt">
+                <el-input v-model="form.createdAt" autocomplete="off" disabled />
+            </el-form-item>
+            <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
                 <el-input v-model="form.username" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="昵称" :label-width="formLabelWidth">
+            <el-form-item label="昵称" :label-width="formLabelWidth" prop="nickname">
                 <el-input v-model="form.nickname" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="电话" :label-width="formLabelWidth">
+            <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
                 <el-input v-model="form.phone" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="角色" :label-width="formLabelWidth">
+            <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
                 <el-select v-model="form.role" placeholder="请选择角色" multiple>
                     <el-option label="超级管理员" value="超级管理员" />
                     <el-option label="内容管理员" value="内容管理员" />
@@ -68,7 +78,7 @@ const handleCancel = () => {
                     <el-option label="访客" value="访客" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="状态" :label-width="formLabelWidth">
+            <el-form-item label="状态" :label-width="formLabelWidth" prop="status">
                 <el-select v-model="form.status" placeholder="请选择状态">
                     <el-option label="启用" value="启用" />
                     <el-option label="禁用" value="禁用" />
@@ -79,7 +89,7 @@ const handleCancel = () => {
         </el-form>
         <template #footer>
             <div class="dialog-footer">
-                <el-button @click="handleCancel">取消</el-button>
+                <el-button @click="handleCancel(formRef)">取消</el-button>
                 <el-button type="primary" @click="handleConfirm">确定</el-button>
             </div>
         </template>
