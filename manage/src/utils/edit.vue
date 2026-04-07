@@ -10,7 +10,7 @@ interface FormItemUser {
     phone: string
     role: string[]
     status: string
-    createdAt: string
+    createdAt?: string
 }
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
@@ -27,7 +27,7 @@ const form = reactive<FormItemUser>({
     role: [],
     status: ''
 })
-
+const props = defineProps<{ title: string, opear: string }>()
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
 watch(content, (newVal) => {
     console.log('子组件收到 content:', newVal)
@@ -40,8 +40,13 @@ watch(content, (newVal) => {
 
 // 确定按钮：将修改后的数据传回父组件
 const handleConfirm = () => {
-    // 把修改后的 form 数据同步回 content
-    Object.assign(content.value, form)
+    if (props.opear === '0') {
+        // 新增：直接赋值
+        content.value = { ...form }
+    } else {
+        // 编辑：修改属性
+        Object.assign(content.value, form)
+    }
     dialogFormVisible.value = false
 }
 
@@ -51,12 +56,30 @@ const handleCancel = (formEl: FormInstance | undefined) => {
     formEl.resetFields()
 
 }
+const rules = reactive({
+    username: [
+        { required: true, message: '输入用户名', trigger: 'blur' }
+    ],
+    nickname: [
+        { required: true, message: '输入昵称', trigger: 'blur' }
+    ],
+    phone: [
+        { required: true, message: '输入电话', trigger: 'blur' },
+        { min: 11, max: 11, message: '电话号码11位' }
+    ],
+    role: [
+        { required: true, message: '请选择角色', trigger: 'change' }
+    ],
+    status: [
+        { required: true, message: '请选择状态', trigger: 'change' }
+    ]
+})
 </script>
 
 <template>
-    <el-dialog v-model="dialogFormVisible" :show-close="false" title="编辑" width="500">
-        <el-form :model="form" ref="formRef">
-            <el-form-item label="创建时间" :label-width="formLabelWidth" prop="createdAt">
+    <el-dialog v-model="dialogFormVisible" :show-close="false" :title="props.title" width="500">
+        <el-form :model="form" ref="formRef" :rules="rules">
+            <el-form-item v-if="form.createdAt" label="创建时间" :label-width="formLabelWidth" prop="createdAt">
                 <el-input v-model="form.createdAt" autocomplete="off" disabled />
             </el-form-item>
             <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">

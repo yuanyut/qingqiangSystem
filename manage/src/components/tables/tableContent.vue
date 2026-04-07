@@ -2,22 +2,8 @@
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
 import edit from '@/utils/edit.vue'
-interface User {
-    id: number | string,
-    username: string,
-    nickname: string,
-    phone: number | string,
-    role: string[],
-    status: string,
-    createdAt: string
-}
-const tableData: User[] = reactive([
-    { id: '1', username: 'admin', nickname: 'Admin', phone: '13800138000', role: ['超级管理员'], status: '启用', createdAt: '2023-10-01 10:00:00' },
-    { id: '2', username: 'zhangsan', nickname: 'Zhang San', phone: '13912345678', role: ['内容管理员', '超级管理员'], status: '启用', createdAt: '2023-10-02 11:30:00' },
-    { id: '3', username: 'lisi', nickname: 'Li Si', phone: '13798765432', role: ['互动审核员'], status: '禁用', createdAt: '2023-10-03 14:15:00' },
-    { id: '4', username: 'wangwu', nickname: 'Wang Wu', phone: '13611112222', role: ['访客'], status: '启用', createdAt: '2023-10-04 09:45:00' },
-    { id: '5', username: 'zhaoliu', nickname: 'Zhao Liu', phone: '13533334444', role: ['互动审核员'], status: '启用', createdAt: '2023-10-05 16:20:00' },
-])
+
+const tableData: any = defineModel('tableData')
 const deleteModul = ref(false)
 const editModul = ref(false)
 const opearIndex = ref(0)
@@ -30,7 +16,7 @@ const deleteClick = (value: any) => {
 }
 const deleteClicks = () => {
     deleteModul.value = false
-    tableData.splice(opearIndex.value, 1)
+    tableData.value.splice(opearIndex.value, 1)
 }
 const editClick = (value: any) => {
     editModul.value = true
@@ -66,7 +52,7 @@ const editClick = (value: any) => {
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent"></edit>
+        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑" opear="0"></edit>
     </div>
 
 </template>
