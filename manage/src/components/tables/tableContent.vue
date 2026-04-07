@@ -23,10 +23,11 @@ const deleteClicks = () => {
     }
 
     else if (selects.value === true) {
-        multipleSelection.value.forEach((item: any, index: number) => {
-            console.log('99', tableData.value)
-            console.log(tableData.value.findIndex((item: any) => item === item.username))
-        });
+        multipleSelection.value.forEach((item1: any) => {
+            const index = tableData.value.findIndex((item: any) => item.username === item1.username)
+            console.log(`用户名 ${item1.username} 在 tableData 的索引:`, index)
+            tableData.value.splice(index, 1)
+        })
         selects.value = false
     }
 

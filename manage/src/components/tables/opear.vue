@@ -41,7 +41,7 @@ console.log('初始化时 content.value:', editContent.value)
     <div>
         <div>
             <div @click="addUser">增加用户</div>
-            <div @click="deleteUser" v-if="multipleSelection.length > 0">批量删除</div>
+            <div @click="deleteUser" v-if="multipleSelection.length > 1">批量删除</div>
         </div>
         <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加"
             opear="0"></edit>
