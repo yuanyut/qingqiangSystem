@@ -5,8 +5,8 @@ import type { FormInstance } from 'element-plus'
 const formRef = ref<FormInstance>()
 const form = reactive({
     name: '',
-    juese: '',
     phone: '',
+    juese: '',
     status: '',
 })
 
@@ -37,7 +37,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                     <el-option label="访客" value="5" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="状态" props="status">
+            <el-form-item label="状态" prop="status">
                 <el-select v-model="form.status" placeholder="请选择状态">
                     <el-option label="启用" value="0" />
                     <el-option label="禁用" value="1" />
