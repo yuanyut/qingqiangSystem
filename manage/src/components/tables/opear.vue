@@ -11,7 +11,9 @@ interface FormItemUser {
 }
 // const now = new Date()
 const editContent = defineModel<any>('editContent')
-
+// const selects = ref(false)
+const selects = defineModel('selects')
+const multipleSelection: any = defineModel('multipleSelection')
 console.log('666666', editContent.value)
 const editModul = ref(false)
 const addUser = () => {
@@ -29,7 +31,9 @@ const addUser = () => {
 watch(editContent, (newVal) => {
     console.log('content 变化:', newVal)
 }, { deep: true, immediate: true })
-
+const deleteUser = () => {
+    selects.value = true
+}
 // 再加一个
 console.log('初始化时 content.value:', editContent.value)
 </script>
@@ -37,9 +41,10 @@ console.log('初始化时 content.value:', editContent.value)
     <div>
         <div>
             <div @click="addUser">增加用户</div>
-            <div>批量删除</div>
+            <div @click="deleteUser" v-if="multipleSelection.length > 0">批量删除</div>
         </div>
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="增加" opear="0"></edit>
+        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加"
+            opear="0"></edit>
     </div>
 
 </template>

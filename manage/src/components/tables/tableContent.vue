@@ -8,6 +8,7 @@ const deleteModul = ref(false)
 const editModul = ref(false)
 const opearIndex = ref(0)
 const editContent = ref()
+const selects = defineModel('selects')
 const deleteClick = (value: any) => {
 
     opearIndex.value = value
@@ -15,22 +16,46 @@ const deleteClick = (value: any) => {
     console.log('fu', deleteModul.value)
 }
 const deleteClicks = () => {
-    deleteModul.value = false
-    tableData.value.splice(opearIndex.value, 1)
+    console.log(selects.value)
+    if (selects.value === false) {
+        deleteModul.value = false
+        tableData.value.splice(opearIndex.value, 1)
+    }
+
+    else if (selects.value === true) {
+        multipleSelection.value.forEach((item: any, index: number) => {
+            console.log('99', tableData.value)
+            console.log(tableData.value.findIndex((item: any) => item === item.username))
+        });
+        selects.value = false
+    }
+
 }
 const editClick = (value: any) => {
     editModul.value = true
     console.log(value)
     editContent.value = value
 }
+const multipleSelection: any = defineModel('multipleSelection')
 
+const handleSelectionChange = (val: any[]) => {
+    multipleSelection.value = val
+    console.log('选中的行数据:', val)
+}
+watch(selects, (newVal) => {
+    if (newVal === false)
+        return
+    if (newVal === true) {
+        deleteModul.value = true
+    }
+})
 </script>
 <template>
     <div>
         <div>
-            <el-table :data="tableData" style="width: 100%">
+            <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" />
-                <el-table-column property="username" label="用户名" width="120" />
+                <el-table-column property=" username" label="用户名" width="120" />
                 <el-table-column property="nickname" label="昵称" width="120" />
                 <el-table-column property="phone" label="电话" width="120" />
                 <el-table-column property="role" label="角色" width="240" show-overflow-tooltip />

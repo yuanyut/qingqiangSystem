@@ -15,7 +15,7 @@ interface FormItemUser {
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
 const content = defineModel('content', { default: () => ({}) })
-
+const selects = defineModel('selects')
 const formLabelWidth = '140px'
 
 // 初始化 form

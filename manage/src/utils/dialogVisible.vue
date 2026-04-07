@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-
+const selects = defineModel('selects')
 const dialogVisible = defineModel<boolean>({ default: false })
 const emit = defineEmits(['submitFun', 'cancleFun'])
 const handleClose = (done: () => void) => {
@@ -11,6 +11,9 @@ const submit = () => {
     emit('submitFun')
 }
 const cancel = () => {
+    if (selects.value == true) {
+        selects.value = false
+    }
     dialogVisible.value = false
 }
 </script>

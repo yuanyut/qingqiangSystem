@@ -31,14 +31,16 @@ watch(editContent, (newVal) => {
         })
     }
 }, { deep: true })
-
-
+const selects = ref(false)
+const multipleSelection = ref([])
 </script>
 <template>
     <div>
         <opearHeader></opearHeader>
-        <opear v-model:editContent="editContent"></opear>
-        <tableContent v-model:tableData="tableData"></tableContent>
+        <opear v-model:editContent="editContent" v-model:multipleSelection="multipleSelection"
+            v-model:selects="selects"></opear>
+        <tableContent v-model:tableData="tableData" v-model:selects="selects"
+            v-model:multipleSelection="multipleSelection"></tableContent>
     </div>
 </template>
 <style scoped></style>
