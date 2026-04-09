@@ -4,150 +4,178 @@ import opear from '@/components/Contents/Drama/tables/opear.vue'
 import tableContent from '@/components/Contents/Drama/tables/tableContent.vue';
 import { reactive, watch, ref } from 'vue';
 interface User {
-    id: number | string,
-    coverUrl: string,
-    name: string,
-    category: string,
-    categoryId: number,
-    clickCount: number,
-    publishTime: string,
-    status: string, // published, draft, offline
-    statusText: string,
-    director: string,
-    actor: string,
-    duration: string,
-    description: string,
-    content: string
+     id: number
+  videoUrl: string
+  title: string
+  description: string
+  actor: string
+  category: string
+  duration: number
+  clickCount: number
+  likeCount: number
+  publishTime: string
+  statusText: string
 }
+
+
 const tableData: User[] = reactive([
-      {
+  {
     id: 1,
-    coverUrl: 'https://picsum.photos/80/80?random=1',
-    name: '三滴血',
+    videoUrl: 'https://example.com/qinju/sanniangjiaozhi.mp4',
+    title: '三娘教子',
+    description: '明代薛广赴京不归，妻张氏、妾刘氏改嫁，三娘王春娥织布教子，倚哥不争气被三娘训诫的故事',
+    actor: '李淑芳',
     category: '传统剧目',
-    categoryId: 1,
-    clickCount: 158000,
-    publishTime: '2024-01-15',
-    status: 'published', // published, draft, offline
-    statusText: '已发布',
-    director: '李淑芳',
-    actor: '李淑芳、张涛',
-    duration: '145分钟',
-    description: '经典秦腔剧目，讲述民间冤案昭雪的故事。山西商人周仁瑞之妻生下一子，取名天佑...',
-    content: '<p>《三滴血》是秦腔传统名剧，由范紫东编剧。剧情讲述了山西商人周仁瑞之妻生下一子，取名天佑，并认李三娘为干娘。周仁瑞之弟周仁祥为夺家产，诬告天佑非周家血脉...<p>'
+    duration: 1850,
+    clickCount: 125000,
+    likeCount: 8900,
+    publishTime: '2024-01-15 19:30:00',
+    statusText: '已发布'
   },
   {
     id: 2,
-    coverUrl: 'https://picsum.photos/80/80?random=2',
-    name: '火焰驹',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 98600,
-    publishTime: '2024-01-20',
-    status: 'published',
-    statusText: '已发布',
-    director: '李小锋',
-    actor: '李小锋、李梅',
-    duration: '138分钟',
-    description: '忠贞爱情故事，秦腔代表性剧目。北宋时，北狄反，李彦荣挂帅出征...',
-    content: '<p>《火焰驹》原名《卖水记》，是秦腔经典剧目。讲述北宋时期，兵部尚书李绶之子李彦贵与黄璋之女黄桂英的爱情故事...<p>'
+    videoUrl: 'https://example.com/qinju/zhaoshiguzhe.mp4',
+    title: '赵氏孤儿',
+    description: '春秋时期晋国贵族赵氏被灭门，门客程婴舍子救孤，抚养孤儿长大后复仇的悲壮故事',
+    actor: '刘随社',
+    category: '历史剧',
+    duration: 2100,
+    clickCount: 98000,
+    likeCount: 7200,
+    publishTime: '2024-01-20 20:00:00',
+    statusText: '已发布'
   },
   {
     id: 3,
-    coverUrl: 'https://picsum.photos/80/80?random=3',
-    name: '周仁回府',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 72000,
-    publishTime: '2024-02-01',
-    status: 'published',
-    statusText: '已发布',
-    director: '任哲中',
-    actor: '任哲中、郝彩凤',
-    duration: '152分钟',
-    description: '明代传奇故事，讲述周仁为救义兄之妻而舍妻的感人故事。',
-    content: '<p>《周仁回府》又名《忠义侠》，是秦腔的经典剧目。故事发生在明代，严嵩当权，陷害杜文学...<p>'
+    videoUrl: 'https://example.com/qinju/youguisuan.mp4',
+    title: '游龟山',
+    description: '江夏县知县田云山之子田玉川与卢府千金凤英的爱情故事，包含"藏舟"等经典折子戏',
+    actor: '李小锋',
+    category: '爱情剧',
+    duration: 1680,
+    clickCount: 76000,
+    likeCount: 5400,
+    publishTime: '2024-02-01 19:00:00',
+    statusText: '已发布'
   },
   {
     id: 4,
-    coverUrl: 'https://picsum.photos/80/80?random=4',
-    name: '游西湖',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 65000,
-    publishTime: '2024-02-10',
-    status: 'published',
-    statusText: '已发布',
-    director: '马友仙',
-    actor: '马友仙、李爱琴',
-    duration: '148分钟',
-    description: '李慧娘鬼魂救裴生的爱情故事，秦腔经典鬼戏。',
-    content: '<p>《游西湖》是秦腔传统名剧，讲述南宋时李慧娘与裴禹的爱情故事。李慧娘因赞裴生被贾似道杀害，后化为鬼魂救出裴生...<p>'
+    videoUrl: 'https://example.com/qinju/zhourenhuixiang.mp4',
+    title: '周仁回府',
+    description: '严嵩权倾朝野，周仁为救义兄杜文学，被迫献出妻子，忍辱负重最终昭雪的故事',
+    actor: '李爱琴',
+    category: '忠义剧',
+    duration: 1950,
+    clickCount: 156000,
+    likeCount: 12300,
+    publishTime: '2024-02-10 19:30:00',
+    statusText: '已发布'
   },
   {
     id: 5,
-    coverUrl: 'https://picsum.photos/80/80?random=5',
-    name: '斩单童',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 58000,
-    publishTime: '2024-02-15',
-    status: 'published',
-    statusText: '已发布',
-    director: '张兰秦',
-    actor: '张兰秦、刘随社',
-    duration: '125分钟',
-    description: '花脸经典剧目，讲述单雄信被斩前的慷慨悲歌。',
-    content: '<p>《斩单童》是秦腔花脸的代表剧目，取材于《隋唐演义》。讲述瓦岗寨英雄单雄信被李世民擒获，行刑前痛骂众友，慷慨就义...<p>'
+    videoUrl: 'https://example.com/qinju/huotingxiang.mp4',
+    title: '火焰驹',
+    description: '北宋时期，李彦荣被诬陷，其妻黄桂英骑火焰驹千里传信，最终平反昭雪的故事',
+    actor: '马友仙',
+    category: '神话剧',
+    duration: 1720,
+    clickCount: 112000,
+    likeCount: 8600,
+    publishTime: '2024-02-18 20:00:00',
+    statusText: '已发布'
   },
   {
     id: 6,
-    coverUrl: 'https://picsum.photos/80/80?random=6',
-    name: '窦娥冤',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 49000,
-    publishTime: '2024-02-20',
-    status: 'draft',
-    statusText: '草稿',
-    director: '苏凤丽',
-    actor: '苏凤丽、张兰秦',
-    duration: '140分钟',
-    description: '关汉卿经典悲剧，秦腔改编版本。',
-    content: '<p>《窦娥冤》改编自关汉卿同名元杂剧，讲述窦娥被冤屈而死，死后六月飞雪、血溅白练的悲剧故事...<p>'
+    videoUrl: 'https://example.com/qinju/duanshu.mp4',
+    title: '断桥',
+    description: '白蛇传经典折子戏，白素贞在断桥与许仙重逢，小青怒斥许仙负心，感人至深',
+    actor: '齐爱云',
+    category: '神话剧',
+    duration: 850,
+    clickCount: 89000,
+    likeCount: 6700,
+    publishTime: '2024-02-25 19:00:00',
+    statusText: '已发布'
   },
   {
     id: 7,
-    coverUrl: 'https://picsum.photos/80/80?random=7',
-    name: '法门寺',
-    category: '传统剧目',
-    categoryId: 1,
-    clickCount: 43000,
-    publishTime: '2024-03-01',
-    status: 'published',
-    statusText: '已发布',
-    director: '丁良生',
-    actor: '丁良生、李娟',
-    duration: '135分钟',
-    description: '公案戏，讲述刘媒婆、宋巧姣等人物故事。',
-    content: '<p>《法门寺》是秦腔经典公案戏，故事发生在明朝，讲述刘媒婆、宋巧姣、傅朋等人的离奇案件...<p>'
+    videoUrl: 'https://example.com/qinju/shatan.mp4',
+    title: '杀庙',
+    description: '秦香莲被韩琦追杀至破庙，韩琦得知真相后不忍下手，自刎而死，秦香莲携子女逃离',
+    actor: '丁良生',
+    category: '悲剧',
+    duration: 620,
+    clickCount: 143000,
+    likeCount: 9800,
+    publishTime: '2024-03-01 19:30:00',
+    statusText: '已发布'
   },
   {
     id: 8,
-    coverUrl: 'https://picsum.photos/80/80?random=8',
-    name: '秦腔艺术节开幕式',
-    category: '现代演出',
-    categoryId: 2,
-    clickCount: 35000,
-    publishTime: '2024-03-10',
-    status: 'offline',
-    statusText: '已下架',
-    director: '省秦腔剧院',
-    actor: '众名家',
-    duration: '180分钟',
-    description: '2024年秦腔艺术节开幕式精彩集锦。',
-    content: '2024年秦腔艺术节开幕式汇集了众多秦腔名家，演出精彩纷呈...'
-  }])
+    videoUrl: 'https://example.com/qinju/qiuzhu.mp4',
+    title: '铡美案',
+    description: '陈世美中状元后抛妻弃子，包拯秉公执法，将其铡死，彰显正义',
+    actor: '胡林焕',
+    category: '公案剧',
+    duration: 1450,
+    clickCount: 201000,
+    likeCount: 15400,
+    publishTime: '2024-03-08 20:00:00',
+    statusText: '已发布'
+  },
+  {
+    id: 9,
+    videoUrl: 'https://example.com/qinju/beishangfen.mp4',
+    title: '背舌',
+    description: '传统折子戏，讲述夫妻误会化解的幽默故事，唱腔优美，表演生动',
+    actor: '张保卫',
+    category: '折子戏',
+    duration: 520,
+    clickCount: 54000,
+    likeCount: 3800,
+    publishTime: '2024-03-12 19:00:00',
+    statusText: '已发布'
+  },
+  {
+    id: 10,
+    videoUrl: 'https://example.com/qinju/shihua.mp4',
+    title: '拾画',
+    description: '书生柳梦梅拾得杜丽娘画像，相思成疾，演绎生者可以死，死者可以生的至情',
+    actor: '任小蕾',
+    category: '爱情剧',
+    duration: 580,
+    clickCount: 67000,
+    likeCount: 4900,
+    publishTime: '2024-03-15 19:30:00',
+    statusText: '已发布'
+  },
+  {
+    id: 11,
+    videoUrl: 'https://example.com/qinju/dengtuan.mp4',
+    title: '红灯记',
+    description: '革命现代戏，李玉和一家三代为保护密电码与日寇斗争的英雄故事',
+    actor: '李梅',
+    category: '现代戏',
+    duration: 1650,
+    clickCount: 89000,
+    likeCount: 6700,
+    publishTime: '2024-03-20 19:30:00',
+    statusText: '已发布'
+  },
+  {
+    id: 12,
+    videoUrl: 'https://example.com/qinju/wuyuan.mp4',
+    title: '五典坡',
+    description: '薛平贵与王宝钏的爱情故事，王宝钏寒窑苦守十八载，最终夫妻团圆',
+    actor: '侯红琴',
+    category: '传统剧目',
+    duration: 1980,
+    clickCount: 134000,
+    likeCount: 10200,
+    publishTime: '2024-03-25 20:00:00',
+    statusText: '已发布'
+  }
+])
 
 const editContent = ref()
 const addEdit = ref()
