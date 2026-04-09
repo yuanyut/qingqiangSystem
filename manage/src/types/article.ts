@@ -1,42 +1,5 @@
-<script setup lang="ts">
-import opearHeader from '@/components/Contents/Article/tables/opearHeader.vue';
-import opear from '@/components/Contents/Article/tables/opear.vue'
-import tableContent from '@/components/Contents/Article/tables/tableContent.vue';
-import { reactive, watch, ref } from 'vue';
-interface Article {
-  /** 文章ID */
-  id: number
-  /** 封面图URL */
-  coverUrl: string
-  /** 文章标题 */
-  title: string
-  /** 分类名称 */
-  category: string
-  /** 分类ID */
-  categoryId: number |string
-  /** 作者 */
-  author: string
-  /** 作者ID */
-  authorId: number |string
-  /** 发布时间 */
-  publishTime: string
-  /** 文章状态 */
-  status: string
-  /** 状态文字 */
-  statusText: string
-  /** 阅读量 */
-  viewCount: number
-  /** 点赞数 */
-  likeCount: number
-  /** 评论数 */
-  commentCount: number
-  /** 文章摘要 */
-  summary: string
-  /** 富文本内容（HTML） */
-  content: string
-}
-const tableData= reactive<Article[]>([
-    {
+export const articleList = [
+  {
     id: 1,
     coverUrl: 'https://picsum.photos/80/80?random=101',
     title: '秦腔艺术的传承与发展',
@@ -172,57 +135,53 @@ const tableData= reactive<Article[]>([
     summary: '秦腔脸谱色彩鲜艳、图案丰富，具有独特的艺术价值和文化内涵...',
     content: '<p>秦腔脸谱是中国戏曲脸谱的重要组成部分，具有鲜明的地方特色。</p><h2>色彩含义</h2><p>秦腔脸谱的色彩运用非常讲究，红色代表忠勇，黑色代表刚直，白色代表奸诈，绿色代表草莽英雄。</p><h2>图案特点</h2><p>秦腔脸谱的图案设计夸张而富有想象力，既有写实也有写意，能够准确表现人物性格特征。</p>'
   }
-    ])
-
-const editContent = ref()
-const addEdit = ref()
-watch(editContent, (newVal) => {
-    addEdit.value = newVal
-    if (newVal.name != '' && newVal.publishTime === '') {
-        newVal.publishTime = new Date().toLocaleString()
-        tableData.push({
-            ...newVal
-        })
-    }
-}, { deep: true })
-const selects = ref(false)
-const multipleSelection = ref([])
-
-
-const formHeader = ref({
-    name: '',
-    phone: '',
-    juese: '',
-    status: ''
-})
-const search = ref(false)
-watch(formHeader, (newVal) => {
-    console.log('这是新的', newVal)
-}, { deep: true })
-interface lableItem {
-    lable1?: string,
-    lable2?: string,
-    lable3?: string,
-    lable4?: string,
-    lable5?: string,
-    lable6?: string,
-    lable7?: string,
+]
+export enum ArticleCategory {
+  CULTURE_RESEARCH = 1,  // 文化研究
+  DRAMA_APPRECIATION = 2, // 剧目赏析
+  CELEBRITY_INTERVIEW = 3, // 人物专访
+  NEWS = 4,               // 新闻动态
+  OPERA_KNOWLEDGE = 5,    // 戏曲知识
+  MUSIC_RESEARCH = 6,     // 音乐研究
+  HERITAGE_PROTECTION = 7 // 非遗保护
 }
-const labels=reactive<lableItem>({
-    lable5:'名称',
-    lable6:'分类',
-    lable7:'状态'
-})
+export type ArticleStatus = 'published' | 'draft' | 'offline' |string
 
-</script>
-<template>
-    <div>
-        <opearHeader v-model:form-header="formHeader" v-model:search="search" :lable="labels"></opearHeader>
-        <opear v-model:editContent="editContent" v-model:multipleSelection="multipleSelection"
-            v-model:selects="selects"></opear>
-        <tableContent v-model:tableData="tableData" v-model:selects="selects"
-            v-model:multipleSelection="multipleSelection" v-model:form-header="formHeader" v-model:search="search">
-        </tableContent>
-    </div>
-</template>
-<style scoped></style>
+// 状态文字映射
+export const statusTextMap: Record<ArticleStatus, string> = {
+  published: '已发布',
+  draft: '草稿',
+  offline: '已下架'
+}
+export interface Article {
+  /** 文章ID */
+  id: number
+  /** 封面图URL */
+  coverUrl: string
+  /** 文章标题 */
+  title: string
+  /** 分类名称 */
+  category: string
+  /** 分类ID */
+  categoryId: ArticleCategory
+  /** 作者 */
+  author: string
+  /** 作者ID */
+  authorId: number
+  /** 发布时间 */
+  publishTime: string
+  /** 文章状态 */
+  status: ArticleStatus
+  /** 状态文字 */
+  statusText: string
+  /** 阅读量 */
+  viewCount: number
+  /** 点赞数 */
+  likeCount: number
+  /** 评论数 */
+  commentCount: number
+  /** 文章摘要 */
+  summary: string
+  /** 富文本内容（HTML） */
+  content: string
+}
