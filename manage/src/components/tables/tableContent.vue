@@ -89,6 +89,7 @@ const handleCurrentChange = (val: number) => {
                 <el-table-column property="username" label="用户名" width="120" />
                 <el-table-column property="nickname" label="昵称" width="120" />
                 <el-table-column property="phone" label="电话" width="120" />
+                <el-table-column property="password" label="密码" width="120" />
                 <el-table-column property="role" label="角色" width="240" show-overflow-tooltip />
                 <el-table-column property="status" label="状态" />
                 <el-table-column label="创建时间" width="160" fixed>

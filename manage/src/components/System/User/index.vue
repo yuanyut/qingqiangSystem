@@ -8,16 +8,17 @@ interface User {
     username: string,
     nickname: string,
     phone: number | string,
+    password: string,
     role: string[],
     status: string,
     createdAt: string
 }
 const tableData: User[] = reactive([
-    { id: '1', username: 'admin', nickname: 'Admin', phone: '13800138000', role: ['超级管理员'], status: '启用', createdAt: '2023-10-01 10:00:00' },
-    { id: '2', username: 'zhangsan', nickname: 'Zhang San', phone: '13912345678', role: ['内容管理员', '超级管理员'], status: '启用', createdAt: '2023-10-02 11:30:00' },
-    { id: '3', username: 'lisi', nickname: 'Li Si', phone: '13798765432', role: ['互动审核员'], status: '禁用', createdAt: '2023-10-03 14:15:00' },
-    { id: '4', username: 'wangwu', nickname: 'Wang Wu', phone: '13611112222', role: ['访客'], status: '启用', createdAt: '2023-10-04 09:45:00' },
-    { id: '5', username: 'zhaoliu', nickname: 'Zhao Liu', phone: '13533334444', role: ['互动审核员'], status: '启用', createdAt: '2023-10-05 16:20:00' },
+    { id: '1', username: 'admin', nickname: 'Admin', phone: '13800138000', password: '********', role: ['超级管理员'], status: '启用', createdAt: '2023-10-01 10:00:00' },
+    { id: '2', username: 'zhangsan', nickname: 'Zhang San', phone: '13912345678', password: '********', role: ['内容管理员', '超级管理员'], status: '启用', createdAt: '2023-10-02 11:30:00' },
+    { id: '3', username: 'lisi', nickname: 'Li Si', phone: '13798765432', password: '********', role: ['互动审核员'], status: '禁用', createdAt: '2023-10-03 14:15:00' },
+    { id: '4', username: 'wangwu', nickname: 'Wang Wu', phone: '13611112222', password: '********', role: ['访客'], status: '启用', createdAt: '2023-10-04 09:45:00' },
+    { id: '5', username: 'zhaoliu', nickname: 'Zhao Liu', phone: '13533334444', password: '********', role: ['互动审核员'], status: '启用', createdAt: '2023-10-05 16:20:00' },
 ])
 
 const editContent = ref()
@@ -45,17 +46,17 @@ const search = ref(false)
 watch(formHeader, (newVal) => {
     console.log('这是新的', newVal)
 }, { deep: true })
-interface lableItem{
-        lable1:string,
-    lable2:string,
-    lable3:string,
-    lable4:string
-    }
-const labels=reactive<lableItem>({
-    lable1:'用户名',
-    lable2:'手机号',
-    lable3:'角色',
-    lable4:'状态'
+interface lableItem {
+    lable1: string,
+    lable2: string,
+    lable3: string,
+    lable4: string
+}
+const labels = reactive<lableItem>({
+    lable1: '用户名',
+    lable2: '手机号',
+    lable3: '角色',
+    lable4: '状态'
 })
 </script>
 <template>

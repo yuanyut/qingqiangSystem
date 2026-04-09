@@ -8,6 +8,7 @@ interface FormItemUser {
     username: string
     nickname: string
     phone: string
+    password: string
     role: string[]
     status: string
     createdAt?: string
@@ -24,6 +25,7 @@ const form = reactive<FormItemUser>({
     username: '',
     nickname: '',
     phone: '',
+    password: '',
     role: [],
     status: ''
 })
@@ -48,12 +50,13 @@ const handleConfirm = () => {
         Object.assign(content.value, form)
 
     }
-    form.createdAt= '',
-    form.username= '',
-    form.nickname='',
-    form.phone='',
-    form.role= [],
-    form.status= ''
+    form.createdAt = '',
+        form.username = '',
+        form.nickname = '',
+        form.phone = '',
+        form.password = '',
+        form.role = [],
+        form.status = ''
     dialogFormVisible.value = false
 }
 
@@ -73,6 +76,10 @@ const rules = reactive({
     phone: [
         { required: true, message: '输入电话', trigger: 'blur' },
         { min: 11, max: 11, message: '电话号码11位' }
+    ],
+    password: [
+        { required: true, message: '输入密码', trigger: 'blur' },
+        { min: 6, message: '密码长度至少6位', trigger: 'blur' }
     ],
     role: [
         { required: true, message: '请选择角色', trigger: 'change' }
@@ -97,6 +104,10 @@ const rules = reactive({
             </el-form-item>
             <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
                 <el-input v-model="form.phone" autocomplete="off" />
+            </el-form-item>
+            <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+                <el-input v-model="form.password" type="password" show-password autocomplete="off"
+                    placeholder="请输入密码" />
             </el-form-item>
             <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
                 <el-select v-model="form.role" placeholder="请选择角色" multiple>
