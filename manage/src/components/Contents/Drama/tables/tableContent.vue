@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
-import edit from '@/utils/edit.vue'
+import edit from '@/components/Contents/Drama/tables/edit.vue'
 const search = defineModel('search')
 const tableData: any = defineModel('tableData')
 const deleteModul = ref(false)
@@ -86,15 +86,19 @@ const handleCurrentChange = (val: number) => {
         <div>
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" />
-                <el-table-column property="username" label="用户名" width="120" />
-                <el-table-column property="nickname" label="昵称" width="120" />
-                <el-table-column property="phone" label="电话" width="120" />
-                <el-table-column property="role" label="角色" width="240" show-overflow-tooltip />
-                <el-table-column property="status" label="状态" />
-                <el-table-column label="创建时间" width="160" fixed>
-                    <template #default="scope">{{ scope.row.createdAt }}</template>
+                <el-table-column property="coverUrl" label="封面" width="120" />
+                <el-table-column property="name" label="名称" width="160" show-overflow-tooltip/>
+                <el-table-column property="actor" label="演员" width="160" show-overflow-tooltip/>
+                <el-table-column property="description" label="描述" width="160" show-overflow-tooltip/>
+                <el-table-column property="content" label="内容" width="160" show-overflow-tooltip/>
+                <el-table-column property="category" label="分类" width="120" />
+                <el-table-column property="clickCount" label="点击" width="120" />
+                
+                <el-table-column label="发布时间" width="160" >
+                    <template #default="scope">{{ scope.row.publishTime }}</template>
                 </el-table-column>
-                <el-table-column fixed="right" label="Operations" min-width="120">
+                <el-table-column property="statusText" label="状态" />
+                <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
                         <el-button link type="primary" size="small" @click="editClick(scope.row)">
                             编辑

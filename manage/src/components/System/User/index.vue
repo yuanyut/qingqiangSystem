@@ -45,10 +45,22 @@ const search = ref(false)
 watch(formHeader, (newVal) => {
     console.log('这是新的', newVal)
 }, { deep: true })
+interface lableItem{
+        lable1:string,
+    lable2:string,
+    lable3:string,
+    lable4:string
+    }
+const labels=reactive<lableItem>({
+    lable1:'用户名',
+    lable2:'手机号',
+    lable3:'角色',
+    lable4:'状态'
+})
 </script>
 <template>
     <div>
-        <opearHeader v-model:form-header="formHeader" v-model:search="search"></opearHeader>
+        <opearHeader v-model:form-header="formHeader" v-model:search="search" :lable="labels"></opearHeader>
         <opear v-model:editContent="editContent" v-model:multipleSelection="multipleSelection"
             v-model:selects="selects"></opear>
         <tableContent v-model:tableData="tableData" v-model:selects="selects"

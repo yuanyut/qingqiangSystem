@@ -46,7 +46,14 @@ const handleConfirm = () => {
     } else {
         // 编辑：修改属性
         Object.assign(content.value, form)
+
     }
+    form.createdAt= '',
+    form.username= '',
+    form.nickname='',
+    form.phone='',
+    form.role= [],
+    form.status= ''
     dialogFormVisible.value = false
 }
 
