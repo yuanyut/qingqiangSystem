@@ -3,12 +3,7 @@ import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {
     Search,
-    User,
-    Star,
-    Edit,
-    DataAnalysis,
-    ChatDotRound,
-    View,
+  
     CircleCheck,
     CircleClose,
     Clock,
@@ -18,9 +13,8 @@ import {
 } from '@element-plus/icons-vue'
 
 interface FormHeaderItem {
-    name: string
-    juese: string
-    category: string
+    content: string
+    user: string
     status: string
 }
 
@@ -40,9 +34,8 @@ const props = defineProps<{
     lable: lableItem
 }>()
 const form = reactive<FormHeaderItem>({
-    name: '',
-    juese: '',
-    category: '',
+    content: '',
+    user: '',
     status: ''
 })
 
@@ -62,66 +55,17 @@ const resetForm = (formEl: FormInstance | undefined) => {
 <template>
     <div class="search-card">
         <el-form v-if="form" :model="form" label-width="80px" ref="formRef" class="search-form">
-            <!-- 名家搜索 -->
+            <!-- 评论审核搜索 -->
             <div class="form-row">
-                <el-form-item :label="props.lable.lable5" prop="name" v-if="props.lable.lable5">
-                    <el-input v-model="form.name" placeholder="请输入名家姓名" clearable prefix-icon="User" />
+                <el-form-item :label="props.lable.lable5" prop="content" v-if="props.lable.lable5">
+                    <el-input v-model="form.content" placeholder="请输入评论内容" clearable prefix-icon="MessageFilled" />
                 </el-form-item>
 
-                <el-form-item :label="props.lable.lable6" v-if="props.lable.lable6" prop="juese">
-                    <el-select v-model="form.juese" placeholder="请选择角色" clearable class="full-width">
-                        <el-option label="全部角色" value="全部角色">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Star />
-                                </el-icon>
-                                <span>全部角色</span>
-                            </div>
-                        </el-option>
-                        <el-option label="旦角" value="旦角">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span>旦角</span>
-                            </div>
-                        </el-option>
-                        <el-option label="须生" value="须生">
-                            <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>须生</span>
-                            </div>
-                        </el-option>
-                        <el-option label="小生" value="小生">
-                            <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>小生</span>
-                            </div>
-                        </el-option>
-                        <el-option label="花脸" value="花脸">
-                            <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>花脸</span>
-                            </div>
-                        </el-option>
-                        <el-option label="丑角" value="丑角">
-                            <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>丑角</span>
-                            </div>
-                        </el-option>
-                    </el-select>
+                <el-form-item :label="props.lable.lable6" v-if="props.lable.lable6" prop="user">
+                    <el-input v-model="form.user" placeholder="请输入用户名称" clearable prefix-icon="User" />
                 </el-form-item>
                 <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
-                    <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
+                    <el-select v-model="form.status" placeholder="请选择审核状态" clearable class="full-width">
                         <el-option label="全部" value="全部">
                             <div class="option-item">
                                 <el-icon>
@@ -130,28 +74,36 @@ const resetForm = (formEl: FormInstance | undefined) => {
                                 <span class="status-active">全部</span>
                             </div>
                         </el-option>
-                        <el-option label="活跃" value="活跃">
-                            <div class="option-item">
-                                <el-icon>
-                                    <CircleCheck />
-                                </el-icon>
-                                <span class="status-active">活跃</span>
-                            </div>
-                        </el-option>
-                        <el-option label="退休" value="退休">
+                        <el-option label="待审核" value="待审核">
                             <div class="option-item">
                                 <el-icon>
                                     <Clock />
                                 </el-icon>
-                                <span class="status-pending">退休</span>
+                                <span class="status-pending">待审核</span>
                             </div>
                         </el-option>
-                        <el-option label="离世" value="离世">
+                        <el-option label="已审核" value="已审核">
+                            <div class="option-item">
+                                <el-icon>
+                                    <CircleCheck />
+                                </el-icon>
+                                <span class="status-active">已审核</span>
+                            </div>
+                        </el-option>
+                        <el-option label="已驳回" value="已驳回">
+                            <div class="option-item">
+                                <el-icon>
+                                    <CircleClose />
+                                </el-icon>
+                                <span class="status-deleted">已驳回</span>
+                            </div>
+                        </el-option>
+                        <el-option label="已删除" value="已删除">
                             <div class="option-item">
                                 <el-icon>
                                     <Delete />
                                 </el-icon>
-                                <span class="status-deleted">离世</span>
+                                <span class="status-deleted">已删除</span>
                             </div>
                         </el-option>
                     </el-select>

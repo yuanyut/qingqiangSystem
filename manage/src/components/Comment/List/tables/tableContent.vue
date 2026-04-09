@@ -108,41 +108,41 @@ const formatCount = (count: number) => {
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
                 <!-- 多选列 -->
                 <el-table-column type="selection" width="55" />
-                
+
                 <!-- 评论内容 -->
                 <el-table-column property="content" label="评论内容" width="300" show-overflow-tooltip />
-                
+
                 <!-- 用户 -->
                 <el-table-column property="user" label="用户" width="150" />
-                
+
                 <!-- 目标类型 -->
                 <el-table-column property="targetType" label="目标类型" width="100" />
-                
+
                 <!-- 目标标题 -->
                 <el-table-column property="targetTitle" label="目标标题" width="200" show-overflow-tooltip />
-                
+
                 <!-- 发布时间 -->
                 <el-table-column label="发布时间" width="180">
                     <template #default="scope">{{ scope.row.publishTime }}</template>
                 </el-table-column>
-                
+
                 <!-- 回复数 -->
                 <el-table-column property="replyCount" label="回复数" width="100">
                     <template #default="scope">
                         {{ formatCount(scope.row.replyCount) }}
                     </template>
                 </el-table-column>
-                
+
                 <!-- 点赞数 -->
                 <el-table-column property="likeCount" label="点赞数" width="100">
                     <template #default="scope">
                         {{ formatCount(scope.row.likeCount) }}
                     </template>
                 </el-table-column>
-                
+
                 <!-- 状态 -->
                 <el-table-column property="statusText" label="状态" width="100" />
-                
+
                 <!-- 操作列 -->
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
@@ -156,27 +156,19 @@ const formatCount = (count: number) => {
                 </el-table-column>
             </el-table>
         </div>
-        
+
         <!-- 分页 -->
         <div style="margin-top: 25px;">
-            <el-pagination 
-                v-model:currentPage="currentPage3" 
-                v-model:page-size="pageSize3" 
-                :small="small"
-                :disabled="disabled" 
-                :background="background" 
-                layout="prev, pager, next, jumper" 
-                :total="1000"
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
-            />
+            <el-pagination v-model:currentPage="currentPage3" v-model:page-size="pageSize3" :small="small"
+                :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="1000"
+                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
-        
+
         <!-- 删除确认弹窗 -->
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
-        
+
         <!-- 编辑弹窗 -->
         <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑评论" opear="0"></edit>
     </div>

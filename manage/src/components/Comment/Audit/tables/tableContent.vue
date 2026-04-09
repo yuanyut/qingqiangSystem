@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
-import edit from '@/components/Contents/Actor/tables/edit.vue'
+import edit from '@/components/Comment/Audit/tables/edit.vue'
 
 const search = defineModel('search')
 const tableData: any = defineModel('tableData')
@@ -12,7 +12,13 @@ const editContent = ref()
 const selects = defineModel('selects')
 const safeForm: any = defineModel('formHeader')
 
-// 删除单个名家
+// 审核评论
+const auditClick = (value: any) => {
+    editContent.value = value
+    editModul.value = true
+}
+
+// 删除单个评论
 const deleteClick = (value: any) => {
     opearIndex.value = value
     deleteModul.value = true
@@ -28,25 +34,18 @@ const deleteClicks = () => {
     } else if (selects.value === true) {
         multipleSelection.value.forEach((item1: any) => {
             const index = tableData.value.findIndex((item: any) => item.id === item1.id)
-            console.log(`名家 ${item1.name} 在 tableData 的索引:`, index)
+            console.log(`评论 ${item1.content.substring(0, 20)}... 在 tableData 的索引:`, index)
             tableData.value.splice(index, 1)
         })
         selects.value = false
     }
 }
 
-// 编辑名家
-const editClick = (value: any) => {
-    editModul.value = true
-    console.log(value)
-    editContent.value = value
-}
-
 const multipleSelection: any = defineModel('multipleSelection')
 
 const handleSelectionChange = (val: any[]) => {
     multipleSelection.value = val
-    console.log('选中的名家数据:', val)
+    console.log('选中的评论数据:', val)
 }
 
 // 监听批量删除选择
@@ -61,7 +60,7 @@ watch(selects, (newVal) => {
 watch(search, (newVal) => {
     if (newVal === false) return
     if (newVal === true) {
-        // 调用后端返回的名家数据
+        // 调用后端返回的评论数据
     }
 })
 
@@ -92,8 +91,8 @@ const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
 }
 
-// 格式化播放量
-const formatViewCount = (count: number) => {
+// 格式化数字
+const formatCount = (count: number) => {
     if (!count) return '0'
     if (count >= 10000) {
         return (count / 10000).toFixed(1) + 'w'
@@ -109,56 +108,54 @@ const formatViewCount = (count: number) => {
                 <!-- 多选列 -->
                 <el-table-column type="selection" width="55" />
 
-                <!-- 名家照片 -->
-                <el-table-column label="名家照片" width="120">
-                    <template #default="scope">
-                        <img :src="scope.row.photo" alt="名家照片"
-                            style="width: 80px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #e4e7ed;">
-                    </template>
+                <!-- 评论内容 -->
+                <el-table-column property="content" label="评论内容" width="300" show-overflow-tooltip />
+
+                <!-- 用户 -->
+                <el-table-column property="user" label="用户" width="150">
+                    <template #default="scope">{{ scope.row.user }}（{{ scope.row.userType }}）</template>
                 </el-table-column>
 
-                <!-- 名家姓名 -->
-                <el-table-column property="name" label="名家姓名" width="120" show-overflow-tooltip />
+                <!-- 目标类型 -->
+                <el-table-column property="targetType" label="目标类型" width="100" />
 
-                <!-- 个人简介 -->
-                <el-table-column property="description" label="个人简介" width="200" show-overflow-tooltip />
+                <!-- 目标标题 -->
+                <el-table-column property="targetTitle" label="目标标题" width="200" show-overflow-tooltip />
 
-                <!-- 角色 -->
-                <el-table-column property="juese" label="角色" width="100" />
+                <!-- 发布时间 -->
+                <el-table-column label="发布时间" width="180">
+                    <template #default="scope">{{ scope.row.publishTime }}</template>
+                </el-table-column>
 
-                <!-- 流派 -->
-                <el-table-column property="category" label="流派" width="100" />
-
-                <!-- 作品数 -->
-                <el-table-column property="worksCount" label="作品数" width="100" />
-
-                <!-- 点击量 -->
-                <el-table-column property="clickCount" label="点击量" width="100">
+                <!-- 回复数 -->
+                <el-table-column property="replyCount" label="回复数" width="100">
                     <template #default="scope">
-                        {{ formatViewCount(scope.row.clickCount) }}
+                        {{ formatCount(scope.row.replyCount) }}
                     </template>
                 </el-table-column>
 
                 <!-- 点赞数 -->
                 <el-table-column property="likeCount" label="点赞数" width="100">
                     <template #default="scope">
-                        {{ formatViewCount(scope.row.likeCount) }}
+                        {{ formatCount(scope.row.likeCount) }}
                     </template>
                 </el-table-column>
 
-                <!-- 加入时间 -->
-                <el-table-column label="加入时间" width="120">
-                    <template #default="scope">{{ scope.row.joinTime }}</template>
-                </el-table-column>
-
                 <!-- 状态 -->
-                <el-table-column property="statusText" label="状态" width="100" />
+                <el-table-column property="statusText" label="状态" width="100">
+                    <template #default="scope">
+
+                        {{ scope.row.statusText }}
+
+                    </template>
+                </el-table-column>
 
                 <!-- 操作列 -->
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
-                        <el-button link type="primary" size="small" @click="editClick(scope.row)">
-                            编辑
+                        <el-button type="primary" size="small" @click="auditClick(scope.row)"
+                            v-if="scope.row.statusText === '待审核'">
+                            审核
                         </el-button>
                         <el-button link type="primary" size="small" @click.prevent="deleteClick(scope.$index)">
                             删除
@@ -180,8 +177,8 @@ const formatViewCount = (count: number) => {
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
 
-        <!-- 编辑弹窗 -->
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑名家" opear="0"></edit>
+        <!-- 审核弹窗 -->
+        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="评论审核" opear="0"></edit>
     </div>
 </template>
 
