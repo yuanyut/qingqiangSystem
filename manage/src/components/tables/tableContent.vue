@@ -58,6 +58,17 @@ watch(search, (newVal) => {
         //调用后端返回的数据
     }
 })
+const currentPage3 = ref(1)
+const pageSize3 = ref(100)
+const small = ref(false)
+const background = ref(false)
+const disabled = ref(false)
+const handleSizeChange = (val: number) => {
+    console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val: number) => {
+    console.log(`current page: ${val}`)
+}
 </script>
 <template>
     <div>
@@ -83,6 +94,11 @@ watch(search, (newVal) => {
                 </el-table-column>
             </el-table>
         </div>
+        <div style="margin-top: 25px;">
+            <el-pagination v-model:currentPage="currentPage3" v-model:page-size="pageSize3" :small="small"
+                :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="1000"
+                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        </div>
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
@@ -90,4 +106,9 @@ watch(search, (newVal) => {
     </div>
 
 </template>
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+:deep(.el-pagination) {
+    display: flex;
+    justify-content: center;
+}
+</style>
