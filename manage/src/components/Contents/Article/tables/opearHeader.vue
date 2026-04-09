@@ -3,46 +3,39 @@ import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {
     Search,
+    Refresh,
+    Document,
+    Collection,
     User,
-    Star,
-    Edit,
-    DataAnalysis,
-    ChatDotRound,
-    View,
-    CircleCheck,
-    CircleClose,
     Clock,
     Delete,
-    Refresh,
-    Phone
+    CircleCheck,
+    CircleClose
 } from '@element-plus/icons-vue'
 
 interface FormHeaderItem {
-    name: string
-    phone: string
-    juese: string
+    title: string
+    category: string
     status: string
 }
 
 const formRef = ref<FormInstance>()
 const search = defineModel('search')
 const safeForm = defineModel<FormHeaderItem>('formHeader')
+
 interface lableItem {
-    lable1?: string,
-    lable2?: string,
-    lable3?: string,
-    lable4?: string,
-    lable5?: string,
-    lable6?: string,
-    lable7?: string,
+    lable1?: string,  // 标题
+    lable2?: string,  // 分类
+    lable3?: string,  // 状态
 }
+
 const props = defineProps<{
     lable: lableItem
 }>()
+
 const form = reactive<FormHeaderItem>({
-    name: '',
-    phone: '',
-    juese: '',
+    title: '',
+    category: '',
     status: ''
 })
 
@@ -57,264 +50,131 @@ const onSubmit = () => {
 const resetForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.resetFields()
+    form.title = ''
+    form.category = ''
+    form.status = ''
+    safeForm.value = { title: '', category: '', status: '' }
+    search.value = true
 }
 </script>
+
 <template>
     <div class="search-card">
-        <el-form v-if="form" :model="form" label-width="80px" ref="formRef" class="search-form">
-           <!-- 角色 -->
-            <div class="form-row" v-if="props.lable.lable1 ||props.lable.lable2">
-                <el-form-item :label="props.lable.lable1" prop="name" v-if="props.lable.lable1 ">
-                    <el-input v-model="form.name" placeholder="请输入用户名" clearable prefix-icon="User" />
-                </el-form-item>
-
-                <el-form-item :label="props.lable.lable2" prop="phone" v-if="props.lable.lable2 ">
-                    <el-input v-model="form.phone" placeholder="请输入手机号" clearable prefix-icon="Phone" />
-                </el-form-item>
-            </div>
-
-            <div class="form-row" v-if="props.lable.lable3 || props.lable.lable4">
-                <el-form-item :label="props.lable.lable3" v-if="props.lable.lable3" prop="juese">
-                    <el-select v-model="form.juese" placeholder="请选择角色" clearable class="full-width">
-                        <el-option label="超级管理员" value="超级管理员">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Star />
-                                </el-icon>
-                                <span>超级管理员</span>
-                            </div>
-                        </el-option>
-                        <el-option label="内容管理员" value="内容管理员">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span>内容管理员</span>
-                            </div>
-                        </el-option>
-                        <el-option label="数据分析员" value="数据分析员">
-                            <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>数据分析员</span>
-                            </div>
-                        </el-option>
-                        <el-option label="互动审核员" value="互动审核员">
-                            <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>互动审核员</span>
-                            </div>
-                        </el-option>
-                        <el-option label="普通用户" value="普通用户">
-                            <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>普通用户</span>
-                            </div>
-                        </el-option>
-                        <el-option label="访客" value="访客">
-                            <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>访客</span>
-                            </div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-
-                <el-form-item :label="props.lable.lable4" prop="status" v-if="props.lable.lable4">
-                    <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
-                        <el-option label="启用" value="启用">
-                            <div class="option-item">
-                                <el-icon>
-                                    <CircleCheck />
-                                </el-icon>
-                                <span class="status-active">启用</span>
-                            </div>
-                        </el-option>
-                        <el-option label="禁用" value="禁用">
-                            <div class="option-item">
-                                <el-icon>
-                                    <CircleClose />
-                                </el-icon>
-                                <span class="status-disabled">禁用</span>
-                            </div>
-                        </el-option>
-                        <el-option label="待审核" value="待审核">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Clock />
-                                </el-icon>
-                                <span class="status-pending">待审核</span>
-                            </div>
-                        </el-option>
-                        <el-option label="已注销" value="已注销">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Delete />
-                                </el-icon>
-                                <span class="status-deleted">已注销</span>
-                            </div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-            </div>
-            <!-- 剧目 -->
+        <el-form :model="form" label-width="80px" ref="formRef" class="search-form">
             <div class="form-row">
-                <el-form-item :label="props.lable.lable5" prop="name" v-if="props.lable.lable5 ">
-                    <el-input v-model="form.name" placeholder="请输入名称" clearable prefix-icon="User" />
+                <!-- 标题搜索 -->
+                <el-form-item :label="props.lable.lable1 || '标题'" prop="title">
+                    <el-input 
+                        v-model="form.title" 
+                        :placeholder="`请输入${props.lable.lable1 || '标题'}`" 
+                        clearable 
+                        :prefix-icon="Document"
+                    />
                 </el-form-item>
 
-                <el-form-item :label="props.lable.lable6" v-if="props.lable.lable6" prop="juese">
-                    <el-select v-model="form.juese" placeholder="请选择分类" clearable class="full-width">
-                        <el-option label="全部分类" value="全部分类">
+                <!-- 分类筛选 -->
+                <el-form-item :label="props.lable.lable2 || '分类'" prop="category" v-if="props.lable.lable2">
+                    <el-select v-model="form.category" placeholder="请选择分类" clearable class="full-width">
+                        <el-option label="全部分类" value="">
                             <div class="option-item">
-                                <el-icon>
-                                    <Star />
-                                </el-icon>
+                                <el-icon><Collection /></el-icon>
                                 <span>全部分类</span>
                             </div>
                         </el-option>
-                        <el-option label="传统剧目" value="传统剧目">
+                        <el-option label="文化研究" value="文化研究">
                             <div class="option-item">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span>传统剧目</span>
+                                <span>文化研究</span>
                             </div>
                         </el-option>
-                        <el-option label="现代改编" value="现代改编">
+                        <el-option label="剧目赏析" value="剧目赏析">
                             <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>现代改编</span>
+                                <span>剧目赏析</span>
                             </div>
                         </el-option>
-                        <el-option label="实验秦腔" value="实验秦腔">
+                        <el-option label="人物专访" value="人物专访">
                             <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>实验秦腔</span>
+                                <span>人物专访</span>
                             </div>
                         </el-option>
-                        <el-option label="折子戏" value="折子戏">
+                        <el-option label="新闻动态" value="新闻动态">
                             <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>折子戏</span>
+                                <span>新闻动态</span>
                             </div>
                         </el-option>
-                        <el-option label="名家专场" value="名家专场">
+                        <el-option label="戏曲知识" value="戏曲知识">
                             <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>名家专场</span>
+                                <span>戏曲知识</span>
+                            </div>
+                        </el-option>
+                        <el-option label="音乐研究" value="音乐研究">
+                            <div class="option-item">
+                                <span>音乐研究</span>
+                            </div>
+                        </el-option>
+                        <el-option label="非遗保护" value="非遗保护">
+                            <div class="option-item">
+                                <span>非遗保护</span>
                             </div>
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
+
+                <!-- 状态筛选 -->
+                <el-form-item :label="props.lable.lable3 || '状态'" prop="status" v-if="props.lable.lable3">
                     <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
-                        <el-option label="全部" value="全部">
+                        <el-option label="全部" value="">
                             <div class="option-item">
-                                <el-icon>
-                                    <CircleCheck />
-                                </el-icon>
-                                <span class="status-active">全部</span>
+                                <el-icon><CircleCheck /></el-icon>
+                                <span>全部</span>
                             </div>
                         </el-option>
                         <el-option label="草稿" value="草稿">
                             <div class="option-item">
-                                <el-icon>
-                                    <CircleClose />
-                                </el-icon>
+                                <el-icon><Clock /></el-icon>
                                 <span class="status-disabled">草稿</span>
                             </div>
                         </el-option>
                         <el-option label="已发布" value="已发布">
                             <div class="option-item">
-                                <el-icon>
-                                    <Clock />
-                                </el-icon>
-                                <span class="status-pending">已发布</span>
+                                <el-icon><CircleCheck /></el-icon>
+                                <span class="status-active">已发布</span>
                             </div>
                         </el-option>
                         <el-option label="已下架" value="已下架">
                             <div class="option-item">
-                                <el-icon>
-                                    <Delete />
-                                </el-icon>
+                                <el-icon><Delete /></el-icon>
                                 <span class="status-deleted">已下架</span>
                             </div>
                         </el-option>
                     </el-select>
                 </el-form-item>
             </div>
+
             <div class="form-actions">
                 <el-button @click="resetForm(formRef)" class="reset-btn">
-                    <el-icon>
-                        <Refresh />
-                    </el-icon>
+                    <el-icon><Refresh /></el-icon>
                     重置
                 </el-button>
                 <el-button type="primary" @click="onSubmit" class="search-btn">
-                    <el-icon>
-                        <Search />
-                    </el-icon>
+                    <el-icon><Search /></el-icon>
                     查询
                 </el-button>
             </div>
         </el-form>
     </div>
 </template>
+
 <style scoped>
 .search-card {
     border-radius: 20px;
-    padding: 24px;
+    margin-bottom: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    margin: 20px;
     transition: all 0.3s ease;
 }
 
 .search-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-}
-
-.card-header {
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.header-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 28px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 8px;
-}
-
-.title-icon {
-    font-size: 28px;
-    animation: pulse 2s infinite;
-}
-
-.header-subtitle {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    letter-spacing: 0.5px;
 }
 
 .search-form {
@@ -334,6 +194,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 .form-row :deep(.el-form-item) {
     flex: 1;
     margin-bottom: 0;
+    min-width: 200px;
 }
 
 .form-row :deep(.el-form-item__label) {
@@ -428,18 +289,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
     .search-card {
@@ -452,14 +301,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
         gap: 16px;
     }
 
-    .header-title {
-        font-size: 24px;
-    }
-
-    .title-icon {
-        font-size: 24px;
-    }
-
     .form-actions {
         justify-content: center;
     }
@@ -467,21 +308,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
     .reset-btn,
     .search-btn {
         flex: 1;
-    }
-}
-
-/* 暗色模式支持 */
-@media (prefers-color-scheme: dark) {
-    .search-form {
-        background: rgba(30, 30, 40, 0.95);
-    }
-
-    .form-row :deep(.el-form-item__label) {
-        color: #e5e7eb;
-    }
-
-    .form-actions {
-        border-top-color: #374151;
     }
 }
 </style>

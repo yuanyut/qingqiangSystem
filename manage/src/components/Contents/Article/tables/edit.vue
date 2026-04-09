@@ -1,44 +1,89 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
+import { ElMessage } from 'element-plus'
 
 const formRef = ref<FormInstance>()
-// 修正类型定义
-interface FormItemUser {
-    coverUrl: string,
-    name: string,
-    category: string,
-    clickCount: number,
-    publishTime: string,
-    statusText: string,
-    actor: string,
-    description: string,
+
+// 文章表单数据类型
+interface ArticleFormData {
+    coverUrl: string
+    title: string
+    category: string
+    author: string
+    publishTime: string
+    statusText: string
+    viewCount: number
+    likeCount: number
+    commentCount: number
+    summary: string
     content: string
 }
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
 const content = defineModel('content', { default: () => ({}) })
-const selects = defineModel('selects')
-const formLabelWidth = '140px'
+const formLabelWidth = '100px'
 
 // 初始化 form
-const form = reactive<FormItemUser>({
+const form = reactive<ArticleFormData>({
     coverUrl: '',
-    name: '',
+    title: '',
     category: '',
-    clickCount: 0,
+    author: '',
     publishTime: '',
     statusText: '',
-    actor: '',
-    description: '',
+    viewCount: 0,
+    likeCount: 0,
+    commentCount: 0,
+    summary: '',
     content: ''
 })
+
 const props = defineProps<{ title: string, opear: string }>()
-// 监听 content 变化，更新 form（用 Object.assign 保持响应式）
+
+// 隐藏的文件上传input
+const fileInputRef = ref<HTMLInputElement>()
+
+// 触发文件选择
+const triggerUpload = () => {
+    fileInputRef.value?.click()
+}
+
+// 处理文件上传
+const handleFileChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    
+    if (!file) return
+    
+    // 验证文件类型
+    if (!file.type.startsWith('image/')) {
+        ElMessage.error('请选择图片文件')
+        return
+    }
+    
+    // 验证文件大小（限制2MB）
+    if (file.size > 2 * 1024 * 1024) {
+        ElMessage.error('图片大小不能超过2MB')
+        return
+    }
+    
+    // 将图片转为base64预览
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        form.coverUrl = e.target?.result as string
+        ElMessage.success('上传成功')
+    }
+    reader.readAsDataURL(file)
+    
+    // 清空input，以便再次选择同一文件
+    input.value = ''
+}
+
+// 监听 content 变化，更新 form
 watch(content, (newVal) => {
     console.log('子组件收到 content:', newVal)
     if (newVal) {
-        // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
         console.log('form 更新后:', form)
     }
@@ -52,123 +97,125 @@ const handleConfirm = () => {
     } else {
         // 编辑：修改属性
         Object.assign(content.value, form)
-
-        form.coverUrl = '',
-            form.name = '',
-            form.category = '',
-            form.clickCount = 0,
-            form.publishTime = '',
-            form.statusText = '',
-            form.actor = '',
-            form.description = '',
-            form.content = ''
-
     }
     dialogFormVisible.value = false
 }
 
+// 取消按钮：重置表单
 const handleCancel = (formEl: FormInstance | undefined) => {
     dialogFormVisible.value = false
     if (!formEl) return
     formEl.resetFields()
-
+    // 重置 form
+    Object.assign(form, {
+        coverUrl: '',
+        title: '',
+        category: '',
+        author: '',
+        publishTime: '',
+        statusText: '',
+        viewCount: 0,
+        likeCount: 0,
+        commentCount: 0,
+        summary: '',
+        content: ''
+    })
 }
-// const rules = reactive({
-//     username: [
-//         { required: true, message: '输入用户名', trigger: 'blur' }
-//     ],
-//     nickname: [
-//         { required: true, message: '输入昵称', trigger: 'blur' }
-//     ],
-//     phone: [
-//         { required: true, message: '输入电话', trigger: 'blur' },
-//         { min: 11, max: 11, message: '电话号码11位' }
-//     ],
-//     role: [
-//         { required: true, message: '请选择角色', trigger: 'change' }
-//     ],
-//     status: [
-//         { required: true, message: '请选择状态', trigger: 'change' }
-//     ]
-// })
 </script>
 
 <template>
-    <el-dialog v-model="dialogFormVisible" :show-close="false" :title="props.title" width="500">
-        <el-form :model="form" ref="formRef">
-            <el-form-item v-if="form.publishTime" label="创建时间" :label-width="formLabelWidth" prop="publishTime">
-                <el-input v-model="form.publishTime" autocomplete="off" disabled />
-            </el-form-item>
-            <el-form-item label="名称" :label-width="formLabelWidth" prop="name">
-                <el-input v-model="form.name" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="演员" :label-width="formLabelWidth" prop="actor">
-                <el-input v-model="form.actor" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="描述" :label-width="formLabelWidth" prop="description">
-                <el-input v-model="form.description" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="内容" :label-width="formLabelWidth" prop="content">
-                <el-input v-model="form.content" autocomplete="off" />
-            </el-form-item>
-            <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
-                <el-select v-model="form.category" placeholder="请选择分类">
-
-                    <el-option label="传统剧目" value="传统剧目">
-                        <div class="option-item">
-                            <span>传统剧目</span>
+    <el-dialog v-model="dialogFormVisible" :show-close="false" :title="props.title" width="600">
+        <el-form :model="form" ref="formRef" :label-width="formLabelWidth">
+            <!-- 封面 - 点击可更换 -->
+            <el-form-item label="封面" prop="coverUrl">
+                <div class="cover-upload">
+                    <!-- 有封面时显示图片，可点击更换 -->
+                    <div v-if="form.coverUrl" class="cover-preview" @click="triggerUpload">
+                        <el-image 
+                            :src="form.coverUrl" 
+                            fit="cover"
+                        />
+                        <div class="cover-mask">
+                            <span>点击更换</span>
                         </div>
-                    </el-option>
-                    <el-option label="现代改编" value="现代改编">
-                        <div class="option-item">
+                    </div>
+                    <!-- 无封面时显示上传按钮 -->
+                    <div v-else class="cover-placeholder" @click="triggerUpload">
+                        <el-icon><Plus /></el-icon>
+                        <span>点击上传封面</span>
+                    </div>
+                    
+                    <!-- 隐藏的文件上传input -->
+                    <input 
+                        type="file"
+                        ref="fileInputRef"
+                        style="display: none"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        @change="handleFileChange"
+                    />
+                </div>
+            </el-form-item>
 
-                            <span>现代改编</span>
-                        </div>
-                    </el-option>
-                    <el-option label="实验秦腔" value="实验秦腔">
-                        <div class="option-item">
+            <!-- 标题 -->
+            <el-form-item label="标题" prop="title">
+                <el-input v-model="form.title" autocomplete="off" placeholder="请输入文章标题" />
+            </el-form-item>
 
-                            <span>实验秦腔</span>
-                        </div>
-                    </el-option>
-                    <el-option label="折子戏" value="折子戏">
-                        <div class="option-item">
-
-                            <span>折子戏</span>
-                        </div>
-                    </el-option>
-                    <el-option label="名家专场" value="名家专场">
-                        <div class="option-item">
-
-                            <span>名家专场</span>
-                        </div>
-                    </el-option>
+            <!-- 分类 -->
+            <el-form-item label="分类" prop="category">
+                <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
+                    <el-option label="文化研究" value="文化研究" />
+                    <el-option label="剧目赏析" value="剧目赏析" />
+                    <el-option label="人物专访" value="人物专访" />
+                    <el-option label="新闻动态" value="新闻动态" />
+                    <el-option label="戏曲知识" value="戏曲知识" />
+                    <el-option label="音乐研究" value="音乐研究" />
+                    <el-option label="非遗保护" value="非遗保护" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="状态" :label-width="formLabelWidth" prop="status">
-                <el-select v-model="form.statusText" placeholder="请选择状态">
 
-                    <el-option label="草稿" value="草稿">
-                        <div class="option-item">
+            <!-- 作者 -->
+            <el-form-item label="作者" prop="author">
+                <el-input v-model="form.author" autocomplete="off" placeholder="请输入作者" />
+            </el-form-item>
 
-                            <span class="status-disabled">草稿</span>
-                        </div>
-                    </el-option>
-                    <el-option label="已发布" value="已发布">
-                        <div class="option-item">
+            <!-- 发布时间 -->
+            <el-form-item v-if="form.publishTime" label="发布时间" prop="publishTime">
+                <el-input v-model="form.publishTime" autocomplete="off" disabled />
+            </el-form-item>
 
-                            <span class="status-pending">已发布</span>
-                        </div>
-                    </el-option>
-                    <el-option label="已下架" value="已下架">
-                        <div class="option-item">
+            <!-- 摘要 -->
+            <el-form-item label="摘要" prop="summary">
+                <el-input 
+                    v-model="form.summary" 
+                    type="textarea" 
+                    :rows="3" 
+                    placeholder="请输入文章摘要"
+                    maxlength="200"
+                    show-word-limit
+                />
+            </el-form-item>
 
-                            <span class="status-deleted">已下架</span>
-                        </div>
-                    </el-option>
+            <!-- 内容 -->
+            <el-form-item label="内容" prop="content">
+                <el-input 
+                    v-model="form.content" 
+                    type="textarea" 
+                    :rows="6" 
+                    placeholder="请输入文章内容"
+                />
+            </el-form-item>
+
+            <!-- 状态 -->
+            <el-form-item label="状态" prop="statusText">
+                <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%">
+                    <el-option label="草稿" value="草稿" />
+                    <el-option label="已发布" value="已发布" />
+                    <el-option label="已下架" value="已下架" />
                 </el-select>
             </el-form-item>
         </el-form>
+        
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="handleCancel(formRef)">取消</el-button>
@@ -177,3 +224,89 @@ const handleCancel = (formEl: FormInstance | undefined) => {
         </template>
     </el-dialog>
 </template>
+
+<style scoped>
+.cover-upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* 封面预览样式 - 可点击 */
+.cover-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e4e7ed;
+}
+
+.cover-preview .el-image {
+    width: 100%;
+    height: 100%;
+}
+
+.cover-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    color: white;
+    font-size: 12px;
+}
+
+.cover-preview:hover .cover-mask {
+    opacity: 1;
+}
+
+/* 无封面时的占位符 */
+.cover-placeholder {
+    width: 100px;
+    height: 100px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #fafafa;
+    color: #999;
+    gap: 8px;
+}
+
+.cover-placeholder:hover {
+    border-color: #409eff;
+    color: #409eff;
+    background: #f0f9ff;
+}
+
+.cover-placeholder .el-icon {
+    font-size: 24px;
+}
+
+.cover-placeholder span {
+    font-size: 12px;
+}
+
+.stats-row {
+    display: flex;
+    gap: 24px;
+    color: #909399;
+    font-size: 13px;
+}
+
+:deep(.el-textarea__inner) {
+    font-family: inherit;
+}
+</style>

@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import { Plus, Delete, InfoFilled, Check } from '@element-plus/icons-vue'
-import edit from '@/components/Contents/Drama/tables/edit.vue'
+import edit from '@/components/Contents/Article/tables/edit.vue'
 
 interface FormItemUser {
     username: string
