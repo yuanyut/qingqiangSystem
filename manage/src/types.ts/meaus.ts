@@ -43,30 +43,30 @@ export const mockMenu = [
         "component": "/src/components/System/User/index.vue",
         "permission": "system:user:list"
       },
-      {
-        "name": "角色管理",
-        "path": "system/role",
-        "component": "/src/components/System/Role/index.vue",
-        "permission": "system:role:list"
-      },
-      {
-        "name": "权限管理",
-        "path": "system/permission",
-        "component": "/src/components/System/Permission/index.vue",
-        "permission": "system:permission:list"
-      },
-      {
-        "name": "菜单管理",
-        "path": "system/menu",
-        "component": "/src/components/System/Menu/index.vue",
-        "permission": "system:menu:list"
-      },
-      {
-        "name": "操作日志",
-        "path": "system/log",
-        "component": "/src/components/System/Log/index.vue",
-        "permission": "system:log:list"
-      }
+      // {
+      //   "name": "角色管理",
+      //   "path": "system/role",
+      //   "component": "/src/components/System/Role/index.vue",
+      //   "permission": "system:role:list"
+      // },
+      // {
+      //   "name": "权限管理",
+      //   "path": "system/permission",
+      //   "component": "/src/components/System/Permission/index.vue",
+      //   "permission": "system:permission:list"
+      // },
+      // {
+      //   "name": "菜单管理",
+      //   "path": "system/menu",
+      //   "component": "/src/components/System/Menu/index.vue",
+      //   "permission": "system:menu:list"
+      // },
+      // {
+      //   "name": "操作日志",
+      //   "path": "system/log",
+      //   "component": "/src/components/System/Log/index.vue",
+      //   "permission": "system:log:list"
+      // }
     ]
   },
   {
@@ -86,45 +86,45 @@ export const mockMenu = [
         "component": "/src/components/Contents/Article/index.vue",
         "permission": "contents:article:list"
       },
-      {
-        "name": "图片资源管理",
-        "path": "contents/image",
-        "component": "/src/components/Contents/Image/index.vue",
-        "permission": "contents:image:list"
-      },
-      {
-        "name": "视频资源管理",
-        "path": "contents/video",
-        "component": "/src/components/Contents/Video/index.vue",
-        "permission": "contents:video:list"
-      },
-      {
-        "name": "轮播图管理",
-        "path": "contents/banner",
-        "component": "/src/components/Contents/Banner/index.vue",
-        "permission": "contents:banner:list"
-      }
+      // {
+      //   "name": "图片资源管理",
+      //   "path": "contents/image",
+      //   "component": "/src/components/Contents/Image/index.vue",
+      //   "permission": "contents:image:list"
+      // },
+      // {
+      //   "name": "视频资源管理",
+      //   "path": "contents/video",
+      //   "component": "/src/components/Contents/Video/index.vue",
+      //   "permission": "contents:video:list"
+      // },
+      // {
+      //   "name": "轮播图管理",
+      //   "path": "contents/banner",
+      //   "component": "/src/components/Contents/Banner/index.vue",
+      //   "permission": "contents:banner:list"
+      // }
     ]
   },
-  {
-    "name": "用户管理",
-    "path": "/user",
-    "icon": "User",
-    "children": [
-      {
-        "name": "前台用户列表",
-        "path": "user/list",
-        "component": "/src/components/User/List/index.vue",
-        "permission": "user:list"
-      },
-      {
-        "name": "用户行为数据",
-        "path": "user/activity",
-        "component": "/src/components/User/Activity/index.vue",
-        "permission": "user:activity:list"
-      }
-    ]
-  },
+  // {
+  //   "name": "用户管理",
+  //   "path": "/user",
+  //   "icon": "User",
+  //   "children": [
+  //     {
+  //       "name": "前台用户列表",
+  //       "path": "user/list",
+  //       "component": "/src/components/User/List/index.vue",
+  //       "permission": "user:list"
+  //     },
+  //     {
+  //       "name": "用户行为数据",
+  //       "path": "user/activity",
+  //       "component": "/src/components/User/Activity/index.vue",
+  //       "permission": "user:activity:list"
+  //     }
+  //   ]
+  // },
 
   {
     "name": "推荐系统",
@@ -164,23 +164,23 @@ export const mockMenu = [
       }
     ]
   },
-  {
-    "name": "系统设置",
-    "path": "setting",
-    "icon": "Tools",
-    "children": [
-      {
-        "name": "数据字典",
-        "path": "setting/dict",
-        "component": "/src/components/Setting/Dict/index.vue",
-        "permission": "setting:dict:list"
-      },
-      {
-        "name": "Banner 配置",
-        "path": "setting/banner",
-        "component": "/src/components/Setting/Banner/index.vue",
-        "permission": "setting:banner:list"
-      }
-    ]
-  }
+  // {
+  //   "name": "系统设置",
+  //   "path": "setting",
+  //   "icon": "Tools",
+  //   "children": [
+  //     {
+  //       "name": "数据字典",
+  //       "path": "setting/dict",
+  //       "component": "/src/components/Setting/Dict/index.vue",
+  //       "permission": "setting:dict:list"
+  //     },
+  //     {
+  //       "name": "Banner 配置",
+  //       "path": "setting/banner",
+  //       "component": "/src/components/Setting/Banner/index.vue",
+  //       "permission": "setting:banner:list"
+  //     }
+  //   ]
+  // }
 ]

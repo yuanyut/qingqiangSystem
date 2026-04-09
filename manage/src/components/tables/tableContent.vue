@@ -2,13 +2,14 @@
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
 import edit from '@/utils/edit.vue'
-
+const search = defineModel('search')
 const tableData: any = defineModel('tableData')
 const deleteModul = ref(false)
 const editModul = ref(false)
 const opearIndex = ref(0)
 const editContent = ref()
 const selects = defineModel('selects')
+const safeForm: any = defineModel('formHeader')
 const deleteClick = (value: any) => {
 
     opearIndex.value = value
@@ -48,6 +49,13 @@ watch(selects, (newVal) => {
         return
     if (newVal === true) {
         deleteModul.value = true
+    }
+})
+watch(search, (newVal) => {
+    if (newVal === false)
+        return
+    if (newVal === true) {
+        //调用后端返回的数据
     }
 })
 </script>

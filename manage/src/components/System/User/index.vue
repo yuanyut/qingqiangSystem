@@ -33,14 +33,27 @@ watch(editContent, (newVal) => {
 }, { deep: true })
 const selects = ref(false)
 const multipleSelection = ref([])
+
+
+const formHeader = ref({
+    name: '',
+    phone: '',
+    juese: '',
+    status: ''
+})
+const search = ref(false)
+watch(formHeader, (newVal) => {
+    console.log('这是新的', newVal)
+}, { deep: true })
 </script>
 <template>
     <div>
-        <opearHeader></opearHeader>
+        <opearHeader v-model:form-header="formHeader" v-model:search="search"></opearHeader>
         <opear v-model:editContent="editContent" v-model:multipleSelection="multipleSelection"
             v-model:selects="selects"></opear>
         <tableContent v-model:tableData="tableData" v-model:selects="selects"
-            v-model:multipleSelection="multipleSelection"></tableContent>
+            v-model:multipleSelection="multipleSelection" v-model:form-header="formHeader" v-model:search="search">
+        </tableContent>
     </div>
 </template>
 <style scoped></style>
