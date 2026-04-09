@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, } from 'vue'
 import router from '@/router/index'
-import { mockMenu } from '@/types.ts/meaus'
+import { mockMenu } from '@/types/meaus'
 import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
 interface ruleForm{

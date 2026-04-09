@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { mockMenu } from '@/types.ts/meaus'
+import { mockMenu } from '@/types/meaus'
 
 const route = useRoute()
 const router = useRouter()

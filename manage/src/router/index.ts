@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import login from '@/view/login.vue'
 import manage from '@/view/manage.vue'
-import { mockMenu } from '@/types.ts/meaus'
+import { mockMenu } from '@/types/meaus'
 
 // 1. 创建路由
 const router = createRouter({

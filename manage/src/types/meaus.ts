@@ -24,12 +24,12 @@ export const mockMenu = [
         "component": "/src/components/Analysis/User/index.vue",
         "permission": "analysis:user:list"
       },
-      {
-        "name": "PV/UV 数据",
-        "path": "analysis/pvuv",
-        "component": "/src/components/Analysis/PVUV/index.vue",
-        "permission": "analysis:pvuv:list"
-      }
+      // {
+      //   "name": "PV/UV 数据",
+      //   "path": "analysis/pvuv",
+      //   "component": "/src/components/Analysis/PVUV/index.vue",
+      //   "permission": "analysis:pvuv:list"
+      // }
     ]
   },
   {
@@ -84,6 +84,18 @@ export const mockMenu = [
         "name": "文章管理",
         "path": "contents/article",
         "component": "/src/components/Contents/Article/index.vue",
+        "permission": "contents:article:list"
+      },
+      {
+        "name": "名家管理",
+        "path": "contents/actor",
+        "component": "/src/components/Contents/Actor/index.vue",
+        "permission": "contents:article:list"
+      },
+      {
+        "name": "资讯管理",
+        "path": "contents/profile",
+        "component": "/src/components/Contents/Profile/index.vue",
         "permission": "contents:article:list"
       },
       // {
