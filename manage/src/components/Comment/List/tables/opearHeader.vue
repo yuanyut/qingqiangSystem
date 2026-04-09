@@ -3,8 +3,6 @@ import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {
     Search,
-    User,
-    MessageFilled,
     CircleCheck,
     CircleClose,
     Clock,
@@ -58,7 +56,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
         <el-form v-if="form" :model="form" label-width="80px" ref="formRef" class="search-form">
             <!-- 评论搜索 -->
             <div class="form-row">
-                <el-form-item :label="props.lable.lable5" prop="content" v-if="props.lable.lable5 ">
+                <el-form-item :label="props.lable.lable5" prop="content" v-if="props.lable.lable5">
                     <el-input v-model="form.content" placeholder="请输入评论内容" clearable prefix-icon="MessageFilled" />
                 </el-form-item>
 
