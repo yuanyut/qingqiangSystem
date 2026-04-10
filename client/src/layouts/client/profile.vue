@@ -64,7 +64,6 @@ const change = (item: SideListItem, index: number) => {
         <div class="username">username</div>
         <div class="nickname">nickname</div>
         <div class="address">address</div>
-        <div class="title">title</div>
         <div class="join-date">加入于 2024年</div>
       </div>
       
