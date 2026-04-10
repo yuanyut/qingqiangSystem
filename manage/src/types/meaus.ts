@@ -81,7 +81,7 @@ export const mockMenu = [
         "permission": "contents:drama:list"
       },
       {
-        "name": "文章管理",
+        "name": "文化管理",
         "path": "contents/article",
         "component": "/src/components/Contents/Article/index.vue",
         "permission": "contents:article:list"
