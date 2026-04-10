@@ -176,6 +176,19 @@ export const mockMenu = [
       }
     ]
   },
+   {
+    "name": "个人管理",
+    "path": "/mine",
+    "icon": "Mine",
+    "children": [
+      {
+        "name": "个人中心",
+        "path": "mine/center",
+        "component": "/src/components/Mine/Center/index.vue",
+        "permission": "mine:list"
+      },
+    ]
+  },
   // {
   //   "name": "系统设置",
   //   "path": "setting",

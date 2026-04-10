@@ -297,7 +297,7 @@ const activeDaram = ref(0)
 .dashboard-page {
   background: #f0f2f5;
   overflow: auto;
-  max-height: 100vh;
+  max-height:calc(100vh - 60px) ;
   padding: 0 20px 20px 20px;
 }
 

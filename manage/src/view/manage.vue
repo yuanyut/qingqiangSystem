@@ -22,5 +22,13 @@ import Header from '@/layouts/header.vue';
 <style scoped>
 :deep(.el-main){
   --el-main-padding: 0px;
+  height: calc(100vh - 60px);
+}
+:deep(.el-container){
+  height: calc(100vh - 60px);
+}
+:deep(.el-aside){
+  height: calc(100vh - 60px);
+  overflow: hidden;
 }
 </style>
