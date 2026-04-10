@@ -28,7 +28,7 @@ onMounted(() => {
 // 添加登出函数
 const handleLogout = () => {
     // 实现登出逻辑
-    router.push('/login')
+    router.push('/')
 }
 
 </script>
