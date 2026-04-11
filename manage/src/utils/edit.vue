@@ -110,7 +110,7 @@ const rules = reactive({
                     placeholder="请输入密码" />
             </el-form-item>
             <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
-                <el-select v-model="form.role" placeholder="请选择角色" multiple>
+                <el-select v-model="form.role" placeholder="请选择角色" >
                     <el-option label="管理员" value="超级管理员" />
                     <!-- <el-option label="内容管理员" value="内容管理员" />
                     <el-option label="数据分析员" value="数据分析员" />
