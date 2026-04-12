@@ -1,10 +1,10 @@
-package com.qqsystem.server;
+package com.qqsystem.serve;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ServerApplicationTests {
+class ServeApplicationTests {
 
     @Test
     void contextLoads() {

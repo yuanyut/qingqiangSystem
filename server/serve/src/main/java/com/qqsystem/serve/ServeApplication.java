@@ -1,13 +1,14 @@
-package com.qqsystem.server;
+package com.qqsystem.serve;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServerApplication {
+public class ServeApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServerApplication.class, args);
+
+        SpringApplication.run(ServeApplication.class, args);
     }
 
 }
