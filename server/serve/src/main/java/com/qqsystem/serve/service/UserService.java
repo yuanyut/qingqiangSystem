@@ -1,5 +1,6 @@
 package com.qqsystem.serve.service;
 
+import com.qqsystem.serve.dto.UserDTO;
 import com.qqsystem.serve.entity.User;
 import com.qqsystem.serve.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,17 @@ public class UserService {
 
         // 4. 登录成功
         return user;
+    }
+    public UserDTO getUserInfo(Long userId) {
+
+        User user = userMapper.selectById(userId);
+
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setNickname(user.getNickname());
+        dto.setAvatar(user.getAvatar());
+        System.out.println(dto);
+        return dto;
     }
 }
