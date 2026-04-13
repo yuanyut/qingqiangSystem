@@ -31,5 +31,7 @@ public class Drama {
     // ⭐ 关联扩展（关键）
     private List<DramaActor> actors;
 
+    private List<Actor> actorDetails;
+
     private List<Content> contents;
 }

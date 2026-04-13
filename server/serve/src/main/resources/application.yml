@@ -16,3 +16,4 @@ mybatis:
   type-aliases-package: com.qqsystem.serve.entity  # 实体类包路径
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL
+    map-underscore-to-camel-case: true  # 开启驼峰命名转换

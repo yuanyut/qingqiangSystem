@@ -36,7 +36,7 @@ public class DramaController {
     // ⭐ 增强详情（核心）
     @GetMapping("/detail/full/{id}")
     public Drama detailFull(@PathVariable Long id) {
-        return ((DramaServiceImpl) dramaService).getDetailWithRelation(id);
+        return dramaService.getDetailWithRelation(id);
     }
 
     @PostMapping("/add")

@@ -7,6 +7,8 @@ import java.util.List;
 public interface DramaService {
     Drama getById(Long id);
 
+    Drama getDetailWithRelation(Long id);
+
     List<Drama> pageList(int page, int size, Long categoryId);
 
     Long countList(Long categoryId);
