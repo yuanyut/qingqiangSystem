@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qqsystem.serve.mapper.DramaActorMapper">
+
+    <select id="selectByDramaId" resultType="com.qqsystem.serve.entity.DramaActor">
+        SELECT *
+        FROM drama_actor
+        WHERE drama_id = #{dramaId}
+    </select>
+
+    <insert id="insert" parameterType="com.qqsystem.serve.entity.DramaActor">
+        INSERT INTO drama_actor (
+            drama_id,
+            actor_id,
+            role_name
+        ) VALUES (
+                     #{dramaId},
+                     #{actorId},
+                     #{roleName}
+                 )
+    </insert>
+
+    <delete id="deleteByDramaId">
+        DELETE FROM drama_actor
+        WHERE drama_id = #{dramaId}
+    </delete>
+
+</mapper>

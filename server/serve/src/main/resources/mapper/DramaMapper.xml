@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qqsystem.serve.mapper.DramaMapper">
+
+    <select id="selectById" resultType="com.qqsystem.serve.entity.Drama">
+        SELECT *
+        FROM drama
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectList" resultType="com.qqsystem.serve.entity.Drama">
+        SELECT *
+        FROM drama
+        WHERE status = 1
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM drama
+        WHERE status = 1
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.qqsystem.serve.entity.Drama">
+        INSERT INTO drama (
+            name,
+            cover,
+            intro,
+            category_id,
+            status,
+            view_count,
+            publish_date,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{name},
+                     #{cover},
+                     #{intro},
+                     #{categoryId},
+                     #{status},
+                     #{viewCount},
+                     #{publishDate},
+                     NOW(),
+                     NOW()
+                 )
+    </insert>
+
+    <update id="updateById">
+        UPDATE drama
+        SET
+            name = #{name},
+            cover = #{cover},
+            intro = #{intro},
+            category_id = #{categoryId},
+            status = #{status},
+            publish_date = #{publishDate},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM drama
+        WHERE id = #{id}
+    </delete>
+
+    <update id="increaseViewCount">
+        UPDATE drama
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+
+</mapper>
