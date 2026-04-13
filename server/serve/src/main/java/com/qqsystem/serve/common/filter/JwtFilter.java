@@ -23,7 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-        if (uri.equals("/user/login") || uri.equals("/user/register") || uri.equals("/user/admin/login")) {
+        if (uri.equals("/user/login") || uri.equals("/user/register") || uri.equals("/admin/login")) {
             filterChain.doFilter(request, response);
             return;
         }
