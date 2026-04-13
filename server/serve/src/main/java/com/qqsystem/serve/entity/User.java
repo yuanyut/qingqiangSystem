@@ -1,6 +1,7 @@
 package com.qqsystem.serve.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class User {
 
@@ -13,8 +14,25 @@ public class User {
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    private Date birthday;
+    private String sex;
 
-    // getter & setter（必须有）
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+// getter & setter（必须有）
 
     public void setStatus(Integer status) {
         this.status = status;

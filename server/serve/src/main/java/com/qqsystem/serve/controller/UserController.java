@@ -2,6 +2,7 @@ package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.Result;
 import com.qqsystem.serve.common.utils.JwtUtil;
+import com.qqsystem.serve.dto.RegisterDTO;
 import com.qqsystem.serve.dto.UserDTO;
 import com.qqsystem.serve.entity.User;
 import com.qqsystem.serve.service.UserService;
@@ -46,4 +47,9 @@ public class UserController {
         return userService.getUserInfo(userId);
     }
 
+    @PostMapping("/register")
+    public Result register(@RequestBody RegisterDTO dto) {
+        userService.register(dto);
+        return Result.success("注册成功");
+    }
 }
