@@ -10,4 +10,69 @@
         WHERE id = #{id}
     </select>
 
+    <select id="selectList" resultType="com.qqsystem.serve.entity.Actor">
+        SELECT *
+        FROM actor
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countList" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM actor
+    </select>
+
+    <insert id="insert" parameterType="com.qqsystem.serve.entity.Actor">
+        INSERT INTO actor (
+            name,
+            avatar,
+            intro,
+            role_name,
+            style,
+            works_count,
+            view_count,
+            like_count,
+            join_date,
+            status
+        ) VALUES (
+                     #{name},
+                     #{avatar},
+                     #{intro},
+                     #{roleName},
+                     #{style},
+                     #{worksCount},
+                     #{viewCount},
+                     #{likeCount},
+                     #{joinDate},
+                     #{status}
+                 )
+    </insert>
+
+    <update id="updateById" parameterType="com.qqsystem.serve.entity.Actor">
+        UPDATE actor
+        SET
+            name = #{name},
+            avatar = #{avatar},
+            intro = #{intro},
+            role_name = #{roleName},
+            style = #{style},
+            works_count = #{worksCount},
+            view_count = #{viewCount},
+            like_count = #{likeCount},
+            join_date = #{joinDate},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM actor
+        WHERE id = #{id}
+    </delete>
+
+    <update id="increaseViewCount">
+        UPDATE actor
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+
 </mapper>

@@ -10,6 +10,12 @@
         WHERE drama_id = #{dramaId}
     </select>
 
+    <select id="selectByActorId" resultType="com.qqsystem.serve.entity.DramaActor">
+        SELECT *
+        FROM drama_actor
+        WHERE actor_id = #{actorId}
+    </select>
+
     <insert id="insert" parameterType="com.qqsystem.serve.entity.DramaActor">
         INSERT INTO drama_actor (
             drama_id,
@@ -25,6 +31,11 @@
     <delete id="deleteByDramaId">
         DELETE FROM drama_actor
         WHERE drama_id = #{dramaId}
+    </delete>
+
+    <delete id="deleteByActorId">
+        DELETE FROM drama_actor
+        WHERE actor_id = #{actorId}
     </delete>
 
 </mapper>

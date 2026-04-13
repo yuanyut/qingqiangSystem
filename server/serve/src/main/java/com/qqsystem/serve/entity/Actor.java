@@ -3,6 +3,7 @@ package com.qqsystem.serve.entity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Actor {
@@ -32,4 +33,7 @@ public class Actor {
     private Date createTime;
 
     private Date updateTime;
+
+    // 关联扩展
+    private List<Drama> dramas;
 }

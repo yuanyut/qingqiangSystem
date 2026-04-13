@@ -9,7 +9,11 @@ public interface DramaActorMapper {
 
     List<DramaActor> selectByDramaId(@Param("dramaId") Long dramaId);
 
+    List<DramaActor> selectByActorId(@Param("actorId") Long actorId);
+
     int insert(DramaActor dramaActor);
 
     int deleteByDramaId(@Param("dramaId") Long dramaId);
+
+    int deleteByActorId(@Param("actorId") Long actorId);
 }
