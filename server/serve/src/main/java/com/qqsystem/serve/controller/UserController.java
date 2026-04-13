@@ -27,9 +27,34 @@ public class UserController {
             return Result.error("登录失败");
         }
         //生成这个用户的token
-        String token= JwtUtil.generateToken(result.getId(),result.getUsername());
+        String token = JwtUtil.generateToken(
+                result.getId(),
+                result.getUsername(),
+                result.getRole()
+        );
         System.out.println("token=" + token);
         return Result.success("登录成功，欢迎：" + result.getUsername(), token);
+    }
+    @PostMapping("/admin/login")
+    public Result adminLogin(@RequestBody User user) {
+
+        User result = userService.login(user.getUsername(), user.getPassword());
+
+        if (result == null) {
+            return Result.error("登录失败");
+        }
+
+        if (!"admin".equals(result.getRole())) {
+            return Result.error("无权限访问管理系统");
+        }
+
+        String token = JwtUtil.generateToken(
+                result.getId(),
+                result.getUsername(),
+                result.getRole()
+        );
+
+        return Result.success("管理员登录成功", token);
     }
     //获取用户信息
     @GetMapping("/me")

@@ -23,31 +23,45 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String uri = request.getRequestURI();
 
-
-        if (uri.contains("/user/login") || uri.contains("/user/register")) {
+        if (uri.equals("/user/login") || uri.equals("/user/register") || uri.equals("/user/admin/login")) {
             filterChain.doFilter(request, response);
-//            System.out.println("token=" );
             return;
         }
 
         String token = request.getHeader("Authorization");
 
-        if (token != null) {
-
-
-            if (JwtUtil.isValid(token)) {
-
-                Claims claims = JwtUtil.parseToken(token);
-
-                request.setAttribute("userId", claims.get("userId"));
-                request.setAttribute("username", claims.getSubject());
-
-                filterChain.doFilter(request, response);
-                return;
-            }
+        if (token == null) {
+            response.setStatus(401);
+            response.getWriter().write("未登录");
+            return;
         }
 
-        response.setStatus(401);
-        response.getWriter().write("Token无效或未登录");
+
+
+        try {
+            Claims claims = JwtUtil.parseToken(token);
+
+            Long userId = claims.get("userId", Long.class);
+            String username = claims.getSubject();
+            String role = claims.get("role", String.class);
+
+            // ✔ 存入 request（轻量版上下文）
+            request.setAttribute("userId", userId);
+            request.setAttribute("username", username);
+            request.setAttribute("role", role);
+
+            // 权限控制（毕设核心）
+            if (uri.startsWith("/admin") && !"ADMIN".equals(role)) {
+                response.setStatus(403);
+                response.getWriter().write("无管理员权限");
+                return;
+            }
+
+            filterChain.doFilter(request, response);
+
+        } catch (Exception e) {
+            response.setStatus(401);
+            response.getWriter().write("Token无效");
+        }
     }
 }
