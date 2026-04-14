@@ -27,14 +27,14 @@ watch(()=>route.path,(newPath)=>{
     current.value=4;
   }else if(newPath.includes('news')){
     current.value=5;
-  }else if(newPath.includes('profile')&&userInfoStore.UserInfos.isLogin){
+  }else if(newPath.includes('profile')&&userInfoStore.isLoggedIn){
     current.value=6;
   }
 })
 //监听登录状态变化，重新计算 current
-watch(() => userInfoStore.UserInfos.isLogin, (isLogin) => {
+watch(() => userInfoStore.isLoggedIn, (isLoggedIn) => {
   if (route.path.includes('profile')) {
-    if (isLogin) {
+    if (isLoggedIn) {
       current.value = 6;
     } else {
       // 如果未登录，跳转到首页或保持原状态

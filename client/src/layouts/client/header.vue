@@ -29,7 +29,7 @@ watch(() => props.current, (newVal) => {
 })
 
 const handleTabClick = (index: number): void => {
-    if(index == 6 && !userInfoStore.UserInfos.isLogin){
+    if(index == 6 && !userInfoStore.isLoggedIn){
          ElMessage({
             message: '请先登录',
             type: 'warning',
@@ -50,6 +50,8 @@ onMounted(() => {
 
 // 添加登出函数
 const handleLogout = () => {
+    // 清除本地存储的token
+    localStorage.removeItem('token')
     // 实现登出逻辑
     router.push('/login')
 }
@@ -84,7 +86,7 @@ const handleLogout = () => {
                         size="default"
                         class="user-avatar"
                     />
-                    <span class="user-name" v-if="userInfoStore.UserInfos.isLogin">
+                    <span class="user-name" v-if="userInfoStore.isLoggedIn">
                         {{ userInfoStore.UserInfos.nickname || userInfoStore.UserInfos.username }}
                     </span>
                     <el-icon class="dropdown-icon">
@@ -93,7 +95,7 @@ const handleLogout = () => {
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu class="custom-dropdown">
-                        <el-dropdown-item v-if="userInfoStore.UserInfos.isLogin" class="dropdown-item user-info-item">
+                        <el-dropdown-item v-if="userInfoStore.isLoggedIn" class="dropdown-item user-info-item">
                             <div class="user-info">
                                 <!-- <el-avatar :src="userInfoStore.UserInfos.avatar" size="small" /> -->
                                 <div class="user-detail">
@@ -103,7 +105,7 @@ const handleLogout = () => {
                             </div>
                         </el-dropdown-item>
                         
-                        <el-dropdown-item v-if="userInfoStore.UserInfos.isLogin" divided class="dropdown-item">
+                        <el-dropdown-item v-if="userInfoStore.isLoggedIn" divided class="dropdown-item">
                             <div class="menu-item-content">
                                 <svg t="1774517861899" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1634" width="20" height="20"><path d="M858.496 763.584a374.016 374.016 0 0 0-80.64-119.488 375.68 375.68 0 0 0-119.488-80.64l-1.152-0.448a247.936 247.936 0 1 0-290.432 0.128l-1.152 0.448c-44.8 18.944-85.056 46.016-119.552 80.64a375.68 375.68 0 0 0-110.08 257.6 8 8 0 0 0 8 8.192h60.032a8 8 0 0 0 7.936-7.808 298.112 298.112 0 0 1 87.808-204.288A298.048 298.048 0 0 1 512 609.92c80.192 0 155.52 31.232 212.224 87.936a298.112 298.112 0 0 1 87.744 204.288 7.936 7.936 0 0 0 8.064 7.808h59.968c4.48 0 8.128-3.712 8-8.192a372.736 372.736 0 0 0-29.44-138.24l-0.064 0.064zM512 534.016a170.88 170.88 0 0 1-121.6-50.432 170.88 170.88 0 0 1-50.368-121.6c0-45.888 17.92-89.088 50.368-121.6A170.88 170.88 0 0 1 512 190.08c45.888 0 89.088 17.92 121.6 50.368a170.88 170.88 0 0 1 50.368 121.6 170.88 170.88 0 0 1-50.368 121.6 170.88 170.88 0 0 1-121.6 50.432v-0.064z" fill="#000000" p-id="1635"></path></svg>
                                 <span>个人中心</span>
@@ -112,14 +114,14 @@ const handleLogout = () => {
                         
                         
                         
-                        <el-dropdown-item v-if="userInfoStore.UserInfos.isLogin" divided class="dropdown-item logout-item" @click="handleLogout">
+                        <el-dropdown-item v-if="userInfoStore.isLoggedIn" divided class="dropdown-item logout-item" @click="handleLogout">
                             <div class="menu-item-content">
                                 <svg t="1774517987630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4608" width="20" height="20"><path d="M570.10688 47.2576H453.90336v525.52192h116.1984V47.2576z m208.86016 86.8864L697.6512 214.9376c92.87168 63.45728 162.42688 173.14304 162.42688 300.05248 0 190.47936-156.544 346.28608-348.17536 346.28608-191.42656 0-348.17536-155.80672-348.17536-346.28608 0-126.90944 69.76-236.5952 168.30976-294.27712L245.0432 134.144C129.05472 220.71296 47.73376 359.18848 47.73376 514.99008c0 254.03904 209.0752 461.75232 464.16384 461.75232 255.29856 0 464.36864-207.70816 464.36864-461.75232 0.00512-155.8016-81.31072-294.27712-197.2992-380.84608z" fill="" p-id="4609"></path></svg>
                                 <span>退出登录</span>
                             </div>
                         </el-dropdown-item>
                         
-                        <el-dropdown-item v-if="!userInfoStore.UserInfos.isLogin" class="dropdown-item" @click="router.push('/login')">
+                        <el-dropdown-item v-if="!userInfoStore.isLoggedIn" class="dropdown-item" @click="router.push('/login')">
                             <div class="menu-item-content login-item">
                                 <el-icon><user-filled /></el-icon>
                                 <span>登录/注册</span>

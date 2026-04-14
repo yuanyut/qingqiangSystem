@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { UserInfo } from '@/types/user'
-import { reactive,ref } from 'vue'
+import { reactive, computed } from 'vue'
 export const useUserInfoStore = defineStore('userInfo',()=>{
     
     const UserInfos = reactive<UserInfo>({
@@ -15,8 +15,15 @@ export const useUserInfoStore = defineStore('userInfo',()=>{
         UserInfos.avatar=userInfo.avatar
         UserInfos.isLogin=true
     }
+    
+    // 检查本地存储的token是否存在
+    const isLoggedIn = computed(() => {
+        return localStorage.getItem('token') !== null
+    })
+    
     return {
         UserInfos,
+        isLoggedIn,
         // 方法
         setUserInfo,
         
