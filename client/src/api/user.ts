@@ -13,6 +13,13 @@ export interface RegisterData {
   birthday: string
 }
 
+export interface UserInfo {
+  id: number
+  username: string
+  nickname: string
+  avatar: string
+}
+
 export interface ApiResponse<T = any> {
   code: number
   message: string
@@ -32,5 +39,12 @@ export const register = (data: RegisterData): Promise<ApiResponse<void>> => {
     url: '/user/register',
     method: 'post',
     data
+  })
+}
+
+export const getUserInfo = (): Promise<ApiResponse<UserInfo>> => {
+  return request({
+    url: '/user/me',
+    method: 'get'
   })
 }
