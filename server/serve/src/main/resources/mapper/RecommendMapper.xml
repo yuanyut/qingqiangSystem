@@ -151,4 +151,60 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- 获取热门内容列表（基于content_stats） -->
+    <select id="getHotContentList" resultType="java.util.Map">
+        SELECT
+            c.id,
+            c.title,
+            c.cover,
+            c.type,
+            cs.view_count,
+            cs.like_count,
+            cs.comment_count,
+            (cs.view_count + cs.like_count * 3 + cs.comment_count * 5) as score
+        FROM content c
+        JOIN content_stats cs ON c.id = cs.content_id
+        ORDER BY score DESC
+        LIMIT 10
+    </select>
+
+    <!-- 获取用户最近浏览的内容 -->
+    <select id="getUserRecentContent" resultType="java.util.Map">
+        SELECT
+            bh.target_id as content_id
+        FROM browse_history bh
+        WHERE bh.user_id = #{userId}
+          AND bh.target_type = 'content'
+        ORDER BY bh.create_time DESC
+        LIMIT 5
+    </select>
+
+    <!-- 获取内容的标签 -->
+    <select id="getContentTags" resultType="java.util.Map">
+        SELECT
+            ct.tag_id
+        FROM content_tag ct
+        WHERE ct.content_id = #{contentId}
+    </select>
+
+    <!-- 获取拥有相同标签的内容 -->
+    <select id="getContentByTagId" resultType="java.util.Map">
+        SELECT
+            c.id,
+            c.title,
+            c.cover,
+            c.type,
+            cs.view_count,
+            cs.like_count,
+            cs.comment_count,
+            (cs.view_count + cs.like_count * 3 + cs.comment_count * 5) as score
+        FROM content c
+        JOIN content_stats cs ON c.id = cs.content_id
+        JOIN content_tag ct ON c.id = ct.content_id
+        WHERE ct.tag_id = #{tagId}
+          AND c.id != #{excludeContentId}
+        ORDER BY score DESC
+        LIMIT 10
+    </select>
+
 </mapper>

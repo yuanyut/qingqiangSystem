@@ -139,6 +139,96 @@ public class RecommendServiceImpl implements RecommendService {
         return recommendations.stream().limit(10).collect(Collectors.toList());
     }
 
+    @Override
+    public Map<String, List<RecommendItem>> getHomeRecommendations(Long userId) {
+        Map<String, List<RecommendItem>> result = new HashMap<>();
+        // 获取热门内容列表
+        List<RecommendItem> hotList = getHotList();
+        // 获取基于标签的推荐
+        List<RecommendItem> tagRecommend = getTagRecommend(userId);
+        // 组装结果
+        result.put("hotList", hotList);
+        result.put("tagRecommend", tagRecommend);
+        return result;
+    }
+
+    @Override
+    public List<RecommendItem> getHotList() {
+        List<RecommendItem> hotList = new ArrayList<>();
+        // 获取热门内容列表
+        List<Map<String, Object>> hotContentList = recommendMapper.getHotContentList();
+        for (Map<String, Object> content : hotContentList) {
+            RecommendItem item = new RecommendItem();
+            item.setId((Long) content.get("id"));
+            item.setType((String) content.get("type"));
+            item.setTitle((String) content.get("title"));
+            item.setCover((String) content.get("cover"));
+            item.setScore((Double) content.get("score"));
+            hotList.add(item);
+        }
+        return hotList;
+    }
+
+    @Override
+    public List<RecommendItem> getTagRecommend(Long userId) {
+        List<RecommendItem> tagRecommend = new ArrayList<>();
+        // 获取用户最近浏览的内容
+        List<Map<String, Object>> recentContent = recommendMapper.getUserRecentContent(userId);
+        if (recentContent.isEmpty()) {
+            // 如果用户没有浏览记录，返回热门内容
+            return getHotList();
+        }
+
+        // 存储已推荐的内容ID，避免重复
+        Set<Long> recommendedContentIds = new HashSet<>();
+
+        // 遍历用户最近浏览的内容
+        for (Map<String, Object> content : recentContent) {
+            Long contentId = (Long) content.get("content_id");
+            // 获取内容的标签
+            List<Map<String, Object>> tags = recommendMapper.getContentTags(contentId);
+            // 遍历标签，获取相关内容
+            for (Map<String, Object> tag : tags) {
+                Long tagId = (Long) tag.get("tag_id");
+                // 获取拥有相同标签的内容
+                List<Map<String, Object>> relatedContent = recommendMapper.getContentByTagId(tagId, contentId);
+                for (Map<String, Object> item : relatedContent) {
+                    Long id = (Long) item.get("id");
+                    if (!recommendedContentIds.contains(id)) {
+                        RecommendItem recommendItem = new RecommendItem();
+                        recommendItem.setId(id);
+                        recommendItem.setType((String) item.get("type"));
+                        recommendItem.setTitle((String) item.get("title"));
+                        recommendItem.setCover((String) item.get("cover"));
+                        recommendItem.setScore((Double) item.get("score"));
+                        tagRecommend.add(recommendItem);
+                        recommendedContentIds.add(id);
+                        // 最多推荐10条
+                        if (tagRecommend.size() >= 10) {
+                            return tagRecommend;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 如果推荐内容不足10条，补充热门内容
+        if (tagRecommend.size() < 10) {
+            List<RecommendItem> hotList = getHotList();
+            for (RecommendItem item : hotList) {
+                if (!recommendedContentIds.contains(item.getId())) {
+                    tagRecommend.add(item);
+                    recommendedContentIds.add(item.getId());
+                    if (tagRecommend.size() >= 10) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return tagRecommend;
+    }
+
     // 计算物品相似度（基于共现关系）
     private Map<String, Map<String, Double>> calculateItemSimilarity(List<Map<String, Object>> allBehaviors) {
         // 构建用户-物品映射
