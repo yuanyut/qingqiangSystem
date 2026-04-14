@@ -20,7 +20,7 @@ const router = createRouter({
       path:'/',
       name:'clientPage',
       component:clientPage,
-      redirect:'home',
+      redirect:'/home',
       children:[
         {
           path:'home',
@@ -49,6 +49,9 @@ const router = createRouter({
         {
           path:'profile',
           component:profile,
+          meta: {
+            requiresAuth: true
+          }
         },
       ]
     }

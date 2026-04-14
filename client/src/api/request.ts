@@ -1,11 +1,17 @@
 import axios from 'axios'
 
-const request = axios.create({
+export interface ApiResponse<T = any> {
+  code: number
+  message: string
+  data: T
+}
+
+const service = axios.create({
   baseURL: 'http://localhost:8081',
   timeout: 5000
 })
 
-request.interceptors.request.use(
+service.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token')
     if (token) {
@@ -18,18 +24,21 @@ request.interceptors.request.use(
   }
 )
 
-request.interceptors.response.use(
+service.interceptors.response.use(
   response => {
     return response.data
   },
   error => {
     if (error.response) {
-      // 服务器返回了错误响应，将其转换为统一格式
       return Promise.resolve(error.response.data)
     }
     console.error('Request error:', error)
     return Promise.reject(error)
   }
 )
+
+const request = <T = any>(config: any): Promise<ApiResponse<T>> => {
+  return service(config) as Promise<ApiResponse<T>>
+}
 
 export default request

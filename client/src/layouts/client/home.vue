@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import cardHome from '@/components/client/card_home.vue';
 import newsHome from '@/components/client/news_hone.vue';
+import { getDramaList } from '@/api/drama';
+import { getNewsList } from '@/api/news';
+import { getActorList } from '@/api/actor';
+import { getHomeRecommendations } from '@/api/recommend';
+
 const swiperList = reactive<string[]>([
   '/home/banner1.png',
   '/home/banner2.png',
@@ -10,12 +15,67 @@ const swiperList = reactive<string[]>([
 const youStatus = ref(false)
 const isLiked=ref(true)
 const isFavorited=ref(true)
+
+// 数据状态
+const hotDramas = ref<any[]>([])
+const personalizedDramas = ref<any[]>([])
+const newsList = ref<any[]>([])
+const actorList = ref<any[]>([])
+const loading = ref(true)
+
+// 加载数据
+const loadData = async () => {
+  try {
+    loading.value = true
+    
+    // 获取推荐数据
+    const recommendRes = await getHomeRecommendations()
+    if (recommendRes.code === 200) {
+      hotDramas.value = recommendRes.data.hotDramas || []
+      personalizedDramas.value = recommendRes.data.personalized || []
+    }
+    
+    // 获取资讯数据
+    const newsRes = await getNewsList(1, 9)
+    if (newsRes.code === 200) {
+      newsList.value = newsRes.data.list || []
+    }
+    
+    // 获取演员数据
+    const actorRes = await getActorList(1, 5)
+    if (actorRes.code === 200) {
+      actorList.value = actorRes.data.list || []
+    }
+  } catch (error) {
+    console.error('加载数据失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 换一批推荐
+const changeRecommendations = async () => {
+  try {
+    const recommendRes = await getHomeRecommendations()
+    if (recommendRes.code === 200) {
+      personalizedDramas.value = recommendRes.data.personalized || []
+    }
+  } catch (error) {
+    console.error('刷新推荐失败:', error)
+  }
+}
+
 const changeLike=(index:boolean)=>{
   isLiked.value=index
 }
 const changeFav=()=>{
   isFavorited.value=!isFavorited.value
 }
+
+// 组件加载时获取数据
+onMounted(() => {
+  loadData()
+})
 </script>
 <template>
   <div>
@@ -32,11 +92,23 @@ const changeFav=()=>{
         <span class="all-link">全部</span>
       </div>
       <div class="hot_centent" @mouseover="youStatus = true" @mouseleave="youStatus = false">
-        <div v-for="i in 9" :key="i">
-          <card-home image="/home/banner1.png" name="白蛇传" desc="这是白蛇传" cate="传统剧目" act="演唱者" watch-people="观看人数"
-            love-people="喜爱人数" @change-like="changeLike" :is-liked= isLiked 
-            :is-favorited= isFavorited favorite-count="16"
+        <div v-for="drama in hotDramas" :key="drama.id">
+          <card-home 
+            :image="drama.coverImage || '/home/banner1.png'" 
+            :name="drama.title" 
+            :desc="drama.description" 
+            :cate="drama.categoryName" 
+            act="演唱者" 
+            :watch-people="`${drama.watchCount}人`" 
+            :love-people="`${drama.likeCount}人`" 
+            @change-like="changeLike" 
+            :is-liked="isLiked" 
+            :is-favorited="isFavorited" 
+            :favorite-count="drama.likeCount"
             @change-favorite="changeFav"/>
+        </div>
+        <div v-if="hotDramas.length === 0" class="empty-state">
+          <span>暂无热门剧目</span>
         </div>
         <span class="you" :class="{ active: youStatus, inactive: !youStatus }">右向箭头</span>
       </div>
@@ -45,7 +117,7 @@ const changeFav=()=>{
     <div style="padding:25px;position: relative;">
       <div class="hot_header">
         <span class="title">个性化推荐 · 猜你喜欢</span>
-        <div style="display: flex;gap:10px;align-items: center;">
+        <div style="display: flex;gap:10px;align-items: center;cursor: pointer;" @click="changeRecommendations">
           <svg t="1774169804825" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="2668" width="15" height="15">
             <path
@@ -57,14 +129,23 @@ const changeFav=()=>{
 
       </div>
       <div class="hot_centent " style="gap:60px">
-        <div v-for="i in 5" :key="i">
-          <card-home image="/home/banner1.png" name="白蛇传" desc="这是白蛇传" cate="传统剧目" act="演唱者" watch-people="观看人数"
-            love-people="喜爱人数" @change-like="changeLike" :is-liked= isLiked 
-            :is-favorited= isFavorited
+        <div v-for="drama in personalizedDramas" :key="drama.id">
+          <card-home 
+            :image="drama.coverImage || '/home/banner1.png'" 
+            :name="drama.title" 
+            :desc="drama.description" 
+            :cate="drama.categoryName" 
+            act="演唱者" 
+            :watch-people="`${drama.watchCount}人`" 
+            :love-people="`${drama.likeCount}人`" 
+            @change-like="changeLike" 
+            :is-liked="isLiked" 
+            :is-favorited="isFavorited"
             @change-favorite="changeFav"/>
-
         </div>
-
+        <div v-if="personalizedDramas.length === 0" class="empty-state">
+          <span>暂无推荐剧目</span>
+        </div>
       </div>
     </div>
     <!-- 双栏内容区(资讯+名家) -->
@@ -77,20 +158,23 @@ const changeFav=()=>{
         <news-home name="秦腔资讯">
           <template #content>
             <div class="info-list">
-              <div v-for="i in 9" :key="i" class="info-item">
+              <div v-for="news in newsList" :key="news.id" class="info-item">
                 <div class="info-content">
-                  <div class="info-title">这是信息 {{ i }}</div>
+                  <div class="info-title">{{ news.title }}</div>
                   <div class="info-meta">
                     <span class="info-time">
                       <span class="time-icon">⏰</span>
-                      2024-01-{{ i }}
+                      {{ news.publishTime }}
                     </span>
                     <span class="info-count">
                       <span class="count-icon">👥</span>
-                      {{ Math.floor(Math.random() * 1000) }}人
+                      {{ news.viewCount }}人
                     </span>
                   </div>
                 </div>
+              </div>
+              <div v-if="newsList.length === 0" class="empty-state">
+                <span>暂无资讯</span>
               </div>
             </div>
           </template>
@@ -99,10 +183,10 @@ const changeFav=()=>{
         <news-home name="名家风采">
           <template #content>
             <div class="artist-list">
-              <div v-for="i in 5" :key="i" class="artist-card">
+              <div v-for="actor in actorList" :key="actor.id" class="artist-card">
                 <div class="artist-avatar">
                   <el-image style="width: 120px; height: 120px"
-                    src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="cover"
+                    :src="actor.avatar || 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'" fit="cover"
                     class="avatar-image" />
                   <div class="avatar-overlay">
                     <span class="follow-btn">关注</span>
@@ -111,34 +195,37 @@ const changeFav=()=>{
 
                 <div class="artist-info">
                   <div class="info-header">
-                    <h3 class="artist-name">演员名字 {{ i }}</h3>
-                    <span class="artist-title">国家一级演员</span>
+                    <h3 class="artist-name">{{ actor.name }}</h3>
+                    <span class="artist-title">{{ actor.title }}</span>
                   </div>
 
                   <div class="artist-works">
                     <div class="works-label">代表作品：</div>
                     <div class="works-list">
-                      <span class="work-tag">霸王别姬</span>
-                      <span class="work-tag">贵妃醉酒</span>
-                      <span class="work-tag">牡丹亭</span>
+                      <span v-for="(work, index) in actor.works" :key="index" class="work-tag">
+                        {{ work }}
+                      </span>
                     </div>
                   </div>
 
                   <div class="artist-stats">
                     <div class="stat-item">
                       <span class="stat-label">粉丝</span>
-                      <span class="stat-value">12.3w</span>
+                      <span class="stat-value">{{ actor.fansCount }}</span>
                     </div>
                     <div class="stat-item">
                       <span class="stat-label">作品</span>
-                      <span class="stat-value">28部</span>
+                      <span class="stat-value">{{ actor.worksCount }}部</span>
                     </div>
                     <div class="stat-item">
                       <span class="stat-label">获奖</span>
-                      <span class="stat-value">15项</span>
+                      <span class="stat-value">{{ actor.awardsCount }}项</span>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div v-if="actorList.length === 0" class="empty-state">
+                <span>暂无名家</span>
               </div>
             </div>
           </template>
@@ -590,5 +677,31 @@ const changeFav=()=>{
   margin-top: 8px;
   font-size: 11px;
   color: #6b5a48;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #e2e8f0;
+  width: 100%;
+  text-align: center;
+}
+
+.hot_centent .empty-state {
+  min-width: 200px;
+}
+
+.artist-list .empty-state {
+  margin-top: 20px;
+}
+
+.info-list .empty-state {
+  margin-top: 12px;
 }
 </style>
