@@ -5,19 +5,19 @@ import { Search, Loading } from '@element-plus/icons-vue'
 import CategoryNav from '@/components/client/CategoryNav.vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
 import card_knowledge1 from '@/components/client/card_knowledge1.vue'
-import { getNewsList } from '@/api/news'
-import type { News } from '@/api/news'
+import { getNewsList, getCategoryNav, getTopNews, getHotList, getRecommendList, getMediaList } from '@/api/news'
+import type { News, Category } from '@/api/news'
 
 const router = useRouter()
 const input = ref('')
 
 // 状态管理
-const categoryNav = ref<any[]>([])
-const topNews = ref<any | null>(null)
+const categoryNav = ref<Category[]>([])
+const topNews = ref<News | null>(null)
 const newsList = ref<News[]>([])
-const hotList = ref<any[]>([])
-const recommendList = ref<any[]>([])
-const mediaList = ref<any[]>([])
+const hotList = ref<News[]>([])
+const recommendList = ref<News[]>([])
+const mediaList = ref<News[]>([])
 
 // 加载状态
 const loading = reactive({
@@ -50,13 +50,10 @@ const handleCardClick = (id: number) => {
 const loadCategories = async () => {
   try {
     loading.categories = true
-    // 模拟分类数据
-    categoryNav.value = [
-      { id: 1, name: '秦腔新闻', icon: '🔥', count: 123 },
-      { id: 2, name: '演出资讯', icon: '🎭', count: 89 },
-      { id: 3, name: '名家动态', icon: '🌟', count: 67 },
-      { id: 4, name: '活动公告', icon: '📢', count: 45 }
-    ]
+    const res = await getCategoryNav()
+    if (res.code === 200) {
+      categoryNav.value = res.data
+    }
   } catch (error) {
     console.error('加载分类导航失败:', error)
   } finally {
@@ -68,15 +65,9 @@ const loadCategories = async () => {
 const loadTopNews = async () => {
   try {
     loading.topNews = true
-    // 模拟头条资讯
-    topNews.value = {
-      id: 1,
-      title: '2024秦腔艺术节盛大开幕',
-      content: '为期一个月的秦腔艺术节在西安隆重开幕，来自全国各地的秦腔剧团将带来精彩演出...',
-      createTime: '2024-04-10',
-      category: '秦腔新闻',
-      viewCount: 1234,
-      likeCount: 567
+    const res = await getTopNews()
+    if (res.code === 200) {
+      topNews.value = res.data
     }
   } catch (error) {
     console.error('加载头条资讯失败:', error)
@@ -104,14 +95,10 @@ const loadNewsList = async () => {
 const loadHotList = async () => {
   try {
     loading.hotList = true
-    // 模拟热门排行
-    hotList.value = [
-      { id: 1, title: '2024秦腔艺术节盛大开幕', viewCount: 1234 },
-      { id: 2, title: '著名秦腔演员李梅荣获国家级奖项', viewCount: 987 },
-      { id: 3, title: '秦腔经典剧目《三滴血》全国巡演', viewCount: 765 },
-      { id: 4, title: '秦腔新生代演员培养计划启动', viewCount: 543 },
-      { id: 5, title: '秦腔艺术博物馆开馆仪式', viewCount: 321 }
-    ]
+    const res = await getHotList(10)
+    if (res.code === 200) {
+      hotList.value = res.data
+    }
   } catch (error) {
     console.error('加载热门排行失败:', error)
   } finally {
@@ -123,13 +110,10 @@ const loadHotList = async () => {
 const loadRecommendList = async () => {
   try {
     loading.recommendList = true
-    // 模拟推荐阅读
-    recommendList.value = [
-      { id: 6, title: '秦腔的历史与发展', viewCount: 456 },
-      { id: 7, title: '秦腔表演技巧解析', viewCount: 345 },
-      { id: 8, title: '秦腔音乐的魅力', viewCount: 234 },
-      { id: 9, title: '秦腔与其他剧种的比较', viewCount: 123 }
-    ]
+    const res = await getRecommendList(10)
+    if (res.code === 200) {
+      recommendList.value = res.data
+    }
   } catch (error) {
     console.error('加载推荐阅读失败:', error)
   } finally {
@@ -141,12 +125,10 @@ const loadRecommendList = async () => {
 const loadMediaList = async () => {
   try {
     loading.mediaList = true
-    // 模拟媒体聚焦
-    mediaList.value = [
-      { id: 10, title: '秦腔演员专访：李梅', createTime: '2024-04-08', viewCount: 567 },
-      { id: 11, title: '秦腔经典剧目《铡美案》演出片段', createTime: '2024-04-05', viewCount: 456 },
-      { id: 12, title: '秦腔艺术进校园活动', createTime: '2024-04-01', viewCount: 345 }
-    ]
+    const res = await getMediaList(10)
+    if (res.code === 200) {
+      mediaList.value = res.data
+    }
   } catch (error) {
     console.error('加载媒体聚焦失败:', error)
   } finally {
@@ -212,11 +194,10 @@ onMounted(() => {
           <template #footer>
             <div style="display: flex;gap:50px">
               <span>{{ topNews.createTime || '' }}</span>
-              <span>{{ topNews.category || '' }}</span>
+              <span>{{ topNews.source || '' }}</span>
             </div>
             <div class="featured-meta">
               <span>{{ topNews.viewCount || 0 }}阅读</span>
-              <span>{{ topNews.likeCount || 0 }}点赞</span>
             </div>
           </template>
         </card_knowledge>

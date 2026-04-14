@@ -62,10 +62,55 @@
         WHERE id = #{id}
     </delete>
 
-    <update id="increaseViewCount">
+    <update id="increaseView">
         UPDATE news
         SET view_count = view_count + 1
         WHERE id = #{id}
     </update>
 
+    <!-- 获取新闻分类统计 -->
+    <select id="selectNewsCategories" resultType="java.util.Map">
+        SELECT 
+            MIN(id) as id, 
+            source as name, 
+            '🔥' as icon, 
+            COUNT(*) as count
+        FROM news
+        WHERE source IS NOT NULL AND source != ''
+        GROUP BY source
+        ORDER BY count DESC
+    </select>
+
+    <!-- 获取头条资讯 -->
+    <select id="selectTopNews" resultType="com.qqsystem.serve.entity.News">
+        SELECT id, title, content, cover, create_time, view_count, source
+        FROM news
+        ORDER BY view_count DESC, create_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取热门排行 -->
+    <select id="selectHotNews" resultType="com.qqsystem.serve.entity.News">
+        SELECT id, title, content, cover, create_time, view_count, source
+        FROM news
+        ORDER BY view_count DESC
+        LIMIT #{size}
+    </select>
+
+    <!-- 获取推荐阅读 -->
+    <select id="selectRecommendNews" resultType="com.qqsystem.serve.entity.News">
+        SELECT id, title, content, cover, create_time, view_count, source
+        FROM news
+        ORDER BY view_count DESC, create_time DESC
+        LIMIT #{size}
+    </select>
+
+    <!-- 获取媒体聚焦（视频类） -->
+    <select id="selectMediaNews" resultType="com.qqsystem.serve.entity.News">
+        SELECT id, title, content, cover, create_time, view_count, source
+        FROM news
+        WHERE content LIKE '%视频%' OR title LIKE '%视频%'
+        ORDER BY create_time DESC
+        LIMIT #{size}
+    </select>
 </mapper>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NewsServiceImpl implements NewsService {
@@ -16,7 +17,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public News getById(Long id) {
-        newsMapper.increaseViewCount(id);
+        newsMapper.increaseView(id);
         return newsMapper.selectById(id);
     }
 
@@ -51,6 +52,31 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public void increaseView(Long id) {
-        newsMapper.increaseViewCount(id);
+        newsMapper.increaseView(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> getNewsCategories() {
+        return newsMapper.selectNewsCategories();
+    }
+
+    @Override
+    public News getTopNews() {
+        return newsMapper.selectTopNews();
+    }
+
+    @Override
+    public List<News> getHotNews(int size) {
+        return newsMapper.selectHotNews(size);
+    }
+
+    @Override
+    public List<News> getRecommendNews(int size) {
+        return newsMapper.selectRecommendNews(size);
+    }
+
+    @Override
+    public List<News> getMediaNews(int size) {
+        return newsMapper.selectMediaNews(size);
     }
 }
