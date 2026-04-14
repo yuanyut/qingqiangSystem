@@ -3,11 +3,17 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
 import request from '@/api/request'
+import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { useUserInfoStore } from '@/stores/userInfo'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const newsId = ref<number>(parseInt(route.params.id as string))
 const news = ref<any>(null)
 const loading = ref(true)
+const isLiked = ref(false)
+const isFavorited = ref(false)
+const userStore = useUserInfoStore()
 
 const goBack = () => {
   window.history.back()
@@ -29,6 +35,7 @@ const loadNewsDetail = async () => {
         createTime: res.data.createTime || '未知时间',
         source: res.data.source || '未知来源',
         viewCount: res.data.viewCount || 0,
+        likeCount: res.data.likeCount || 0,
         cover: res.data.cover || '/home/banner1.png'
       }
     }
@@ -39,10 +46,55 @@ const loadNewsDetail = async () => {
   }
 }
 
+// 处理点赞/取消点赞
+const handleLike = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleLike('news', newsId.value)
+    if (res.code === 200) {
+      isLiked.value = res.data.isLiked
+      news.value.likeCount = res.data.isLiked ? news.value.likeCount + 1 : news.value.likeCount - 1
+      ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
+// 处理收藏/取消收藏
+const handleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleFavorite('news', newsId.value)
+    if (res.code === 200) {
+      isFavorited.value = res.data.isFavorited
+      ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('收藏操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
 // 监听路由参数变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
     newsId.value = parseInt(newId as string)
+    isLiked.value = false
+    isFavorited.value = false
     loadNewsDetail()
   }
 })
@@ -72,10 +124,27 @@ onMounted(() => {
       <div class="detail-header">
         <h1 class="news-title">{{ news.title }}</h1>
         <div class="news-meta">
-          <span class="meta-item">{{ news.createTime }}</span>
-          <span class="meta-item">{{ news.source }}</span>
-          <span class="meta-item">{{ news.viewCount }} 阅读</span>
-        </div>
+            <span class="meta-item">{{ news.createTime }}</span>
+            <span class="meta-item">{{ news.source }}</span>
+            <span class="meta-item">{{ news.viewCount }} 阅读</span>
+            <span class="meta-item">{{ news.likeCount }} 点赞</span>
+          </div>
+          <div class="action-buttons">
+            <el-button 
+              :type="isLiked ? 'primary' : 'default'" 
+              @click="handleLike"
+              class="action-button"
+            >
+              {{ isLiked ? '已点赞' : '点赞' }}
+            </el-button>
+            <el-button 
+              :type="isFavorited ? 'warning' : 'default'" 
+              @click="handleFavorite"
+              class="action-button"
+            >
+              {{ isFavorited ? '已收藏' : '收藏' }}
+            </el-button>
+          </div>
         <div v-if="news.cover" class="news-cover">
           <el-image 
             :src="news.cover" 
@@ -163,6 +232,26 @@ onMounted(() => {
 .meta-item {
   display: flex;
   align-items: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.action-button {
+  flex: 1;
+  max-width: 120px;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-button .el-icon {
+  margin-right: 8px;
 }
 
 .news-cover {

@@ -3,11 +3,17 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getCultureDetail } from '@/api/knowledge'
 import type { Content } from '@/api/knowledge'
+import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const knowledgeItem = ref<Content | null>(null)
 const loading = ref(false)
+const isLiked = ref(false)
+const isFavorited = ref(false)
+const userStore = useUserInfoStore()
 
 const goBack = () => {
   window.history.back()
@@ -40,9 +46,56 @@ const loadKnowledgeDetail = async () => {
   }
 }
 
+// 处理点赞/取消点赞
+const handleLike = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleLike('culture', knowledgeItem.value?.id || 0)
+    if (res.code === 200) {
+      isLiked.value = res.data.isLiked
+      if (knowledgeItem.value) {
+        knowledgeItem.value.likeCount = res.data.isLiked ? knowledgeItem.value.likeCount + 1 : knowledgeItem.value.likeCount - 1
+      }
+      ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
+// 处理收藏/取消收藏
+const handleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleFavorite('culture', knowledgeItem.value?.id || 0)
+    if (res.code === 200) {
+      isFavorited.value = res.data.isFavorited
+      ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('收藏操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
 // 监听路由参数变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
+    isLiked.value = false
+    isFavorited.value = false
     loadKnowledgeDetail()
   }
 })
@@ -71,6 +124,22 @@ onMounted(() => {
           <span class="view-count">{{ knowledgeItem.viewCount }} 阅读</span>
           <span class="like-count">{{ knowledgeItem.likeCount }} 点赞</span>
           <span class="create-time">{{ knowledgeItem.createTime }}</span>
+        </div>
+        <div class="action-buttons">
+          <el-button 
+            :type="isLiked ? 'primary' : 'default'" 
+            @click="handleLike"
+            class="action-button"
+          >
+            {{ isLiked ? '已点赞' : '点赞' }}
+          </el-button>
+          <el-button 
+            :type="isFavorited ? 'warning' : 'default'" 
+            @click="handleFavorite"
+            class="action-button"
+          >
+            {{ isFavorited ? '已收藏' : '收藏' }}
+          </el-button>
         </div>
       </div>
       <div class="detail-body">
@@ -167,6 +236,26 @@ onMounted(() => {
   border-radius: 20px;
   font-weight: 500;
   color: #475569;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.action-button {
+  flex: 1;
+  max-width: 120px;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-button .el-icon {
+  margin-right: 8px;
 }
 
 .detail-body {

@@ -2,12 +2,18 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getActorDetail } from '@/api/actor'
+import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const actorId = ref<number>(parseInt(route.params.id as string))
 const actor = ref<any>(null)
 const loading = ref(true)
+const isLiked = ref(false)
+const isFavorited = ref(false)
+const userStore = useUserInfoStore()
 
 const goBack = () => {
   window.history.back()
@@ -39,10 +45,55 @@ const loadActorDetail = async () => {
   }
 }
 
+// 处理点赞/取消点赞
+const handleLike = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleLike('actor', actorId.value)
+    if (res.code === 200) {
+      isLiked.value = res.data.isLiked
+      actor.value.likeCount = res.data.isLiked ? actor.value.likeCount + 1 : actor.value.likeCount - 1
+      ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
+// 处理收藏/取消收藏
+const handleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleFavorite('actor', actorId.value)
+    if (res.code === 200) {
+      isFavorited.value = res.data.isFavorited
+      ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('收藏操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
 // 监听路由参数变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
     actorId.value = parseInt(newId as string)
+    isLiked.value = false
+    isFavorited.value = false
     loadActorDetail()
   }
 })
@@ -103,6 +154,22 @@ onMounted(() => {
               <span class="date-label">入行时间：</span>
               <span class="date-value">{{ actor.joinDate }}</span>
             </span>
+          </div>
+          <div class="action-buttons">
+            <el-button 
+              :type="isLiked ? 'primary' : 'default'" 
+              @click="handleLike"
+              class="action-button"
+            >
+              {{ isLiked ? '已点赞' : '点赞' }}
+            </el-button>
+            <el-button 
+              :type="isFavorited ? 'warning' : 'default'" 
+              @click="handleFavorite"
+              class="action-button"
+            >
+              {{ isFavorited ? '已收藏' : '收藏' }}
+            </el-button>
           </div>
         </div>
       </div>
@@ -289,6 +356,26 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 500;
   color: #1e293b;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.action-button {
+  flex: 1;
+  max-width: 120px;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-button .el-icon {
+  margin-right: 8px;
 }
 
 .detail-section {

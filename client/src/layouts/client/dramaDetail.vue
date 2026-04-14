@@ -2,12 +2,18 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDramaDetail } from '@/api/drama'
+import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const dramaId = ref<number>(parseInt(route.params.id as string))
 const drama = ref<any>(null)
 const loading = ref(true)
+const isLiked = ref(false)
+const isFavorited = ref(false)
+const userStore = useUserInfoStore()
 
 const goBack = () => {
   window.history.back()
@@ -30,7 +36,7 @@ const loadDramaDetail = async () => {
         coverImage: res.data.cover ? res.data.cover.replace(/[`\s]/g, '') : '/home/banner1.png',
         // @ts-ignore - API返回字段为viewCount，但类型定义可能不匹配
         watchCount: res.data.viewCount || 0,
-        likeCount: 0,
+        likeCount: res.data.likeCount || 0,
         categoryName: res.data.categoryId === 1 ? '传统剧目' : '现代剧目'
       }
     }
@@ -41,10 +47,55 @@ const loadDramaDetail = async () => {
   }
 }
 
+// 处理点赞/取消点赞
+const handleLike = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleLike('drama', dramaId.value)
+    if (res.code === 200) {
+      isLiked.value = res.data.isLiked
+      drama.value.likeCount = res.data.isLiked ? drama.value.likeCount + 1 : drama.value.likeCount - 1
+      ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
+// 处理收藏/取消收藏
+const handleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  try {
+    const res = await toggleFavorite('drama', dramaId.value)
+    if (res.code === 200) {
+      isFavorited.value = res.data.isFavorited
+      ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
+    } else {
+      ElMessage.error('操作失败')
+    }
+  } catch (error) {
+    console.error('收藏操作失败:', error)
+    ElMessage.error('操作失败')
+  }
+}
+
 // 监听路由参数变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
     dramaId.value = parseInt(newId as string)
+    isLiked.value = false
+    isFavorited.value = false
     loadDramaDetail()
   }
 })
@@ -94,6 +145,22 @@ onMounted(() => {
               <span class="meta-label">喜欢：</span>
               <span class="meta-value">{{ drama.likeCount }}人</span>
             </span>
+          </div>
+          <div class="action-buttons">
+            <el-button 
+              :type="isLiked ? 'primary' : 'default'" 
+              @click="handleLike"
+              class="action-button"
+            >
+              {{ isLiked ? '已点赞' : '点赞' }}
+            </el-button>
+            <el-button 
+              :type="isFavorited ? 'warning' : 'default'" 
+              @click="handleFavorite"
+              class="action-button"
+            >
+              {{ isFavorited ? '已收藏' : '收藏' }}
+            </el-button>
           </div>
           <div class="drama-description">
             <h3>剧目简介</h3>
@@ -244,6 +311,26 @@ onMounted(() => {
   font-size: 14px;
   line-height: 1.8;
   color: #64748b;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.action-button {
+  flex: 1;
+  max-width: 120px;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.action-button .el-icon {
+  margin-right: 8px;
 }
 
 .detail-section {
