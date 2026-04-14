@@ -89,4 +89,53 @@
         WHERE id = #{id} AND biz_type = 'culture'
     </delete>
 
+    <!-- 获取文化资讯分类统计 -->
+    <select id="selectCultureCategories" resultType="java.util.Map">
+        SELECT 
+            MIN(id) as id, 
+            category as name, 
+            '🔥' as icon, 
+            COUNT(*) as count
+        FROM content
+        WHERE biz_type = 'culture' AND category IS NOT NULL AND category != ''
+        GROUP BY category
+        ORDER BY count DESC
+    </select>
+
+    <!-- 获取头条资讯 -->
+    <select id="selectTopCulture" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        FROM content
+        WHERE biz_type = 'culture'
+        ORDER BY view_count DESC, create_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取热门排行 -->
+    <select id="selectHotCulture" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        FROM content
+        WHERE biz_type = 'culture'
+        ORDER BY view_count DESC
+        LIMIT #{size}
+    </select>
+
+    <!-- 获取推荐阅读 -->
+    <select id="selectRecommendCulture" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        FROM content
+        WHERE biz_type = 'culture'
+        ORDER BY like_count DESC, create_time DESC
+        LIMIT #{size}
+    </select>
+
+    <!-- 获取媒体聚焦（视频类） -->
+    <select id="selectMediaCulture" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        FROM content
+        WHERE biz_type = 'culture' AND type = 'video'
+        ORDER BY create_time DESC
+        LIMIT #{size}
+    </select>
+
 </mapper>

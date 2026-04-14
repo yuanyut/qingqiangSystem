@@ -1,104 +1,168 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { Search } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { Search, Loading } from '@element-plus/icons-vue'
 import CategoryNav from '@/components/client/CategoryNav.vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
 import card_knowledge1 from '@/components/client/card_knowledge1.vue'
-const search = () => {
-  console.log('搜索')
-}
+import { getNewsList } from '@/api/news'
+import type { News } from '@/api/news'
+
+const router = useRouter()
 const input = ref('')
-// 资讯分类导航数据
-const categoryNav = reactive([
-  {
-    id: 'all',
-    name: '全部资讯',
-    icon: '🔥',
-    count: 128,
-    type: 'all',
-    active: true
-  },
-  {
-    id: 'performance',
-    name: '演出信息',
-    icon: '🎭',
-    count: 45,
-    type: 'performance',
-    active: false
-  },
-  {
-    id: 'competition',
-    name: '赛事活动',
-    icon: '🏆',
-    count: 23,
-    type: 'competition',
-    active: false
-  },
-  {
-    id: 'announcement',
-    name: '公告通知',
-    icon: '📢',
-    count: 18,
-    type: 'announcement',
-    active: false
-  },
-  {
-    id: 'news',
-    name: '动态新闻',
-    icon: '🎬',
-    count: 42,
-    type: 'news',
-    active: false
-  },
-  {
-    id: 'heritage',
-    name: '传承动态',
-    icon: '🎓',
-    count: 19,
-    type: 'heritage',
-    active: false
-  },
-  {
-    id: 'academic',
-    name: '学术研究',
-    icon: '📖',
-    count: 15,
-    type: 'academic',
-    active: false
-  },
-  {
-    id: 'exchange',
-    name: '交流活动',
-    icon: '🎪',
-    count: 12,
-    type: 'exchange',
-    active: false
-  },
-  {
-    id: 'interview',
-    name: '人物专访',
-    icon: '🌟',
-    count: 28,
-    type: 'interview',
-    active: false
-  },
-  {
-    id: 'media',
-    name: '媒体报道',
-    icon: '📺',
-    count: 16,
-    type: 'media',
-    active: false
+
+// 状态管理
+const categoryNav = ref<any[]>([])
+const topNews = ref<any | null>(null)
+const newsList = ref<News[]>([])
+const hotList = ref<any[]>([])
+const recommendList = ref<any[]>([])
+const mediaList = ref<any[]>([])
+
+// 加载状态
+const loading = reactive({
+  categories: false,
+  topNews: false,
+  newsList: false,
+  hotList: false,
+  recommendList: false,
+  mediaList: false
+})
+
+// 搜索逻辑
+const search = () => {
+  if (input.value.trim()) {
+    router.push(`/culture/search?keyword=${encodeURIComponent(input.value.trim())}`)
   }
-])
-const shijian=reactive([{
-  title:'1'
-},
-{
-  title:'2'
-}])
-const calendarValue=ref(new Date())
-console.log(calendarValue.value+"6666")
+}
+
+// 分类点击事件
+const handleCategoryClick = (categoryId: number) => {
+  router.push(`/culture/category/${categoryId}`)
+}
+
+// 卡片点击事件
+const handleCardClick = (id: number) => {
+  router.push(`/content/${id}`)
+}
+
+// 加载分类导航
+const loadCategories = async () => {
+  try {
+    loading.categories = true
+    // 模拟分类数据
+    categoryNav.value = [
+      { id: 1, name: '秦腔新闻', icon: '🔥', count: 123 },
+      { id: 2, name: '演出资讯', icon: '🎭', count: 89 },
+      { id: 3, name: '名家动态', icon: '🌟', count: 67 },
+      { id: 4, name: '活动公告', icon: '📢', count: 45 }
+    ]
+  } catch (error) {
+    console.error('加载分类导航失败:', error)
+  } finally {
+    loading.categories = false
+  }
+}
+
+// 加载头条资讯
+const loadTopNews = async () => {
+  try {
+    loading.topNews = true
+    // 模拟头条资讯
+    topNews.value = {
+      id: 1,
+      title: '2024秦腔艺术节盛大开幕',
+      content: '为期一个月的秦腔艺术节在西安隆重开幕，来自全国各地的秦腔剧团将带来精彩演出...',
+      createTime: '2024-04-10',
+      category: '秦腔新闻',
+      viewCount: 1234,
+      likeCount: 567
+    }
+  } catch (error) {
+    console.error('加载头条资讯失败:', error)
+  } finally {
+    loading.topNews = false
+  }
+}
+
+// 加载最新资讯
+const loadNewsList = async () => {
+  try {
+    loading.newsList = true
+    const res = await getNewsList(1, 10)
+    if (res.code === 200 && res.data) {
+      newsList.value = res.data.list
+    }
+  } catch (error) {
+    console.error('加载最新资讯失败:', error)
+  } finally {
+    loading.newsList = false
+  }
+}
+
+// 加载热门排行
+const loadHotList = async () => {
+  try {
+    loading.hotList = true
+    // 模拟热门排行
+    hotList.value = [
+      { id: 1, title: '2024秦腔艺术节盛大开幕', viewCount: 1234 },
+      { id: 2, title: '著名秦腔演员李梅荣获国家级奖项', viewCount: 987 },
+      { id: 3, title: '秦腔经典剧目《三滴血》全国巡演', viewCount: 765 },
+      { id: 4, title: '秦腔新生代演员培养计划启动', viewCount: 543 },
+      { id: 5, title: '秦腔艺术博物馆开馆仪式', viewCount: 321 }
+    ]
+  } catch (error) {
+    console.error('加载热门排行失败:', error)
+  } finally {
+    loading.hotList = false
+  }
+}
+
+// 加载推荐阅读
+const loadRecommendList = async () => {
+  try {
+    loading.recommendList = true
+    // 模拟推荐阅读
+    recommendList.value = [
+      { id: 6, title: '秦腔的历史与发展', viewCount: 456 },
+      { id: 7, title: '秦腔表演技巧解析', viewCount: 345 },
+      { id: 8, title: '秦腔音乐的魅力', viewCount: 234 },
+      { id: 9, title: '秦腔与其他剧种的比较', viewCount: 123 }
+    ]
+  } catch (error) {
+    console.error('加载推荐阅读失败:', error)
+  } finally {
+    loading.recommendList = false
+  }
+}
+
+// 加载媒体聚焦
+const loadMediaList = async () => {
+  try {
+    loading.mediaList = true
+    // 模拟媒体聚焦
+    mediaList.value = [
+      { id: 10, title: '秦腔演员专访：李梅', createTime: '2024-04-08', viewCount: 567 },
+      { id: 11, title: '秦腔经典剧目《铡美案》演出片段', createTime: '2024-04-05', viewCount: 456 },
+      { id: 12, title: '秦腔艺术进校园活动', createTime: '2024-04-01', viewCount: 345 }
+    ]
+  } catch (error) {
+    console.error('加载媒体聚焦失败:', error)
+  } finally {
+    loading.mediaList = false
+  }
+}
+
+// 初始化数据
+onMounted(() => {
+  loadCategories()
+  loadTopNews()
+  loadNewsList()
+  loadHotList()
+  loadRecommendList()
+  loadMediaList()
+})
 </script>
 <template>
   <div class="culture-home">
@@ -119,8 +183,12 @@ console.log(calendarValue.value+"6666")
         <h2 class="section-title">总览</h2>
         <span class="section-subtitle">探寻文化脉络</span>
       </div>
-      <div class="nav-grid">
-        <div v-for="(item, index) in categoryNav" :key="index">
+      <div v-if="loading.categories" class="loading-state">
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span>加载中...</span>
+      </div>
+      <div v-else class="nav-grid">
+        <div v-for="(item, index) in categoryNav" :key="index" @click="handleCategoryClick(item.id)">
           <CategoryNav :title="item.name" :nums="item.count" :icon="item.icon" />
         </div>
       </div>
@@ -131,106 +199,122 @@ console.log(calendarValue.value+"6666")
       <div class="section-header">
         <h2 class="section-title">头条资讯</h2>
       </div>
-      <div class="featured-list">
-       
-        <card_knowledge title="秦腔的起源与发展" desc="来自全国12个省市的30余个剧团齐聚西安">
+      <div v-if="loading.topNews" class="loading-state">
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span>加载中...</span>
+      </div>
+      <div v-else-if="topNews" class="featured-list">
+        <card_knowledge 
+          :title="topNews.title" 
+          :desc="topNews.content || ''" 
+          @click="handleCardClick(topNews.id)"
+        >
           <template #footer>
-            <div style="display: flex;gap:50px"><span>时间</span><span>地点</span></div>
+            <div style="display: flex;gap:50px">
+              <span>{{ topNews.createTime || '' }}</span>
+              <span>{{ topNews.category || '' }}</span>
+            </div>
             <div class="featured-meta">
-              <span>2.3w阅读</span>
-              <span>点赞</span>
-              <span>1人评论</span>
+              <span>{{ topNews.viewCount || 0 }}阅读</span>
+              <span>{{ topNews.likeCount || 0 }}点赞</span>
             </div>
           </template>
         </card_knowledge>
+      </div>
+      <div v-else class="empty-state">
+        <span>暂无头条资讯</span>
       </div>
     </section>
 
     <!-- 双栏布局 (左侧文章 + 右侧卡片) -->
     <section class="section">
       <div class="two-columns">
-        <!-- 左栏：秦腔历史 -->
+        <!-- 左栏：最新资讯 -->
         <div class="column">
           <div class="column-header">
             <h3>最新资讯</h3>
           </div>
-          <div class="card-list">
-            <div v-for="i in 3" :key="i">
-              <card_knowledge title="秦腔的起源与发展"
-                desc="秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代">
+          <div v-if="loading.newsList" class="loading-state">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>加载中...</span>
+          </div>
+          <div v-else class="card-list">
+            <div v-for="(item, index) in newsList" :key="item.id">
+              <card_knowledge 
+                :title="item.title" 
+                :desc="item.content || ''" 
+                @click="handleCardClick(item.id)"
+              >
                 <template #footer>
                   <div class="featured-meta">
-              
-              <span>时间</span><span>2.3w阅读</span>
-              <span>1人评论</span>
-            </div>
+                    <span>{{ item.publishTime || '' }}</span>
+                    <span>{{ item.viewCount || 0 }}阅读</span>
+                    <span>{{ item.source || '' }}</span>
+                  </div>
                 </template>
               </card_knowledge>
             </div>
           </div>
-          <div class="more-link">查看更多 →</div>
+          <div v-if="!loading.newsList && newsList.length > 0" class="more-link">查看更多 →</div>
         </div>
-
-        
       </div>
 
       <!-- 第二行双栏 -->
       <div class="two-columns">
-        <!-- 左栏：艺术特色 -->
+        <!-- 左栏：热门排行 -->
         <div class="column">
           <div class="column-header">
             <h3>热门排行</h3>
           </div>
-          <div class="card-list">
-            <div v-for="i in 4" :key="i">
-              <card_knowledge title="1.秦腔艺术节圆满落幕">
-                <template #footer><div class="featured-meta">
-              
-              <span>2.3w阅读</span>
-              <span>热度</span>
-            </div></template>
+          <div v-if="loading.hotList" class="loading-state">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>加载中...</span>
+          </div>
+          <div v-else class="card-list">
+            <div v-for="(item, index) in hotList" :key="item.id">
+              <card_knowledge 
+                :title="(index + 1) + '.' + item.title" 
+                @click="handleCardClick(item.id)"
+              >
+                <template #footer>
+                  <div class="featured-meta">
+                    <span>{{ item.viewCount || 0 }}阅读</span>
+                    <span>热度</span>
+                  </div>
+                </template>
               </card_knowledge>
             </div>
           </div>
-          <div class="more-link">查看更多 →</div>
+          <div v-if="!loading.hotList && hotList.length > 0" class="more-link">查看更多 →</div>
         </div>
 
-        <!-- 右栏：文化数据 -->
+        <!-- 右栏：推荐阅读 -->
         <div class="column">
           <div class="column-header">
             <h3>推荐阅读</h3>
           </div>
-          <div class="card-list">
-            <div v-for="i in 4" :key="i">
-              <card_knowledge title="秦腔名家">
+          <div v-if="loading.recommendList" class="loading-state">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>加载中...</span>
+          </div>
+          <div v-else class="card-list">
+            <div v-for="(item, index) in recommendList" :key="item.id">
+              <card_knowledge 
+                :title="item.title" 
+                @click="handleCardClick(item.id)"
+              >
                 <template #footer>
-                <div class="featured-meta">
-              
-              <span>2.3w阅读</span>
-              
-            </div></template>
+                  <div class="featured-meta">
+                    <span>{{ item.viewCount || 0 }}阅读</span>
+                  </div>
+                </template>
               </card_knowledge>
             </div>
           </div>
-          <div class="more-link">更多 →</div>
+          <div v-if="!loading.recommendList && recommendList.length > 0" class="more-link">更多 →</div>
         </div>
       </div>
     </section>
-    <!-- 活动日历 -->
-    <!-- <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">活动日历</h2>
-        <span class="more-text">更多 →</span>
-      </div>
-      <div class="gallery-grid">
-        <el-calendar v-model="calendarValue" controller-type="select" >
-          <template #date-cell = "{data}">
-            {{ data.day.split('-').slice(1).join('-') }}
-            {{ data.isSelected ? '66666666666' : '66666666' }}
-          </template>
-        </el-calendar>
-      </div>
-    </section> -->
 
     <!-- 媒体聚焦 -->
     <section class="section">
@@ -238,13 +322,20 @@ console.log(calendarValue.value+"6666")
         <h2 class="section-title">媒体聚焦</h2>
         <span class="more-text">更多 →</span>
       </div>
-      <div class="gallery-grid">
-        <div v-for="i in 3" :key="i">
-          <card_knowledge1 title="央视报道:秦腔艺术节">
+      <div v-if="loading.mediaList" class="loading-state">
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span>加载中...</span>
+      </div>
+      <div v-else class="gallery-grid">
+        <div v-for="(item, index) in mediaList" :key="item.id">
+          <card_knowledge1 
+            :title="item.title" 
+            @click="handleCardClick(item.id)"
+          >
             <template #cardAttr>
               <div class="video-meta">
-                <div>日期</div>
-                <div>2.3w播放</div>
+                <div>{{ item.createTime || '' }}</div>
+                <div>{{ item.viewCount || 0 }}播放</div>
               </div>
             </template>
           </card_knowledge1>
@@ -501,6 +592,30 @@ console.log(calendarValue.value+"6666")
   font-size: 0.75rem;
   color: #b5a084;
   margin-top: 8px;
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  gap: 12px;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 16px;
+  background: #f8fafc;
+  border-radius: 16px;
+  margin: 20px 0;
 }
 
 /* 非遗传承列表 */

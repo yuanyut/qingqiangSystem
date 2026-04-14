@@ -4,10 +4,14 @@ const props = defineProps<{
   title?: string
  
 }>()
+
+const emit = defineEmits<{
+    (e: 'click'): void
+}>()
 </script>
 
 <template>
-  <div class="card">
+  <div class="card" @click="emit('click')">
     <div class="card_header">
       <image :src="props.images" size="100%" class="card_image" />
     </div>

@@ -3,10 +3,14 @@ defineProps<{
     title?: string
     desc?: string
 }>()
+
+const emit = defineEmits<{
+    (e: 'click'): void
+}>()
 </script>
 
 <template>
-    <div class="knowledge-card">
+    <div class="knowledge-card" @click="emit('click')">
         <div class="card-title">{{ title }}</div>
         <div class="card-desc" v-if="desc"> {{ desc }}</div>
         <div class="card-footer" v-if="$slots.footer">
