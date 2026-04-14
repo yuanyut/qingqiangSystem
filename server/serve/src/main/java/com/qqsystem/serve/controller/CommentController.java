@@ -19,11 +19,12 @@ public class CommentController {
     // 添加评论
     @PostMapping("/add")
     public ResponseResult<?> addComment(@RequestBody Comment comment, HttpServletRequest request) {
-        // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）
-        Long userId = getUserIdFromJWT(request);
+        // 从请求上下文中获取userId（由JWT Filter解析并放入）
+        Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
-            return ResponseResult.unauthorized("用户未登录");
+            return ResponseResult.badRequest("未登录");
         }
+        
         comment.setUserId(userId);
         boolean success = commentService.addComment(comment);
         if (success) {
@@ -56,15 +57,5 @@ public class CommentController {
         } else {
             return ResponseResult.badRequest("审核失败");
         }
-    }
-
-    // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）
-    private Long getUserIdFromJWT(HttpServletRequest request) {
-        // 这里简化处理，实际项目中需要从JWT token中解析用户ID
-        // 例如：String token = request.getHeader("Authorization");
-        // 然后解析token获取用户ID
-        
-        // 暂时返回一个固定的用户ID，用于测试
-        return 1L;
     }
 }

@@ -26,15 +26,14 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println("1. 请求路径: " + uri);
         System.out.println("2. 请求方法: " + request.getMethod());
 
-        // 放行接口
-        if (uri.equals("/user/login")
-                || uri.equals("/user/register")
-                || uri.equals("/admin/login")) {
-            System.out.println("3. 命中放行条件，直接放行");
+        // 白名单：公共接口（无需登录）
+        if (isPublicApi(uri)) {
+            System.out.println("3. 命中公共接口白名单，直接放行");
             filterChain.doFilter(request, response);
             return;
         }
-        System.out.println("3. 未命中放行条件，需要验证token");
+
+        System.out.println("3. 未命中白名单，需要验证token");
 
         // 1. 获取 token
         String token = request.getHeader("Authorization");
@@ -91,5 +90,62 @@ public class JwtFilter extends OncePerRequestFilter {
             response.getWriter().write("Token无效或已过期");
         }
         System.out.println("========== JwtFilter 结束 ==========");
+    }
+
+    /**
+     * 判断是否为公共接口（无需登录）
+     */
+    private boolean isPublicApi(String uri) {
+        // 登录注册接口
+        if (uri.equals("/user/login")
+                || uri.equals("/user/register")
+                || uri.equals("/admin/login")) {
+            return true;
+        }
+
+        // 内容列表接口
+        if (uri.equals("/content/culture/list")
+                || uri.equals("/news/list")
+                || uri.equals("/drama/list")
+                || uri.equals("/actor/list")) {
+            return true;
+        }
+
+        // 内容详情接口
+        if (uri.matches("/content/culture/detail/\\d+")
+                || uri.matches("/news/detail/\\d+")
+                || uri.matches("/drama/detail/\\d+")
+                || uri.matches("/drama/detail/full/\\d+")
+                || uri.matches("/actor/detail/\\d+")
+                || uri.matches("/actor/detail/full/\\d+")) {
+            return true;
+        }
+
+        // 分类/标签接口
+        if (uri.equals("/content/culture/categories")
+                || uri.equals("/news/categories")
+                || uri.equals("/drama/categories")
+                || uri.equals("/actor/categories")) {
+            return true;
+        }
+
+        // 首页推荐接口
+        if (uri.equals("/recommend/home")) {
+            return true;
+        }
+
+        // 热门、推荐、媒体接口
+        if (uri.equals("/content/culture/top")
+                || uri.equals("/content/culture/hot")
+                || uri.equals("/content/culture/recommend")
+                || uri.equals("/content/culture/media")
+                || uri.equals("/news/top")
+                || uri.equals("/news/hot")
+                || uri.equals("/news/recommend")
+                || uri.equals("/news/media")) {
+            return true;
+        }
+
+        return false;
     }
 }
