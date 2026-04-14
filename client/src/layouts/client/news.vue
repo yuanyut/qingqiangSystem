@@ -5,7 +5,7 @@ import { Search, Loading } from '@element-plus/icons-vue'
 import CategoryNav from '@/components/client/CategoryNav.vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
 import card_knowledge1 from '@/components/client/card_knowledge1.vue'
-import { getNewsList, getCategoryNav, getTopNews, getHotList, getRecommendList, getMediaList } from '@/api/news'
+import { getNewsList, getCategoryNav, getTopNews, getHotList, getRecommendList, getMediaList, categoryMap } from '@/api/news'
 import type { News, Category } from '@/api/news'
 
 const router = useRouter()
@@ -32,18 +32,18 @@ const loading = reactive({
 // 搜索逻辑
 const search = () => {
   if (input.value.trim()) {
-    router.push(`/culture/search?keyword=${encodeURIComponent(input.value.trim())}`)
+    router.push(`/news/list?keyword=${encodeURIComponent(input.value.trim())}`)
   }
 }
 
 // 分类点击事件
 const handleCategoryClick = (categoryId: number) => {
-  router.push(`/culture/category/${categoryId}`)
+  router.push(`/news/list?category=${categoryId}`)
 }
 
 // 卡片点击事件
 const handleCardClick = (id: number) => {
-  router.push(`/content/${id}`)
+  router.push(`/news/${id}`)
 }
 
 // 加载分类导航
@@ -52,7 +52,25 @@ const loadCategories = async () => {
     loading.categories = true
     const res = await getCategoryNav()
     if (res.code === 200) {
-      categoryNav.value = res.data
+      // 去重处理，确保分类不重复
+      const uniqueCategories: Category[] = []
+      const categoryNames = new Set<string>()
+      
+      res.data.forEach((category: Category) => {
+        // 去除分类名称两端的空格
+        const normalizedName = category.name.trim()
+        
+        if (!categoryNames.has(normalizedName)) {
+          categoryNames.add(normalizedName)
+          // 使用categoryMap将英文代码映射为中文名称
+          if (categoryMap[normalizedName]) {
+            category.name = categoryMap[normalizedName]
+          }
+          uniqueCategories.push(category)
+        }
+      })
+      
+      categoryNav.value = uniqueCategories
     }
   } catch (error) {
     console.error('加载分类导航失败:', error)
@@ -80,7 +98,7 @@ const loadTopNews = async () => {
 const loadNewsList = async () => {
   try {
     loading.newsList = true
-    const res = await getNewsList(1, 10)
+    const res = await getNewsList(1, 5)
     if (res.code === 200 && res.data) {
       newsList.value = res.data.list
     }
@@ -148,36 +166,26 @@ onMounted(() => {
 </script>
 <template>
   <div class="culture-home">
-    <!-- 搜索框 -->
-    <div class="search-container">
-      <div class="search-wrapper">
-        <el-input v-model="input" placeholder="探索文化瑰宝，输入关键词..." class="custom-search-input">
-          <template #append>
-            <el-button :icon="Search" @click="search" class="search-button" />
-          </template>
-        </el-input>
-      </div>
-    </div>
+    
 
-    <!-- 文化分类导航 -->
-    <section class="section">
+    <!-- 分类导航 -->
+    <section v-if="!loading.categories && categoryNav.length > 0" class="section">
       <div class="section-header">
-        <h2 class="section-title">总览</h2>
-        <span class="section-subtitle">探寻文化脉络</span>
+        
       </div>
       <div v-if="loading.categories" class="loading-state">
         <el-icon class="is-loading"><Loading /></el-icon>
         <span>加载中...</span>
       </div>
       <div v-else class="nav-grid">
-        <div v-for="(item, index) in categoryNav" :key="index" @click="handleCategoryClick(item.id)">
+        <div v-for="(item, index) in categoryNav" :key="index" >
           <CategoryNav :title="item.name" :nums="item.count" :icon="item.icon" />
         </div>
       </div>
     </section>
 
     <!-- 特色推荐 · 精选内容 -->
-    <section class="section">
+    <section v-if="!loading.topNews && topNews" class="section">
       <div class="section-header">
         <h2 class="section-title">头条资讯</h2>
       </div>
@@ -194,7 +202,7 @@ onMounted(() => {
           <template #footer>
             <div style="display: flex;gap:50px">
               <span>{{ topNews.createTime || '' }}</span>
-              <span>{{ topNews.source || '' }}</span>
+              <span>{{ topNews.category ? categoryMap[topNews.category] || topNews.category : '' }}</span>
             </div>
             <div class="featured-meta">
               <span>{{ topNews.viewCount || 0 }}阅读</span>
@@ -202,13 +210,10 @@ onMounted(() => {
           </template>
         </card_knowledge>
       </div>
-      <div v-else class="empty-state">
-        <span>暂无头条资讯</span>
-      </div>
     </section>
 
     <!-- 双栏布局 (左侧文章 + 右侧卡片) -->
-    <section class="section">
+    <section v-if="!loading.newsList && newsList.length > 0" class="section">
       <div class="two-columns">
         <!-- 左栏：最新资讯 -->
         <div class="column">
@@ -228,7 +233,7 @@ onMounted(() => {
               >
                 <template #footer>
                   <div class="featured-meta">
-                    <span>{{ item.publishTime || '' }}</span>
+                    <span>{{ item.createTime || '' }}</span>
                     <span>{{ item.viewCount || 0 }}阅读</span>
                     <span>{{ item.source || '' }}</span>
                   </div>
@@ -236,14 +241,14 @@ onMounted(() => {
               </card_knowledge>
             </div>
           </div>
-          <div v-if="!loading.newsList && newsList.length > 0" class="more-link">查看更多 →</div>
+          <div v-if="!loading.newsList && newsList.length > 0" class="more-link" @click="router.push('/news/list')">查看更多 →</div>
         </div>
       </div>
 
       <!-- 第二行双栏 -->
-      <div class="two-columns">
+      <div v-if="(!loading.hotList && hotList.length > 0) || (!loading.recommendList && recommendList.length > 0)" class="two-columns">
         <!-- 左栏：热门排行 -->
-        <div class="column">
+        <div v-if="!loading.hotList && hotList.length > 0" class="column">
           <div class="column-header">
             <h3>热门排行</h3>
           </div>
@@ -266,11 +271,11 @@ onMounted(() => {
               </card_knowledge>
             </div>
           </div>
-          <div v-if="!loading.hotList && hotList.length > 0" class="more-link">查看更多 →</div>
+          
         </div>
 
         <!-- 右栏：推荐阅读 -->
-        <div class="column">
+        <div v-if="!loading.recommendList && recommendList.length > 0" class="column">
           <div class="column-header">
             <h3>推荐阅读</h3>
           </div>
@@ -292,16 +297,16 @@ onMounted(() => {
               </card_knowledge>
             </div>
           </div>
-          <div v-if="!loading.recommendList && recommendList.length > 0" class="more-link">更多 →</div>
+         
         </div>
       </div>
     </section>
 
     <!-- 媒体聚焦 -->
-    <section class="section">
+    <section v-if="!loading.mediaList && mediaList.length > 0" class="section">
       <div class="section-header">
         <h2 class="section-title">媒体聚焦</h2>
-        <span class="more-text">更多 →</span>
+        <span class="more-text" @click="router.push('/news/list')">更多 →</span>
       </div>
       <div v-if="loading.mediaList" class="loading-state">
         <el-icon class="is-loading"><Loading /></el-icon>

@@ -14,6 +14,12 @@
         SELECT *
         FROM news
         WHERE status = 1
+        <if test="category != null">
+            AND category = (SELECT category FROM news WHERE id = #{category, jdbcType=BIGINT})
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
         ORDER BY create_time DESC
         LIMIT #{offset}, #{size}
     </select>
@@ -22,6 +28,12 @@
         SELECT COUNT(*)
         FROM news
         WHERE status = 1
+        <if test="category != null">
+            AND category = (SELECT category FROM news WHERE id = #{category, jdbcType=BIGINT})
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR content LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
     </select>
 
     <insert id="insert" parameterType="com.qqsystem.serve.entity.News">
@@ -72,18 +84,18 @@
     <select id="selectNewsCategories" resultType="java.util.Map">
         SELECT 
             MIN(id) as id, 
-            source as name, 
+            category as name, 
             '🔥' as icon, 
             COUNT(*) as count
         FROM news
-        WHERE source IS NOT NULL AND source != ''
-        GROUP BY source
+        WHERE category IS NOT NULL AND category != ''
+        GROUP BY category
         ORDER BY count DESC
     </select>
 
     <!-- 获取头条资讯 -->
     <select id="selectTopNews" resultType="com.qqsystem.serve.entity.News">
-        SELECT id, title, content, cover, create_time, view_count, source
+        SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
         ORDER BY view_count DESC, create_time DESC
         LIMIT 1
@@ -91,7 +103,7 @@
 
     <!-- 获取热门排行 -->
     <select id="selectHotNews" resultType="com.qqsystem.serve.entity.News">
-        SELECT id, title, content, cover, create_time, view_count, source
+        SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
         ORDER BY view_count DESC
         LIMIT #{size}
@@ -99,7 +111,7 @@
 
     <!-- 获取推荐阅读 -->
     <select id="selectRecommendNews" resultType="com.qqsystem.serve.entity.News">
-        SELECT id, title, content, cover, create_time, view_count, source
+        SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
         ORDER BY view_count DESC, create_time DESC
         LIMIT #{size}
@@ -107,7 +119,7 @@
 
     <!-- 获取媒体聚焦（视频类） -->
     <select id="selectMediaNews" resultType="com.qqsystem.serve.entity.News">
-        SELECT id, title, content, cover, create_time, view_count, source
+        SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
         WHERE content LIKE '%视频%' OR title LIKE '%视频%'
         ORDER BY create_time DESC

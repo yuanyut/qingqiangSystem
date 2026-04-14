@@ -18,10 +18,10 @@ public class NewsController {
     private NewsService newsService;
 
     @GetMapping("/list")
-    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size) {
+    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) Integer category, @RequestParam(required = false) String keyword) {
         Map<String, Object> res = new HashMap<>();
-        res.put("list", newsService.pageList(page, size));
-        res.put("total", newsService.countList());
+        res.put("list", newsService.pageList(page, size, category, keyword));
+        res.put("total", newsService.countList(category, keyword));
         return ResponseResult.success(res);
     }
 

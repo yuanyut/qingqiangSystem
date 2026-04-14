@@ -10,6 +10,8 @@ import communicate from '@/layouts/client/communicate.vue'
 import knowledge from '@/layouts/client/knowledge.vue'
 import knowledgeDetail from '@/layouts/client/knowledgeDetail.vue'
 import news from '@/layouts/client/news.vue'
+import newsDetail from '@/layouts/client/newsDetail.vue'
+import newsList from '@/layouts/client/newsList.vue'
 import profile from '@/layouts/client/profile.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,6 +62,14 @@ const router = createRouter({
         {
           path:'news',
           component:news,
+        },
+        {
+          path:'news/:id',
+          component:newsDetail,
+        },
+        {
+          path:'news/list',
+          component:newsList,
         },
         {
           path:'profile',

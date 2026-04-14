@@ -22,14 +22,14 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public List<News> pageList(int page, int size) {
+    public List<News> pageList(int page, int size, Integer category, String keyword) {
         int offset = (page - 1) * size;
-        return newsMapper.selectList(offset, size);
+        return newsMapper.selectList(offset, size, category, keyword);
     }
 
     @Override
-    public Long countList() {
-        return newsMapper.countList();
+    public Long countList(Integer category, String keyword) {
+        return newsMapper.countList(category, keyword);
     }
 
     @Override

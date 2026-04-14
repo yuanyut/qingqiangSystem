@@ -8,9 +8,9 @@ import java.util.Map;
 public interface NewsService {
     News getById(Long id);
 
-    List<News> pageList(int page, int size);
+    List<News> pageList(int page, int size, Integer category, String keyword);
 
-    Long countList();
+    Long countList(Integer category, String keyword);
 
     boolean add(News news);
 

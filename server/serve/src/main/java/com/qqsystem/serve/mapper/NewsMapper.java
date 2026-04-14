@@ -9,9 +9,9 @@ import java.util.Map;
 public interface NewsMapper {
     News selectById(@Param("id") Long id);
 
-    List<News> selectList(@Param("offset") int offset, @Param("size") int size);
+    List<News> selectList(@Param("offset") int offset, @Param("size") int size, @Param("category") Integer category, @Param("keyword") String keyword);
 
-    Long countList();
+    Long countList(@Param("category") Integer category, @Param("keyword") String keyword);
 
     int insert(News news);
 
