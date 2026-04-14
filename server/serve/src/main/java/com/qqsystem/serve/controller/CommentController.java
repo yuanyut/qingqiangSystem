@@ -1,14 +1,13 @@
 package com.qqsystem.serve.controller;
 
+import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.entity.Comment;
 import com.qqsystem.serve.service.CommentService;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/comment")
@@ -19,52 +18,44 @@ public class CommentController {
 
     // 添加评论
     @PostMapping("/add")
-    public Map<String, Object> addComment(@RequestBody Comment comment, HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
+    public ResponseResult<?> addComment(@RequestBody Comment comment, HttpServletRequest request) {
         // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）
         Long userId = getUserIdFromJWT(request);
         if (userId == null) {
-            result.put("success", false);
-            result.put("message", "用户未登录");
-            return result;
+            return ResponseResult.unauthorized("用户未登录");
         }
         comment.setUserId(userId);
         boolean success = commentService.addComment(comment);
         if (success) {
-            result.put("success", true);
-            result.put("message", "评论提交成功，等待审核");
+            return ResponseResult.success("评论提交成功，等待审核");
         } else {
-            result.put("success", false);
-            result.put("message", "评论提交失败");
+            return ResponseResult.badRequest("评论提交失败");
         }
-        return result;
     }
 
     // 查询评论列表（前台，只显示已审核通过的）
     @GetMapping("/list")
-    public List<Comment> getCommentList(@RequestParam String targetType, @RequestParam Long targetId) {
-        return commentService.getCommentList(targetType, targetId);
+    public ResponseResult<List<Comment>> getCommentList(@RequestParam String targetType, @RequestParam Long targetId) {
+        List<Comment> comments = commentService.getCommentList(targetType, targetId);
+        return ResponseResult.success(comments);
     }
 
     // 查询评论列表（后台，显示所有状态的）
     @GetMapping("/admin/list")
-    public List<Comment> getAdminCommentList(@RequestParam String targetType, @RequestParam Long targetId, @RequestParam(required = false) Integer status) {
-        return commentService.getAdminCommentList(targetType, targetId, status);
+    public ResponseResult<List<Comment>> getAdminCommentList(@RequestParam String targetType, @RequestParam Long targetId, @RequestParam(required = false) Integer status) {
+        List<Comment> comments = commentService.getAdminCommentList(targetType, targetId, status);
+        return ResponseResult.success(comments);
     }
 
     // 审核评论
     @PostMapping("/admin/audit")
-    public Map<String, Object> auditComment(@RequestParam Long commentId, @RequestParam Integer status) {
-        Map<String, Object> result = new HashMap<>();
+    public ResponseResult<?> auditComment(@RequestParam Long commentId, @RequestParam Integer status) {
         boolean success = commentService.auditComment(commentId, status);
         if (success) {
-            result.put("success", true);
-            result.put("message", "审核成功");
+            return ResponseResult.success("审核成功");
         } else {
-            result.put("success", false);
-            result.put("message", "审核失败");
+            return ResponseResult.badRequest("审核失败");
         }
-        return result;
     }
 
     // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）

@@ -1,6 +1,6 @@
 package com.qqsystem.serve.controller;
 
-import com.qqsystem.serve.common.Result;
+import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.common.utils.JwtUtil;
 import com.qqsystem.serve.dto.RegisterDTO;
 import com.qqsystem.serve.dto.UserDTO;
@@ -19,12 +19,12 @@ public class UserController {
     private UserService userService;
     //登录
     @PostMapping("/login")
-    public Result login(@RequestBody User user) {
+    public ResponseResult<?> login(@RequestBody User user) {
 
         User result = userService.login(user.getUsername(), user.getPassword());
 
         if (result == null) {
-            return Result.error("登录失败");
+            return ResponseResult.badRequest("登录失败");
         }
         //生成这个用户的token
         String token = JwtUtil.generateToken(
@@ -33,10 +33,10 @@ public class UserController {
                 result.getRole()
         );
         System.out.println("token=" + token);
-        return Result.success("登录成功，欢迎：" + result.getUsername(), token);
+        return ResponseResult.success(token);
     }
     @GetMapping("/me")
-    public UserDTO me(HttpServletRequest request) {
+    public ResponseResult<UserDTO> me(HttpServletRequest request) {
 
         // 1. 获取 token
         String token = request.getHeader("Authorization");
@@ -47,12 +47,17 @@ public class UserController {
         Long userId = JwtUtil.getUserId(token);
 
         // 3. 查数据库
-        return userService.getUserInfo(userId);
+        UserDTO userDTO = userService.getUserInfo(userId);
+        if (userDTO != null) {
+            return ResponseResult.success(userDTO);
+        } else {
+            return ResponseResult.badRequest("用户不存在");
+        }
     }
 
     @PostMapping("/register")
-    public Result register(@RequestBody RegisterDTO dto) {
+    public ResponseResult<?> register(@RequestBody RegisterDTO dto) {
         userService.register(dto);
-        return Result.success("注册成功");
+        return ResponseResult.success("注册成功");
     }
 }

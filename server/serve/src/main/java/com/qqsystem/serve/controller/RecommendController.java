@@ -1,5 +1,6 @@
 package com.qqsystem.serve.controller;
 
+import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.service.RecommendService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ public class RecommendController {
 
     // 首页推荐
     @GetMapping("/home")
-    public Map<String, Object> getHomeRecommendations(HttpServletRequest request) {
+    public ResponseResult<Map<String, ?>> getHomeRecommendations(HttpServletRequest request) {
         // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）
         Long userId = getUserIdFromJWT(request);
         if (userId == null) {
@@ -27,11 +28,8 @@ public class RecommendController {
         }
         // 获取首页推荐数据
         Map<String, ?> recommendations = recommendService.getHomeRecommendations(userId);
-        // 组装返回结果
-        Map<String, Object> result = new java.util.HashMap<>();
-        result.put("success", true);
-        result.put("data", recommendations);
-        return result;
+        // 返回统一格式
+        return ResponseResult.success(recommendations);
     }
 
     // 从JWT中获取用户ID（实际项目中需要根据具体的认证方式实现）
