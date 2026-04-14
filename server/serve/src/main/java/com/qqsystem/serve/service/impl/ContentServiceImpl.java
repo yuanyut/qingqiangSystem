@@ -2,10 +2,9 @@ package com.qqsystem.serve.service.impl;
 
 import com.qqsystem.serve.entity.Content;
 import com.qqsystem.serve.mapper.ContentMapper;
+import org.springframework.stereotype.Service;  // 添加这个导入
+import jakarta.annotation.Resource;  // 添加这个导入
 import com.qqsystem.serve.service.ContentService;
-import org.springframework.stereotype.Service;
-
-import jakarta.annotation.Resource;
 import java.util.List;
 
 @Service

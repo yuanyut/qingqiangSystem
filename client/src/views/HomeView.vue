@@ -2,6 +2,8 @@
 import { reactive, ref } from 'vue'
 import router from '@/router/index'
 import { useUserInfoStore } from '@/stores/userInfo'
+import { ElMessage } from 'element-plus'
+import { login, register } from '@/api/user'
 const userInfo=useUserInfoStore()
 import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
@@ -63,7 +65,7 @@ const rules1 = reactive<FormRules<typeof ruleFormLogin>>({
   ],
   password:[
      { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 8, max: 12, message: '长度是8-12', trigger: 'blur' }
+      { min: 6, max: 12, message: '长度是6-12', trigger: 'blur' }
   ]
 })
 const rules2 = reactive<FormRules<typeof ruleFormRegister>>({
@@ -72,7 +74,7 @@ const rules2 = reactive<FormRules<typeof ruleFormRegister>>({
   ],
   password:[
      { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 8, max: 12, message: '长度是8-12', trigger: 'blur' }
+      { min: 6, max: 12, message: '长度是6-12', trigger: 'blur' }
   ],
   nickname:[
   { required: true, message: '请输入昵称', trigger: 'blur' },
@@ -110,12 +112,25 @@ const rules3 = reactive<FormRules<typeof ruleFormFind>>({
 //登录提交
 const submitLoginForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      console.log(ruleFormLogin)
-      userInfo.setUserInfo(ruleFormLogin)
-      router.push('/home')
+      try {
+        const res = await login({
+          username: ruleFormLogin.username,
+          password: ruleFormLogin.password || ''
+        })
+        if (res.code === 200) {
+          localStorage.setItem('token', res.data)
+          ElMessage.success('登录成功')
+          userInfo.setUserInfo(ruleFormLogin)
+          router.push('/home')
+        } else {
+          ElMessage.error(res.message || '登录失败')
+        }
+      } catch (error) {
+        ElMessage.error('登录失败，请检查网络连接')
+        console.error('Login error:', error)
+      }
     } else {
       console.log('error submit!', fields)
     }
@@ -124,18 +139,32 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 //注册提交
 const submitRegForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      console.log(ruleFormRegister.age)
-      currentTab.value='login';
-      ruleFormLogin.username=ruleFormRegister.username;
-      formEl.resetFields();
+      try {
+        const res = await register({
+          username: ruleFormRegister.username,
+          password: ruleFormRegister.password || '',
+          nickname: ruleFormRegister.nickname || '',
+          sex: ruleFormRegister.sex?.toString() || '2',
+          birthday: ruleFormRegister.age || ''
+        })
+        if (res.code === 200) {
+          ElMessage.success('注册成功，请登录')
+          currentTab.value = 'login'
+          ruleFormLogin.username = ruleFormRegister.username
+          formEl.resetFields()
+        } else {
+          ElMessage.error(res.message || '注册失败')
+        }
+      } catch (error) {
+        ElMessage.error('注册失败，请检查网络连接')
+        console.error('Register error:', error)
+      }
     } else {
       console.log('error submit!', fields)
     }
   })
-  
 }
 //改密码
 const submitFindForm = async (formEl: FormInstance | undefined) => {
