@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qqsystem.serve.mapper.RecommendMapper">
+
+    <!-- 获取戏剧热门数据 -->
+    <select id="getHotDramas" resultType="java.util.Map">
+        SELECT
+            d.id,
+            'drama' as type,
+            d.name as title,
+            d.cover,
+            d.view_count,
+            (
+                SELECT COUNT(*) FROM `like` WHERE target_type = 'drama' AND target_id = d.id
+            ) as like_count,
+            (
+                SELECT COUNT(*) FROM favorite WHERE target_type = 'drama' AND target_id = d.id
+            ) as favorite_count
+        FROM drama d
+        WHERE d.status = 1
+        ORDER BY (d.view_count + 
+                  (SELECT COUNT(*) FROM `like` WHERE target_type = 'drama' AND target_id = d.id) + 
+                  (SELECT COUNT(*) FROM favorite WHERE target_type = 'drama' AND target_id = d.id)
+                 ) DESC
+        LIMIT 10
+    </select>
+
+    <!-- 获取新闻热门数据 -->
+    <select id="getHotNews" resultType="java.util.Map">
+        SELECT
+            n.id,
+            'news' as type,
+            n.title,
+            n.cover,
+            n.view_count,
+            (
+                SELECT COUNT(*) FROM `like` WHERE target_type = 'news' AND target_id = n.id
+            ) as like_count,
+            (
+                SELECT COUNT(*) FROM favorite WHERE target_type = 'news' AND target_id = n.id
+            ) as favorite_count
+        FROM news n
+        WHERE n.status = 1
+        ORDER BY (n.view_count + 
+                  (SELECT COUNT(*) FROM `like` WHERE target_type = 'news' AND target_id = n.id) + 
+                  (SELECT COUNT(*) FROM favorite WHERE target_type = 'news' AND target_id = n.id)
+                 ) DESC
+        LIMIT 10
+    </select>
+
+    <!-- 获取演员热门数据 -->
+    <select id="getHotActors" resultType="java.util.Map">
+        SELECT
+            a.id,
+            'actor' as type,
+            a.name as title,
+            a.avatar as cover,
+            a.view_count,
+            (
+                SELECT COUNT(*) FROM `like` WHERE target_type = 'actor' AND target_id = a.id
+            ) as like_count,
+            (
+                SELECT COUNT(*) FROM favorite WHERE target_type = 'actor' AND target_id = a.id
+            ) as favorite_count
+        FROM actor a
+        WHERE a.status = 1
+        ORDER BY (a.view_count + 
+                  (SELECT COUNT(*) FROM `like` WHERE target_type = 'actor' AND target_id = a.id) + 
+                  (SELECT COUNT(*) FROM favorite WHERE target_type = 'actor' AND target_id = a.id)
+                 ) DESC
+        LIMIT 10
+    </select>
+
+    <!-- 获取用户行为数据 -->
+    <select id="getUserBehaviors" resultType="java.util.Map">
+        <!-- 浏览记录 -->
+        SELECT
+            'browse' as behavior_type,
+            target_type,
+            target_id,
+            1 as weight
+        FROM browse_history
+        WHERE user_id = #{userId}
+        UNION ALL
+        <!-- 点赞记录 -->
+        SELECT
+            'like' as behavior_type,
+            target_type,
+            target_id,
+            3 as weight
+        FROM `like`
+        WHERE user_id = #{userId}
+        UNION ALL
+        <!-- 收藏记录 -->
+        SELECT
+            'favorite' as behavior_type,
+            target_type,
+            target_id,
+            5 as weight
+        FROM favorite
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 获取所有用户行为数据 -->
+    <select id="getAllBehaviors" resultType="java.util.Map">
+        <!-- 浏览记录 -->
+        SELECT
+            user_id,
+            target_type,
+            target_id,
+            1 as weight
+        FROM browse_history
+        UNION ALL
+        <!-- 点赞记录 -->
+        SELECT
+            user_id,
+            target_type,
+            target_id,
+            3 as weight
+        FROM `like`
+        UNION ALL
+        <!-- 收藏记录 -->
+        SELECT
+            user_id,
+            target_type,
+            target_id,
+            5 as weight
+        FROM favorite
+    </select>
+
+    <!-- 获取用户已浏览的物品 -->
+    <select id="getUserViewedItems" resultType="java.util.Map">
+        SELECT DISTINCT
+            target_type,
+            target_id
+        FROM browse_history
+        WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT
+            target_type,
+            target_id
+        FROM `like`
+        WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT
+            target_type,
+            target_id
+        FROM favorite
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
