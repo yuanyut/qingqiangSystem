@@ -11,6 +11,24 @@ export interface Actor {
   awardsCount: number
 }
 
+export interface ActorDetail {
+  id: number
+  name: string
+  title: string
+  avatar: string
+  intro: string
+  roleName: string
+  style: string
+  worksCount: number
+  viewCount: number
+  likeCount: number
+  joinDate: string
+  status: number
+  createTime: string
+  updateTime: string
+  dramas: any[]
+}
+
 export interface ActorListResponse {
   list: Actor[]
   total: number
@@ -24,5 +42,12 @@ export const getActorList = (page: number, size: number) => {
       page,
       size
     }
+  })
+}
+
+export const getActorDetail = (id: number) => {
+  return request<ActorDetail>({
+    url: `/actor/detail/full/${id}`,
+    method: 'get'
   })
 }

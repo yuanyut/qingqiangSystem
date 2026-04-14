@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref,reactive, onMounted } from 'vue'
+import { ref,reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import cardHome from '@/components/client/card_home.vue';
@@ -11,16 +11,25 @@ const router = useRouter()
 const totalcount = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const originalDramaList = ref<any[]>([])
 const dramaList = ref<any[]>([])
 const loading = ref(false)
 
 const input3 = ref('')
 const selectedCategory = ref<number | undefined>()
-const selectedYear = ref<string>()
-const selectedSort = ref<string>()
+const selectedYear = ref<string | undefined>()
+const selectedSort = ref<string | undefined>()
 
 const isLiked=ref(true)
 const isFavorited=ref(true)
+
+// 筛选器选中状态
+const categoryIndex = ref(1)
+const yearIndex = ref(0)
+const sortIndex = ref(0)
+
+// 是否处于搜索状态
+const isSearching = ref(false)
 
 const changeLike=(index:boolean)=>{
   isLiked.value=index
@@ -29,9 +38,9 @@ const changeFav=()=>{
   isFavorited.value=!isFavorited.value
 }
 
-const search=async ()=>{
-  currentPage.value = 1
-  await loadDramaList()
+const search=()=>{
+  isSearching.value = true
+  filterDramaList()
 }
 
 const handlePageChange=(page:number)=>{
@@ -41,6 +50,68 @@ const handlePageChange=(page:number)=>{
 
 const goToDetail=(id:number)=>{
   router.push(`/drama/${id}`)
+}
+
+const handleCategoryChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  categoryIndex.value = index
+  currentPage.value = 1
+  switch(index) {
+    case 1:
+      selectedCategory.value = undefined
+      break
+    case 2:
+      selectedCategory.value = 1
+      break
+    case 3:
+      selectedCategory.value = 2
+      break
+    case 4:
+      selectedCategory.value = 3
+      break
+    case 5:
+      selectedCategory.value = 4
+      break
+  }
+  loadDramaList()
+}
+
+const handleYearChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  yearIndex.value = index
+  currentPage.value = 1
+  loadDramaList()
+}
+
+const handleSortChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  sortIndex.value = index
+  currentPage.value = 1
+  loadDramaList()
+}
+
+const filterDramaList=()=>{
+  if (!input3.value) {
+    isSearching.value = false
+    dramaList.value = [...originalDramaList.value]
+    totalcount.value = originalDramaList.value.length
+    return
+  }
+  
+  const keyword = input3.value.toLowerCase()
+  dramaList.value = originalDramaList.value.filter(item => {
+    return (
+      item.title.toLowerCase().includes(keyword) ||
+      item.description.toLowerCase().includes(keyword)
+    )
+  })
+  totalcount.value = dramaList.value.length
 }
 
 const loadDramaList=async ()=>{
@@ -53,17 +124,18 @@ const loadDramaList=async ()=>{
       input3.value || undefined
     )
     if (res.code === 200) {
-      dramaList.value = (res.data.list || []).map((item: any) => ({
+      originalDramaList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         title: item.name,
         description: item.intro,
         categoryId: item.categoryId,
-        categoryName: item.categoryId === 1 ? '传统剧目' : '现代剧目',
+        categoryName: item.categoryId === 1 ? '传统剧目' : item.categoryId === 2 ? '现代剧目' : item.categoryId === 3 ? '经典折子戏' : item.categoryId === 4 ? '新编历史剧' : '其他',
         coverImage: item.cover ? item.cover.replace(/[`\s]/g, '') : '/home/banner1.png',
         watchCount: item.viewCount || 0,
         likeCount: 0,
         createdAt: item.createTime
       }))
+      dramaList.value = [...originalDramaList.value]
       totalcount.value = res.data.total || 0
     }
   } catch (error) {
@@ -85,19 +157,68 @@ onMounted(()=>{
         v-model="input3" 
         placeholder="搜索剧目名称、演员..." 
         class="custom-search-input"
+        @keyup.enter="search"
       >
         <template #append>
-          <el-button :icon="Search" @click="search" class="search-button"/>
+          <el-button :icon="Search" @click="search" class="search-button">搜索</el-button>
         </template>
       </el-input>
     </div>
     
     <div class="filter-wrapper">
-      <shai-xuan-h v-model:cate-list="cate"></shai-xuan-h>
-      <!-- 年代 -->
-      <shai-xuan-h v-model:cate-list="years"></shai-xuan-h>
+      <!-- 分类筛选 -->
+      <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">分类</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in cate.slice(1)" 
+            :key="index" 
+            @click="handleCategoryChange(index+1)"
+            :class="{ active: categoryIndex === index+1, disabled: isSearching }" 
+            class="filter-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- 年代筛选 -->
+      <!-- <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">年代</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in years.slice(1)" 
+            :key="index" 
+            @click="handleYearChange(index)"
+            :class="{ active: yearIndex === index, disabled: isSearching }" 
+            class="filter-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div> -->
+      
       <!-- 排序 -->
-      <shai-xuan-h v-model:cate-list="paixu"></shai-xuan-h>
+      <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">排序</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in paixu.slice(1)" 
+            :key="index" 
+            @click="handleSortChange(index)"
+            :class="{ active: sortIndex === index, disabled: isSearching }" 
+            class="filter-tag sort-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
    <div class="playlist-container">
@@ -198,6 +319,12 @@ onMounted(()=>{
   margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.2s;
+}
+
+.filter-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .filter-item:last-child {
@@ -247,6 +374,17 @@ onMounted(()=>{
 .filter-tag.active {
   background-color: #409eff;
   color: #ffffff;
+}
+
+.filter-tag.disabled {
+  cursor: not-allowed;
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+}
+
+.filter-tag.disabled:hover {
+  background-color: #f5f7fa;
+  color: #c0c4cc;
 }
 
 .sort-tag {

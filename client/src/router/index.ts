@@ -5,6 +5,7 @@ import home from '@/layouts/client/home.vue'
 import drama from '@/layouts/client/drama.vue'
 import dramaDetail from '@/layouts/client/dramaDetail.vue'
 import actorInfo from '@/layouts/client/actorInfo.vue'
+import actorDetail from '@/layouts/client/actorDetail.vue'
 import communicate from '@/layouts/client/communicate.vue'
 import knowledge from '@/layouts/client/knowledge.vue'
 import news from '@/layouts/client/news.vue'
@@ -38,6 +39,10 @@ const router = createRouter({
         {
           path:'actorInfo',
           component:actorInfo,
+        },
+        {
+          path:'actor/:id',
+          component:actorDetail,
         },
         {
           path:'communicate',

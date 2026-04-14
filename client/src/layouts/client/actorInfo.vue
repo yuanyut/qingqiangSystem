@@ -1,65 +1,260 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
 import actor_card from '@/components/client/actor_card.vue';
 import { rongYu, years, paiXu } from '@/types/actor';
+import { getActorList } from '@/api/actor';
+
+const router = useRouter()
 const totalcount = ref(0)
-const search = () => {
-  totalcount.value = 35
-}
+const currentPage = ref(1)
+const pageSize = ref(10)
+const originalActorList = ref<any[]>([])
+const actorList = ref<any[]>([])
+const loading = ref(false)
+
 const input3 = ref('')
+const selectedHonor = ref<number | undefined>()
+const selectedYear = ref<string | undefined>()
+const selectedSort = ref<string | undefined>()
+
 const isLiked=ref(true)
 const isFavorited=ref(true)
+
+// 筛选器选中状态
+const honorIndex = ref(0)
+const yearIndex = ref(0)
+const sortIndex = ref(0)
+
+// 是否处于搜索状态
+const isSearching = ref(false)
+
 const changeLike=(index:boolean)=>{
   isLiked.value=index
 }
 const changeFav=()=>{
   isFavorited.value=!isFavorited.value
 }
+
+const search=()=>{
+  isSearching.value = true
+  filterActorList()
+}
+
+const handlePageChange=(page:number)=>{
+  currentPage.value = page
+  loadActorList()
+}
+
+const goToDetail=(id:number)=>{
+  router.push(`/actor/${id}`)
+}
+
+const handleHonorChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  honorIndex.value = index
+  currentPage.value = 1
+  switch(index) {
+    case 0:
+      selectedHonor.value = undefined
+      break
+    case 1:
+      selectedHonor.value = 1
+      break
+    case 2:
+      selectedHonor.value = 2
+      break
+    case 3:
+      selectedHonor.value = 3
+      break
+    case 4:
+      selectedHonor.value = 4
+      break
+  }
+  loadActorList()
+}
+
+const handleYearChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  yearIndex.value = index
+  currentPage.value = 1
+  loadActorList()
+}
+
+const handleSortChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  sortIndex.value = index
+  currentPage.value = 1
+  loadActorList()
+}
+
+const filterActorList=()=>{
+  if (!input3.value) {
+    isSearching.value = false
+    actorList.value = [...originalActorList.value]
+    totalcount.value = originalActorList.value.length
+    return
+  }
+  
+  const keyword = input3.value.toLowerCase()
+  actorList.value = originalActorList.value.filter(item => {
+    return (
+      item.name.toLowerCase().includes(keyword) ||
+      item.title.toLowerCase().includes(keyword)
+    )
+  })
+  totalcount.value = actorList.value.length
+}
+
+const loadActorList=async ()=>{
+  try {
+    loading.value = true
+    const res = await getActorList(
+      currentPage.value,
+      pageSize.value
+    )
+    if (res.code === 200) {
+      originalActorList.value = (res.data.list || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        title: item.title,
+        avatar: item.avatar || '/home/banner1.png',
+        works: item.works || [],
+        fansCount: item.fansCount || 0,
+        worksCount: item.worksCount || 0,
+        awardsCount: item.awardsCount || 0
+      }))
+      actorList.value = [...originalActorList.value]
+      totalcount.value = res.data.total || 0
+    }
+  } catch (error) {
+    console.error('加载演员列表失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(()=>{
+  loadActorList()
+})
 </script>
 <template>
   <!-- 搜索框 -->
   <div class="search-container">
     <div class="search-wrapper">
-      <el-input v-model="input3" placeholder="搜索名家..." class="custom-search-input">
+      <el-input 
+        v-model="input3" 
+        placeholder="搜索名家..." 
+        class="custom-search-input"
+        @keyup.enter="search"
+      >
         <template #append>
-          <el-button :icon="Search" @click="search" class="search-button" />
+          <el-button :icon="Search" @click="search" class="search-button">搜索</el-button>
         </template>
       </el-input>
     </div>
 
     <div class="filter-wrapper">
-      <shai-xuan-h v-model:cate-list="rongYu"></shai-xuan-h>
-      <shai-xuan-h v-model:cate-list="years"></shai-xuan-h>
-      <shai-xuan-h v-model:cate-list="paiXu"></shai-xuan-h>
+      <!-- 荣誉筛选 -->
+      <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">荣誉</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in rongYu.slice(1)" 
+            :key="index" 
+            @click="handleHonorChange(index)"
+            :class="{ active: honorIndex === index, disabled: isSearching }" 
+            class="filter-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- 年代筛选 -->
+      <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">年代</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in years.slice(1)" 
+            :key="index" 
+            @click="handleYearChange(index)"
+            :class="{ active: yearIndex === index, disabled: isSearching }" 
+            class="filter-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- 排序 -->
+      <div class="filter-item" :class="{ disabled: isSearching }">
+        <div class="filter-label">
+          <span class="label-text">排序</span>
+        </div>
+        <div class="filter-options">
+          <span 
+            v-for="(item, index) in paiXu.slice(1)" 
+            :key="index" 
+            @click="handleSortChange(index)"
+            :class="{ active: sortIndex === index, disabled: isSearching }" 
+            class="filter-tag sort-tag"
+          >
+            {{ item.name }}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
   <div class="playlist-container">
     <div class="playlist-header">
       <div class="header-title">
-        <span class="title-text">剧目列表</span>
-        <span class="title-count">共 {{ totalcount }} 部剧目</span>
+        <span class="title-text">名家风采</span>
+        <span class="title-count">共 {{ totalcount }} 位名家</span>
       </div>
     </div>
 
     <div class="playlist-grid">
-      <div v-for="i in 10" :key="i">
-        <actor_card image="/home/banner1.png" name="李淑芬" desc="国家一级演员"  act="三滴血" watch-people="观看人数"
-          love-people="喜爱人数" favorite-count="16"
-          @change-like="changeLike" :is-liked= isLiked 
-            :is-favorited= isFavorited
-            @change-favorite="changeFav"
-          >
-
-        </actor_card>
-
+      <div v-for="actor in actorList" :key="actor.id" class="playlist-item" @click="goToDetail(actor.id)">
+        <actor_card 
+          :image="actor.avatar || '/home/banner1.png'" 
+          :name="actor.name" 
+          :desc="actor.title"  
+          :act="actor.works[0] || '暂无作品'" 
+          watch-people="观看人数"
+          love-people="喜爱人数" 
+          favorite-count="16"
+          :is-liked="isLiked" 
+          :is-favorited="isFavorited"
+          @change-like="changeLike" 
+          @change-favorite="changeFav"
+        />
       </div>
-
-
+      <div v-if="actorList.length === 0 && !loading" class="empty-state">
+        <span>暂无名家数据</span>
+      </div>
     </div>
     <div class="playlist-footer">
-      <el-pagination background layout="prev, pager, next" :total="1000" />
+      <el-pagination 
+        background 
+        layout="prev, pager, next" 
+        :total="totalcount" 
+        :current-page="currentPage"
+        :page-size="pageSize"
+        @current-change="handlePageChange"
+      />
     </div>
   </div>
 </template>
@@ -120,6 +315,12 @@ const changeFav=()=>{
   margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.2s;
+}
+
+.filter-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .filter-item:last-child {
@@ -169,6 +370,17 @@ const changeFav=()=>{
 .filter-tag.active {
   background-color: #409eff;
   color: #ffffff;
+}
+
+.filter-tag.disabled {
+  cursor: not-allowed;
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+}
+
+.filter-tag.disabled:hover {
+  background-color: #f5f7fa;
+  color: #c0c4cc;
 }
 
 .sort-tag {
@@ -336,6 +548,19 @@ const changeFav=()=>{
   padding: 60px 20px;
   color: #94a3b8;
   font-size: 14px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #e2e8f0;
 }
 
 /* 响应式设计 */
