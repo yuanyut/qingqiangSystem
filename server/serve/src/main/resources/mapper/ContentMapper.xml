@@ -11,9 +11,12 @@
     </select>
 
     <select id="selectCultureList" resultType="com.qqsystem.serve.entity.Content">
-        SELECT id, title, cover, create_time
+        SELECT id, title, cover, create_time, category
         FROM content
         WHERE biz_type = 'culture'
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
         ORDER BY create_time DESC
         LIMIT #{offset}, #{size}
     </select>
@@ -22,10 +25,13 @@
         SELECT COUNT(*)
         FROM content
         WHERE biz_type = 'culture'
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
     </select>
 
     <select id="selectCultureDetail" resultType="com.qqsystem.serve.entity.Content">
-        SELECT id, title, content, cover, create_time
+        SELECT id, title, content, cover, create_time, category
         FROM content
         WHERE id = #{id} AND biz_type = 'culture'
     </select>
@@ -40,7 +46,8 @@
             media_url,
             cover,
             view_count,
-            like_count
+            like_count,
+            category
         ) VALUES (
                      #{title},
                      #{bizType},
@@ -50,7 +57,8 @@
                      #{mediaUrl},
                      #{cover},
                      #{viewCount},
-                     #{likeCount}
+                     #{likeCount},
+                     #{category}
                  )
     </insert>
 
@@ -65,7 +73,8 @@
             media_url = #{mediaUrl},
             cover = #{cover},
             view_count = #{viewCount},
-            like_count = #{likeCount}
+            like_count = #{likeCount},
+            category = #{category}
         WHERE id = #{id}
     </update>
 

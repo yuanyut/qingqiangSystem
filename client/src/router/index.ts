@@ -8,6 +8,7 @@ import actorInfo from '@/layouts/client/actorInfo.vue'
 import actorDetail from '@/layouts/client/actorDetail.vue'
 import communicate from '@/layouts/client/communicate.vue'
 import knowledge from '@/layouts/client/knowledge.vue'
+import knowledgeDetail from '@/layouts/client/knowledgeDetail.vue'
 import news from '@/layouts/client/news.vue'
 import profile from '@/layouts/client/profile.vue'
 const router = createRouter({
@@ -51,6 +52,10 @@ const router = createRouter({
         {
           path:'knowledge',
           component:knowledge,
+        },
+        {
+          path:'knowledge/:id',
+          component:knowledgeDetail,
         },
         {
           path:'news',

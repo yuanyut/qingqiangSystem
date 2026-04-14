@@ -18,10 +18,10 @@ public class CultureController {
     private ContentService contentService;
 
     @GetMapping("/list")
-    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size) {
+    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String category) {
         Map<String, Object> res = new HashMap<>();
-        List<Content> cultureList = contentService.getCultureList(page, size);
-        Long total = contentService.countCultureList();
+        List<Content> cultureList = contentService.getCultureList(page, size, category);
+        Long total = contentService.countCultureList(category);
         res.put("list", cultureList);
         res.put("total", total);
         return ResponseResult.success(res);

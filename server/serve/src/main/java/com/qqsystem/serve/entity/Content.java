@@ -24,6 +24,8 @@ public class Content {
 
     private Integer likeCount;
 
+    private String category;
+
     private Date createTime;
 
     private Date updateTime;
@@ -108,6 +110,14 @@ public class Content {
 
     public void setLikeCount(Integer likeCount) {
         this.likeCount = likeCount;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Date getCreateTime() {

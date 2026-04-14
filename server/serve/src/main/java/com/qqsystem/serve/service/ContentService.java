@@ -5,9 +5,9 @@ import com.qqsystem.serve.entity.Content;
 import java.util.List;
 
 public interface ContentService {
-    List<Content> getCultureList(int page, int size);
+    List<Content> getCultureList(int page, int size, String category);
 
-    Long countCultureList();
+    Long countCultureList(String category);
 
     Content getCultureDetail(Long id);
 

@@ -1,14 +1,127 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
-import CategoryNav from '@/components/client/CategoryNav.vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
-import card_knowledge1 from '@/components/client/card_knowledge1.vue'
-import CardTend from '@/components/client/cardTend.vue'
-const search = () => {
-  console.log('搜索')
-}
+import { getCultureList } from '@/api/knowledge'
+import type { Content } from '@/api/knowledge'
+import { knowledgeCategories, knowledgeSortOptions } from '@/types/knowledge'
+
+const router = useRouter()
+const totalcount = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const originalCultureList = ref<Content[]>([])
+const cultureList = ref<Content[]>([])
+const loading = ref(false)
+
 const input = ref('')
+const selectedCategory = ref<string | undefined>()
+const selectedSort = ref<string | undefined>()
+
+// 筛选器选中状态
+const categoryIndex = ref(0)
+const sortIndex = ref(0)
+
+// 是否处于搜索状态
+const isSearching = ref(false)
+
+const search = () => {
+  isSearching.value = true
+  filterCultureList()
+}
+
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  loadCultureList()
+}
+
+const goToDetail = (id: number) => {
+  router.push(`/knowledge/${id}`)
+}
+
+const handleCategoryChange = (index: number) => {
+  if (isSearching.value) {
+    return
+  }
+  categoryIndex.value = index
+  currentPage.value = 1
+  if (index === 0) {
+    selectedCategory.value = undefined
+  } else {
+    selectedCategory.value = knowledgeCategories[index]?.name
+  }
+  loadCultureList()
+}
+
+const handleSortChange = (index: number) => {
+  if (isSearching.value) {
+    return
+  }
+  sortIndex.value = index
+  currentPage.value = 1
+  loadCultureList()
+}
+
+const filterCultureList = () => {
+  if (!input.value) {
+    isSearching.value = false
+    cultureList.value = [...originalCultureList.value]
+    totalcount.value = originalCultureList.value.length
+    return
+  }
+  
+  const keyword = input.value.toLowerCase()
+  cultureList.value = originalCultureList.value.filter(item => {
+    return (
+      item.title.toLowerCase().includes(keyword) ||
+      item.content.toLowerCase().includes(keyword)
+    )
+  })
+  totalcount.value = cultureList.value.length
+}
+
+const loadCultureList = async () => {
+  try {
+    loading.value = true
+    const res = await getCultureList(
+      currentPage.value,
+      pageSize.value
+    )
+    if (res && res.code === 200 && res.data) {
+      originalCultureList.value = (res.data.list || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        content: item.content,
+        cover: item.cover || '/home/banner1.png',
+        status: item.status || 1,
+        viewCount: item.viewCount || 0,
+        likeCount: item.likeCount || 0,
+        category: item.category || '',
+        createTime: item.createTime || '',
+        updateTime: item.updateTime || ''
+      }))
+    
+      // 应用分类筛选
+      if (selectedCategory.value) {
+        cultureList.value = originalCultureList.value.filter(item => 
+          item.category === selectedCategory.value
+        )
+      } else {
+        cultureList.value = [...originalCultureList.value]
+      }
+      totalcount.value = cultureList.value.length
+    }
+  } catch (error) {
+    console.error('加载文化内容失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadCultureList()
+})
 </script>
 <template>
   <div class="culture-home">
@@ -19,499 +132,466 @@ const input = ref('')
           v-model="input"
           placeholder="探索文化瑰宝，输入关键词..."
           class="custom-search-input"
+          @keyup.enter="search"
         >
           <template #append>
-            <el-button :icon="Search" @click="search" class="search-button" />
+            <el-button :icon="Search" @click="search" class="search-button">搜索</el-button>
           </template>
         </el-input>
       </div>
+
+      <div class="filter-wrapper">
+        <!-- 分类筛选 -->
+        <div class="filter-item" :class="{ disabled: isSearching }">
+          <div class="filter-label">
+            <span class="label-text">分类</span>
+          </div>
+          <div class="filter-options">
+            <span 
+              v-for="(item, index) in knowledgeCategories" 
+              :key="index" 
+              @click="handleCategoryChange(index)"
+              :class="{ active: categoryIndex === index, disabled: isSearching }" 
+              class="filter-tag"
+            >
+              {{ item.name }}
+            </span>
+          </div>
+        </div>
+        
+        <!-- 排序 -->
+        <div class="filter-item" :class="{ disabled: isSearching }">
+          <div class="filter-label">
+            <span class="label-text">排序</span>
+          </div>
+          <div class="filter-options">
+            <span 
+              v-for="(item, index) in knowledgeSortOptions" 
+              :key="index" 
+              @click="handleSortChange(index)"
+              :class="{ active: sortIndex === index, disabled: isSearching }" 
+              class="filter-tag sort-tag"
+            >
+              {{ item.name }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 文化分类导航 -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">总览</h2>
-        <span class="section-subtitle">探寻文化脉络</span>
-      </div>
-      <div class="nav-grid">
-        <div v-for="item in 7" :key="item">
-          <CategoryNav title="历史" :nums="14" />
-        </div>
-      </div>
-    </section>
-
-    <!-- 特色推荐 · 精选内容 -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">特色推荐 · 精选内容</h2>
-        <span class="section-subtitle">不容错过的文化精华</span>
-      </div>
-      <div class="featured-list">
-        <div v-for="i in 2" :key="i" class="featured-card">
-          <h3 class="featured-title">秦腔的千年传承</h3>
-          <p class="featured-desc">从明清到现代，秦腔如何成为西北人民的灵魂之声</p>
-          <div class="featured-meta">
-            <span>2.3w阅读</span>
-            <span>点赞</span>
-            <span>1人评论</span>
-          </div>
-          <div class="featured-link">阅读全文 →</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 双栏布局 (左侧文章 + 右侧卡片) -->
-    <section class="section">
-      <div class="two-columns">
-        <!-- 左栏：秦腔历史 -->
-        <div class="column">
-          <div class="column-header">
-            <h3>秦腔历史</h3>
-          </div>
-          <div class="card-list">
-            <div v-for="i in 3" :key="i">
-              <card_knowledge
-                title="秦腔的起源与发展"
-                desc="秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代秦腔起源于西周，形成于秦代"
-              >
-                <template #footer>阅读</template>
-              </card_knowledge>
-            </div>
-          </div>
-          <div class="more-link">查看更多历史文章 →</div>
-        </div>
-
-        <!-- 右栏：文化数据 -->
-        <div class="column">
-          <div class="column-header">
-            <h3>文化数据</h3>
-          </div>
-          <div class="card-list">
-            <div v-for="i in 5" :key="i">
-              <card_knowledge title="现存传统剧目秦腔的起源与发展" />
-            </div>
-          </div>
-          <div class="more-link">查看详情 →</div>
+    <div class="playlist-container">
+      <div class="playlist-header">
+        <div class="header-title">
+          <span class="title-text">秦腔文化知识</span>
+          <span class="title-count">共 {{ totalcount }} 条内容</span>
         </div>
       </div>
 
-      <!-- 第二行双栏 -->
-      <div class="two-columns">
-        <!-- 左栏：艺术特色 -->
-        <div class="column">
-          <div class="column-header">
-            <h3>艺术特色</h3>
-          </div>
-          <div class="card-list">
-            <div v-for="i in 3" :key="i">
-              <card_knowledge title="秦腔的起源与发展">
-                <template #footer>3种主要板式</template>
-              </card_knowledge>
-            </div>
-          </div>
-          <div class="more-link">查看更多历史文章 →</div>
-        </div>
-
-        <!-- 右栏：文化数据 -->
-        <div class="column">
-          <div class="column-header">
-            <h3>经典唱词</h3>
-          </div>
-          <div class="card-list">
-            <div v-for="i in 4" :key="i">
-              <card_knowledge  desc="祖籍陕西">
-                <template #footer>
-                  《三滴血》
-                </template>
-              </card_knowledge>
-            </div>
-          </div>
-          <div class="more-link">更多 →</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 图集专区 · 视觉文化 -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">秦腔图集</h2>
-        <span class="more-text">更多 →</span>
-      </div>
-      <div class="gallery-grid">
-        <div v-for="i in 2" :key="i">
-          <card_knowledge1 title="12张图" />
-        </div>
-      </div>
-    </section>
-
-    <!-- 视频专区 -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">文化视频</h2>
-        <span class="more-text">更多 →</span>
-      </div>
-      <div class="gallery-grid">
-        <div v-for="i in 2" :key="i">
-          <card_knowledge1 title="12张图">
-            <template #cardAttr>
-              <div class="video-meta">
-                <div>时长</div>
-                <div>2.3w播放</div>
-              </div>
-            </template>
-          </card_knowledge1>
-        </div>
-      </div>
-    </section>
-
-    <!-- 非遗传承 -->
-    <section class="section">
-      <div class="section-header">
-        <h2 class="section-title">非遗传承</h2>
-        <span class="section-subtitle">匠心 · 守艺</span>
-      </div>
-      <div class="heritage-list">
-        <div v-for="i in 3" :key="i">
-          <CardTend
-            title="国家级非遗代表性传承人"
-            desc="国家级非遗代表性传承人李淑芳、李小锋、马友仙等50余位艺术家入选"
+      <div class="playlist-grid">
+        <div v-for="item in cultureList" :key="item.id" class="playlist-item" @click="goToDetail(item.id)">
+          <card_knowledge
+            :image="item.cover"
+            :title="item.title"
+            :desc="(item.content || '').substring(0, 100) + '...'"
           >
             <template #footer>
-              <div class="heritage-footer">了解更多 →</div>
+              <div class="card-footer">
+                <span>{{ item.viewCount }} 阅读</span>
+                <span>{{ item.likeCount }} 点赞</span>
+                <span>{{ item.category }}</span>
+              </div>
             </template>
-          </CardTend>
+          </card_knowledge>
+        </div>
+        <div v-if="cultureList.length === 0 && !loading" class="empty-state">
+          <span>暂无文化内容数据</span>
         </div>
       </div>
-    </section>
+
+      <div class="playlist-footer">
+        <el-pagination 
+          background 
+          layout="prev, pager, next" 
+          :total="totalcount" 
+          :current-page="currentPage"
+          :page-size="pageSize"
+          @current-change="handlePageChange"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* 整体风格变量 */
-.culture-home {
-  /* max-width: 1280px; */
-  margin: 0 auto;
-  padding: 24px 32px;
-  /* background: #fefaf5; */
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
-  color: #2c2418;
-}
-
-/* 搜索区域 */
 .search-container {
-  /* background: linear-gradient(135deg, #ffffff 0%, #fcf6ed 100%); */
-  border-radius: 32px;
-  padding: 32px 24px;
-  margin-bottom: 40px;
-  /* box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02); */
-  backdrop-filter: blur(2px);
-  transition: box-shadow 0.3s ease;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
 }
 
+/* 搜索框样式 */
 .search-wrapper {
+  margin-bottom: 24px;
   display: flex;
   justify-content: center;
 }
 
 .custom-search-input {
   width: 100%;
-  max-width: 560px;
-  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  max-width: 400px;
 }
 
 :deep(.custom-search-input .el-input__wrapper) {
-  border-radius: 60px 0 0 60px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-  padding: 4px 20px;
-  border: 1px solid #f0e2d0;
-  background-color: #ffffff;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 0 0 0 1px #e4e7ed;
   transition: all 0.2s;
 }
 
 :deep(.custom-search-input .el-input__wrapper:hover) {
-  border-color: #d4b48c;
-  box-shadow: 0 6px 14px rgba(184, 124, 78, 0.08);
+  box-shadow: 0 0 0 1px #c0c4cc;
 }
 
 :deep(.custom-search-input .el-input__wrapper.is-focus) {
-  border-color: #b87c4e;
-  box-shadow: 0 0 0 3px rgba(184, 124, 78, 0.12);
+  box-shadow: 0 0 0 1px #409eff;
 }
 
 .search-button {
-  border-radius: 0 60px 60px 0;
-  background: #f5ede2;
-  border: 1px solid #f0e2d0;
-  border-left: none;
-  color: #b87c4e;
-  transition: all 0.2s ease;
-  padding: 12px 28px;
-  font-weight: 500;
+  border-radius: 0 8px 8px 0;
+  background-color: #f5f7fa;
+  transition: all 0.2s;
 }
 
 .search-button:hover {
-  background: #b87c4e;
-  color: white;
-  border-color: #b87c4e;
-  transform: scale(1.02);
+  background-color: #ecf5ff;
+  color: #409eff;
 }
 
-/* 通用区块样式 */
-.section {
-  margin-bottom: 52px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 24px;
-  border-left: 5px solid #d9b48b;
-  padding-left: 18px;
-}
-
-.section-title {
-  font-size: 1.65rem;
-  font-weight: 600;
-  margin: 0;
-  background: linear-gradient(135deg, #3a2c21, #6b4c38);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  letter-spacing: -0.01em;
-}
-
-.section-subtitle {
-  font-size: 0.85rem;
-  color: #a1846a;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-}
-
-.more-text {
-  font-size: 0.9rem;
-  color: #b87c4e;
-  cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
-  font-weight: 500;
-}
-
-.more-text:hover {
-  color: #8b5a3a;
-  transform: translateX(4px);
-}
-
-/* 文化分类导航网格 */
-.nav-grid {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin-top: 8px;
-}
-
-/* 特色精选卡片 */
-.featured-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.featured-card {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 24px 28px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.25s ease;
-  border: 1px solid #f5e8db;
-}
-
-.featured-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 30px -12px rgba(98, 67, 41, 0.08);
-  border-color: #eedbcb;
-}
-
-.featured-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin: 0 0 10px 0;
-  color: #3a2c21;
-}
-
-.featured-desc {
-  font-size: 0.95rem;
-  color: #5e4c38;
-  line-height: 1.5;
-  margin-bottom: 14px;
-}
-
-.featured-meta {
-  display: flex;
-  gap: 20px;
-  font-size: 0.8rem;
-  color: #a1846a;
-  margin-bottom: 16px;
-}
-
-.featured-link {
-  font-weight: 500;
-  color: #b87c4e;
-  cursor: pointer;
-  display: inline-block;
-  transition: color 0.2s;
-}
-
-.featured-link:hover {
-  color: #8b5a3a;
-  text-decoration: underline;
-}
-
-/* 双栏布局 */
-.two-columns {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
-}
-
-.column {
-  flex: 1;
-  min-width: 260px;
-  background: #f7f7f7cc;
-  backdrop-filter: blur(2px);
-  border-radius: 28px;
-  padding: 16px;
-  transition: all 0.2s;
-}
-
-.column-header {
-  border-bottom: 2px solid #efdfcf;
-  padding-bottom: 12px;
+/* 筛选区域 */
+.filter-wrapper {
   margin-bottom: 20px;
 }
 
-.column-header h3 {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin: 0;
-  color: #4d3826;
-  letter-spacing: -0.2px;
-}
-
-.card-list {
+.filter-item {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: opacity 0.2s;
 }
 
-.more-link {
-  margin-top: 20px;
-  text-align: right;
+.filter-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.filter-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.filter-label {
+  min-width: 56px;
+  font-size: 14px;
   font-weight: 500;
-  color: #b87c4e;
+  color: #606266;
+  line-height: 32px;
+}
+
+.label-text {
+  position: relative;
+}
+
+.filter-options {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-tag {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: #606266;
+  background-color: #f5f7fa;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 0.9rem;
+  line-height: 1;
+  user-select: none;
 }
 
-.more-link:hover {
-  color: #8b5a3a;
-  transform: translateX(4px);
+.filter-tag:hover {
+  background-color: #ecf5ff;
+  color: #409eff;
 }
 
-/* 图集与视频网格 */
-.gallery-grid {
-  display: flex;
-  gap: 28px;
-  flex-wrap: wrap;
+.filter-tag.active {
+  background-color: #409eff;
+  color: #ffffff;
 }
 
-.video-meta {
+.filter-tag.disabled {
+  cursor: not-allowed;
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+}
+
+.filter-tag.disabled:hover {
+  background-color: #f5f7fa;
+  color: #c0c4cc;
+}
+
+.sort-tag {
+  /* 排序标签特殊样式，如需区分可在此添加 */
+}
+
+.playlist-container {
+  /* background: #f8f9fa; */
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* 头部区域 */
+.playlist-header {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: #b5a084;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.title-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  position: relative;
+  padding-left: 16px;
+}
+
+.title-text::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #d2691e, #8B5A2B);
+  border-radius: 2px;
+}
+
+.title-count {
+  font-size: 13px;
+  color: #94a3b8;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.view-mode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.view-mode:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.mode-icon {
+  font-size: 14px;
+}
+
+/* 网格布局 */
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
   margin-top: 8px;
 }
 
-/* 非遗传承列表 */
-.heritage-list {
+.playlist-item {
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease backwards;
+}
+
+.playlist-item:hover {
+  transform: translateY(-4px);
+}
+
+.playlist-footer {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.heritage-footer {
-  font-weight: 500;
-  color: #b87c4e;
-  transition: color 0.2s;
+/* 卡片底部样式 */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.heritage-footer:hover {
-  color: #8b5a3a;
-  text-decoration: underline;
+/* 为每个卡片添加延迟动画 */
+.playlist-item:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.playlist-item:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.playlist-item:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.playlist-item:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+.playlist-item:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+.playlist-item:nth-child(6) {
+  animation-delay: 0.25s;
+}
+
+.playlist-item:nth-child(7) {
+  animation-delay: 0.3s;
+}
+
+.playlist-item:nth-child(8) {
+  animation-delay: 0.35s;
+}
+
+.playlist-item:nth-child(9) {
+  animation-delay: 0.4s;
+}
+
+/* 动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 空状态或加载状态（可选） */
+.playlist-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #e2e8f0;
 }
 
 /* 响应式设计 */
-@media (max-width: 860px) {
-  .culture-home {
-    padding: 20px 20px;
-  }
-
-  .two-columns {
-    gap: 28px;
-  }
-
-  .nav-grid {
-    gap: 16px;
-  }
-
-  .section-title {
-    font-size: 1.4rem;
+@media (max-width: 1400px) {
+  .playlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
-@media (max-width: 640px) {
-  .search-container {
-    padding: 24px 16px;
+@media (max-width: 768px) {
+  .playlist-container {
+    padding: 16px;
   }
 
-  .two-columns {
+  .playlist-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+  }
+
+  .playlist-header {
     flex-direction: column;
-    gap: 32px;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
-  .column {
-    width: 100%;
+  .title-text {
+    font-size: 18px;
   }
 
-  .featured-card {
-    padding: 20px;
-  }
-
-  .gallery-grid {
-    gap: 16px;
+  .title-count {
+    font-size: 12px;
   }
 }
 
-/* 优雅滚动条 */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+/* 响应式 */
+@media (max-width: 768px) {
+  .search-container {
+    padding: 16px;
+  }
 
-::-webkit-scrollbar-track {
-  background: #f1e7dd;
-  border-radius: 6px;
-}
+  .filter-item {
+    flex-direction: column;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #cfb797;
-  border-radius: 6px;
-}
+  .filter-label {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #b48a5a;
+  .filter-tag {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .custom-search-input {
+    max-width: 100%;
+  }
 }
 </style>

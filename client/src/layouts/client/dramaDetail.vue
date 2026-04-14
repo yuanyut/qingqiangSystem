@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDramaDetail } from '@/api/drama'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
@@ -16,6 +16,7 @@ const goBack = () => {
 const loadDramaDetail = async () => {
   try {
     loading.value = true
+    drama.value = null // 清空旧数据
     const res = await getDramaDetail(dramaId.value)
     if (res.code === 200) {
       drama.value = {
@@ -39,6 +40,14 @@ const loadDramaDetail = async () => {
     loading.value = false
   }
 }
+
+// 监听路由参数变化
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    dramaId.value = parseInt(newId as string)
+    loadDramaDetail()
+  }
+})
 
 onMounted(() => {
   loadDramaDetail()

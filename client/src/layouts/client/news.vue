@@ -217,7 +217,7 @@ console.log(calendarValue.value+"6666")
       </div>
     </section>
     <!-- 活动日历 -->
-    <section class="section">
+    <!-- <section class="section">
       <div class="section-header">
         <h2 class="section-title">活动日历</h2>
         <span class="more-text">更多 →</span>
@@ -230,7 +230,7 @@ console.log(calendarValue.value+"6666")
           </template>
         </el-calendar>
       </div>
-    </section>
+    </section> -->
 
     <!-- 媒体聚焦 -->
     <section class="section">
