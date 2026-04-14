@@ -10,4 +10,74 @@
         WHERE id = #{id}
     </select>
 
+    <select id="selectCultureList" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, cover, create_time
+        FROM content
+        WHERE biz_type = 'culture'
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countCultureList" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM content
+        WHERE biz_type = 'culture'
+    </select>
+
+    <select id="selectCultureDetail" resultType="com.qqsystem.serve.entity.Content">
+        SELECT id, title, content, cover, create_time
+        FROM content
+        WHERE id = #{id} AND biz_type = 'culture'
+    </select>
+
+    <insert id="insert" parameterType="com.qqsystem.serve.entity.Content">
+        INSERT INTO content (
+            title,
+            biz_type,
+            biz_id,
+            type,
+            content,
+            media_url,
+            cover,
+            view_count,
+            like_count
+        ) VALUES (
+                     #{title},
+                     #{bizType},
+                     #{bizId},
+                     #{type},
+                     #{content},
+                     #{mediaUrl},
+                     #{cover},
+                     #{viewCount},
+                     #{likeCount}
+                 )
+    </insert>
+
+    <update id="updateById" parameterType="com.qqsystem.serve.entity.Content">
+        UPDATE content
+        SET
+            title = #{title},
+            biz_type = #{bizType},
+            biz_id = #{bizId},
+            type = #{type},
+            content = #{content},
+            media_url = #{mediaUrl},
+            cover = #{cover},
+            view_count = #{viewCount},
+            like_count = #{likeCount}
+        WHERE id = #{id}
+    </update>
+
+    <update id="increaseViewCount">
+        UPDATE content
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM content
+        WHERE id = #{id} AND biz_type = 'culture'
+    </delete>
+
 </mapper>
