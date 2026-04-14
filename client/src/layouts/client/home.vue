@@ -70,7 +70,7 @@ const changeFav=()=>{
     <!-- 双栏内容区(资讯+名家) -->
     <div style="padding:25px;position: relative;">
       <div class="hot_header">
-        <span class="title">双栏内容区(资讯+名家)</span>
+        <span class="title">双栏内容区</span>
       </div>
       <div class="zixun_centent ">
         <!-- 秦腔资讯 -->
