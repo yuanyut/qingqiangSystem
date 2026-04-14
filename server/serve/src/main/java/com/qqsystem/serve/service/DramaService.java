@@ -9,9 +9,9 @@ public interface DramaService {
 
     Drama getDetailWithRelation(Long id);
 
-    List<Drama> pageList(int page, int size, Long categoryId);
+    List<Drama> pageList(int page, int size, Long categoryId, String keyword);
 
-    Long countList(Long categoryId);
+    Long countList(Long categoryId, String keyword);
 
     boolean add(Drama drama);
 

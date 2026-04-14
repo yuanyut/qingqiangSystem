@@ -10,9 +10,11 @@ public interface DramaMapper {
 
     List<Drama> selectList(@Param("offset") int offset,
                            @Param("size") int size,
-                           @Param("categoryId") Long categoryId);
+                           @Param("categoryId") Long categoryId,
+                           @Param("keyword") String keyword);
 
-    Long countList(@Param("categoryId") Long categoryId);
+    Long countList(@Param("categoryId") Long categoryId,
+                 @Param("keyword") String keyword);
 
     int insert(Drama drama);
 

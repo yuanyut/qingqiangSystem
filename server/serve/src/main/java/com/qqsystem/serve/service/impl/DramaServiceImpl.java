@@ -98,14 +98,14 @@ public class DramaServiceImpl implements DramaService {
         return drama;
     }
     @Override
-    public List<Drama> pageList(int page, int size, Long categoryId) {
+    public List<Drama> pageList(int page, int size, Long categoryId, String keyword) {
         int offset = (page - 1) * size;
-        return dramaMapper.selectList(offset, size, categoryId);
+        return dramaMapper.selectList(offset, size, categoryId, keyword);
     }
 
     @Override
-    public Long countList(Long categoryId) {
-        return dramaMapper.countList(categoryId);
+    public Long countList(Long categoryId, String keyword) {
+        return dramaMapper.countList(categoryId, keyword);
     }
 
     @Override

@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import clientPage from '@/views/clientPage.vue'
 import home from '@/layouts/client/home.vue'
 import drama from '@/layouts/client/drama.vue'
+import dramaDetail from '@/layouts/client/dramaDetail.vue'
 import actorInfo from '@/layouts/client/actorInfo.vue'
 import communicate from '@/layouts/client/communicate.vue'
 import knowledge from '@/layouts/client/knowledge.vue'
@@ -29,6 +30,10 @@ const router = createRouter({
         {
          path:'drama',
          component:drama, 
+        },
+        {
+          path:'drama/:id',
+          component:dramaDetail,
         },
         {
           path:'actorInfo',

@@ -19,11 +19,12 @@ public class DramaController {
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> list(@RequestParam int page,
                                     @RequestParam int size,
-                                    @RequestParam(required = false) Long categoryId) {
+                                    @RequestParam(required = false) Long categoryId,
+                                    @RequestParam(required = false) String keyword) {
 
         Map<String, Object> res = new HashMap<>();
-        res.put("list", dramaService.pageList(page, size, categoryId));
-        res.put("total", dramaService.countList(categoryId));
+        res.put("list", dramaService.pageList(page, size, categoryId, keyword));
+        res.put("total", dramaService.countList(categoryId, keyword));
         return ResponseResult.success(res);
     }
 

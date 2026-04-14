@@ -1,22 +1,81 @@
 <script setup lang="ts">
-import { ref,reactive } from 'vue'
+import { ref,reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import cardHome from '@/components/client/card_home.vue';
 import { cate,years,paixu } from '@/types/darams';
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
+import { getDramaList } from '@/api/drama';
+
+const router = useRouter()
 const totalcount = ref(0)
-const search=()=>{
-  totalcount.value=35
-}
+const currentPage = ref(1)
+const pageSize = ref(10)
+const dramaList = ref<any[]>([])
+const loading = ref(false)
+
 const input3 = ref('')
+const selectedCategory = ref<number | undefined>()
+const selectedYear = ref<string>()
+const selectedSort = ref<string>()
+
 const isLiked=ref(true)
 const isFavorited=ref(true)
+
 const changeLike=(index:boolean)=>{
   isLiked.value=index
 }
 const changeFav=()=>{
   isFavorited.value=!isFavorited.value
 }
+
+const search=async ()=>{
+  currentPage.value = 1
+  await loadDramaList()
+}
+
+const handlePageChange=(page:number)=>{
+  currentPage.value = page
+  loadDramaList()
+}
+
+const goToDetail=(id:number)=>{
+  router.push(`/drama/${id}`)
+}
+
+const loadDramaList=async ()=>{
+  try {
+    loading.value = true
+    const res = await getDramaList(
+      currentPage.value,
+      pageSize.value,
+      selectedCategory.value,
+      input3.value || undefined
+    )
+    if (res.code === 200) {
+      dramaList.value = (res.data.list || []).map((item: any) => ({
+        id: item.id,
+        title: item.name,
+        description: item.intro,
+        categoryId: item.categoryId,
+        categoryName: item.categoryId === 1 ? '传统剧目' : '现代剧目',
+        coverImage: item.cover ? item.cover.replace(/[`\s]/g, '') : '/home/banner1.png',
+        watchCount: item.viewCount || 0,
+        likeCount: 0,
+        createdAt: item.createTime
+      }))
+      totalcount.value = res.data.total || 0
+    }
+  } catch (error) {
+    console.error('加载剧目列表失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(()=>{
+  loadDramaList()
+})
 </script>
 <template>
   <!-- 搜索框 -->
@@ -50,25 +109,35 @@ const changeFav=()=>{
     </div>
     
     <div class="playlist-grid">
-      <div v-for="i in 10" :key="i" class="playlist-item">
+      <div v-for="drama in dramaList" :key="drama.id" class="playlist-item" @click="goToDetail(drama.id)">
         <card-home 
-          image="/home/banner1.png" 
-          name="白蛇传" 
-          desc="这是白蛇传" 
-          cate="传统剧目" 
+          :image="drama.coverImage || '/home/banner1.png'" 
+          :name="drama.title" 
+          :desc="drama.description" 
+          :cate="drama.categoryName" 
           act="演唱者" 
-          watch-people="观看人数"
-          love-people="喜爱人数" 
+          :watch-people="`${drama.watchCount}人`" 
+          :love-people="`${drama.likeCount}人`" 
           favorite-count="16"
-          :is-liked= isLiked 
-          :is-favorited= isFavorited
+          :is-liked="isLiked" 
+          :is-favorited="isFavorited"
           @change-like="changeLike"
           @change-favorite="changeFav"
         />
       </div>
+      <div v-if="dramaList.length === 0 && !loading" class="empty-state">
+        <span>暂无剧目数据</span>
+      </div>
     </div>
     <div class="playlist-footer">
-       <el-pagination background layout="prev, pager, next" :total="1000" />
+       <el-pagination 
+         background 
+         layout="prev, pager, next" 
+         :total="totalcount" 
+         :current-page="currentPage"
+         :page-size="pageSize"
+         @current-change="handlePageChange"
+       />
     </div>
   </div>
 </template>
@@ -285,7 +354,7 @@ const changeFav=()=>{
 }
 /* 为每个卡片添加延迟动画 */
 .playlist-item:nth-child(1) { animation-delay: 0s; }
-.playlist-item:nth-child(2) { animation-delay: 0.05s; }  
+.playlist-item:nth-child(2) { animation-delay: 0.05s; }
 .playlist-item:nth-child(3) { animation-delay: 0.1s; }
 .playlist-item:nth-child(4) { animation-delay: 0.15s; }
 .playlist-item:nth-child(5) { animation-delay: 0.2s; }
@@ -313,6 +382,19 @@ const changeFav=()=>{
   padding: 60px 20px;
   color: #94a3b8;
   font-size: 14px;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #e2e8f0;
 }
 
 /* 响应式设计 */
