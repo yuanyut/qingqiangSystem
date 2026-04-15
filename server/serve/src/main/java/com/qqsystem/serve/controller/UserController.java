@@ -27,7 +27,7 @@ public class UserController {
     
     //登录
     @PostMapping("/login")
-    public ResponseResult<?> login(@RequestBody User user) {
+    public ResponseResult<?> login(@RequestBody User user, HttpServletRequest request) {
 
         User result = userService.login(user.getUsername(), user.getPassword());
 
@@ -40,6 +40,12 @@ public class UserController {
                 result.getUsername(),
                 result.getRole()
         );
+        
+        // 记录登录日志
+        String ip = request.getRemoteAddr();
+        String device = request.getHeader("User-Agent");
+        userService.recordLoginLog(result.getId(), ip, device);
+        
         System.out.println("token=" + token);
         return ResponseResult.success(token);
     }
