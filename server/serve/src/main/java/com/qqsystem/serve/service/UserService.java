@@ -9,7 +9,7 @@ import com.qqsystem.serve.mapper.ActorMapper;
 import com.qqsystem.serve.mapper.BehaviorMapper;
 import com.qqsystem.serve.mapper.ContentMapper;
 import com.qqsystem.serve.mapper.DramaMapper;
-import com.qqsystem.serve.mapper.loginlogmapper;
+import com.qqsystem.serve.mapper.LoginLogMapper;
 import com.qqsystem.serve.mapper.NewsMapper;
 import com.qqsystem.serve.mapper.UserMapper;
 import com.qqsystem.serve.vo.FavoriteVO;
@@ -45,7 +45,7 @@ public class UserService {
     private ContentMapper contentMapper;
     
     @Autowired
-    private loginlogmapper loginLogMapper;
+    private LoginLogMapper loginLogMapper;
 
     public User login(String username, String password) {
 
@@ -363,7 +363,7 @@ public class UserService {
     
     // 记录登录日志
     public void recordLoginLog(Long userId, String ip, String device) {
-        com.qqsystem.serve.entity.loginLog loginLog = new com.qqsystem.serve.entity.loginLog();
+        com.qqsystem.serve.entity.LoginLog loginLog = new com.qqsystem.serve.entity.LoginLog();
         loginLog.setUserId(userId);
         loginLog.setIp(ip);
         loginLog.setDevice(device);

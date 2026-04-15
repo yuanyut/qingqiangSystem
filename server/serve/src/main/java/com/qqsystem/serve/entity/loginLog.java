@@ -2,7 +2,7 @@ package com.qqsystem.serve.entity;
 
 import java.util.Date;
 
-public class loginLog {
+public class LoginLog {
     private Long id;
     private Long userId;
     private String ip;

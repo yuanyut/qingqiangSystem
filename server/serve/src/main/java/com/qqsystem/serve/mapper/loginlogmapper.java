@@ -1,7 +1,7 @@
 package com.qqsystem.serve.mapper;
 
-import com.qqsystem.serve.entity.loginLog;
+import com.qqsystem.serve.entity.LoginLog;
 
-public interface loginlogmapper {
-    void insertLoginLog(loginLog loginLog);
+public interface LoginLogMapper {
+    void insertLoginLog(LoginLog loginLog);
 }
