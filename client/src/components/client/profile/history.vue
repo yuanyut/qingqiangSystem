@@ -1,85 +1,49 @@
 <script setup>
-import { ref, computed ,reactive} from 'vue'
+import { ref, computed ,reactive, onMounted, onActivated} from 'vue'
 import { useRouter } from 'vue-router'
+import { getUserHistory, deleteBehavior, clearBehavior } from '@/api/user'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
 // 浏览历史数据
-const browseHistory = reactive([
-  {
-    id: 1,
-    type: 'drama',
-    title: '三滴血',
-    subtitle: '李淑芳版',
-    coverUrl: '/images/sandixue.jpg',
-    duration: '观看 15分钟',
-    time: '15:30',
-    dateGroup: '今天',
-    timestamp: '2024-03-27 15:30:00'
-  },
-  {
-    id: 2,
-    type: 'interview',
-    title: '秦腔名家李小锋访谈',
-    subtitle: '讲述《火焰驹》背后的故事',
-    coverUrl: '/images/lixf_interview.jpg',
-    duration: '浏览 8分钟',
-    time: '14:20',
-    dateGroup: '今天',
-    timestamp: '2024-03-27 14:20:00'
-  },
-  {
-    id: 3,
-    type: 'video',
-    title: '火焰驹精彩唱段',
-    subtitle: '李小锋主演',
-    coverUrl: '/images/huoyanju_clip.jpg',
-    duration: '观看 5分钟',
-    time: '20:15',
-    dateGroup: '昨天',
-    timestamp: '2024-03-26 20:15:00'
-  },
-  {
-    id: 4,
-    type: 'news',
-    title: '秦腔艺术节资讯',
-    subtitle: '2024秦腔艺术节精彩回顾',
-    coverUrl: '/images/festival_news.jpg',
-    duration: '浏览 3分钟',
-    time: '10:30',
-    dateGroup: '昨天',
-    timestamp: '2024-03-26 10:30:00'
-  },
-  {
-    id: 5,
-    type: 'video',
-    title: '秦腔教学：旦角发声技巧',
-    subtitle: '马友仙老师主讲',
-    coverUrl: '/images/teaching.jpg',
-    duration: '观看 12分钟',
-    time: '3月24日',
-    dateGroup: '更早',
-    timestamp: '2024-03-24 15:20:00'
-  },
-  {
-    id: 6,
-    type: 'drama',
-    title: '周仁回府',
-    subtitle: '任哲中经典版',
-    coverUrl: '/images/zhourenhuifu.jpg',
-    duration: '观看 45分钟',
-    time: '3月23日',
-    dateGroup: '更早',
-    timestamp: '2024-03-23 19:30:00'
+const browseHistory = ref([])
+const loading = ref(false)
+
+// 加载浏览历史数据
+const loadHistory = async () => {
+  try {
+    loading.value = true
+    const res = await getUserHistory()
+    if (res.code === 200) {
+      browseHistory.value = res.data.list || []
+    } else {
+      ElMessage.error('获取浏览历史失败')
+    }
+  } catch (error) {
+    console.error('加载浏览历史失败:', error)
+    ElMessage.error('加载失败，请检查网络')
+  } finally {
+    loading.value = false
   }
-])
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  loadHistory()
+})
+
+// 页面激活时重新加载数据（解决从其他页面浏览后返回个人中心数据不更新的问题）
+onActivated(() => {
+  loadHistory()
+})
 
 // 筛选选项
 const filterOptions = reactive([
   { value: 'all', label: '全部' },
   { value: 'drama', label: '剧目' },
-  { value: 'artist', label: '名家' },
-  { value: 'video', label: '视频' },
+  { value: 'actor', label: '名家' },
+  { value: 'culture', label: '文化' },
   { value: 'news', label: '资讯' }
 ])
 
@@ -94,33 +58,50 @@ const filterLists=(value)=>{
 const filterList=computed(()=>{
   
     if(currentTab.value==='all'){
-      return browseHistory
+      return browseHistory.value
     }
     else{
-      return browseHistory.filter(item => item.type === currentTab.value)
+      return browseHistory.value.filter(item => item.targetType === currentTab.value)
     }
   })
 console.log('这是筛选'+filterList)
 const lableChange=(value)=>{
   if(value==='drama')
     return '剧目'
-  if(value ==='artist')
+  if(value ==='actor')
   return '名家'
-   if(value==='video')
-    return '视频'
+   if(value==='culture')
+    return '文化'
   if(value ==='news')
   return '资讯'
 }
-const clearBtn=()=>{
-  browseHistory.length=0
-}
-const deleteBtn=(id)=>{
-  console.log(id)
-  const index = browseHistory.findIndex(item => item.id === id)
-  if (index !== -1) {
-    browseHistory.splice(index, 1)
+const clearBtn=async()=>{
+  try {
+    await clearBehavior('view')
+    browseHistory.value = []
+    ElMessage.success('清空历史记录成功')
+  } catch (error) {
+    console.error('清空历史记录失败:', error)
+    ElMessage.error('清空历史记录失败，请重试')
   }
+}
+const deleteBtn=async(id)=>{
+  try {
+    await deleteBehavior(id)
+    const index = browseHistory.value.findIndex(item => item.id === id)
+    if (index !== -1) {
+      browseHistory.value.splice(index, 1)
+    }
+    ElMessage.success('删除历史记录成功')
+  } catch (error) {
+    console.error('删除历史记录失败:', error)
+    ElMessage.error('删除历史记录失败，请重试')
+  }
+}
 
+// 跳转到详情页
+const goToDetail = (targetType, targetId) => {
+  router.push(`/${targetType}/${targetId}`)
 }
 </script>
 <template>
@@ -137,6 +118,7 @@ const deleteBtn=(id)=>{
         v-for="filter in filterOptions"
         :key="filter.value"
         class="filter-btn"
+        :class="{ active: currentTab === filter.value }"
         @click="filterLists(filter.value)"
       >
         {{ filter.label }}
@@ -147,11 +129,11 @@ const deleteBtn=(id)=>{
     <div class="history-list">
       <div v-for="item in filterList" :key="item.id" class="date-group">
         <div class="history-items">
-          <div class="history-item">
+          <div class="history-item" @click="goToDetail(item.targetType, item.targetId)">
             <div class="item-cover">
               <img :src="item.coverUrl" :alt="item.title">
-              <div class="cover-type" :class="item.type">
-                {{ lableChange(item.type)}}
+              <div class="cover-type" :class="item.targetType">
+                {{ lableChange(item.targetType)}}
               </div>
             </div>
             
@@ -165,7 +147,7 @@ const deleteBtn=(id)=>{
             </div>
             
             <div class="item-actions">
-              <button class="action-btn" @click="deleteBtn(item.id)">删除</button>
+              <button class="action-btn" @click.stop="deleteBtn(item.id)">删除</button>
             </div>
           </div>
         </div>
@@ -352,7 +334,7 @@ const deleteBtn=(id)=>{
   background: rgba(140, 100, 120, 0.9);
 }
 
-.cover-type.video {
+.cover-type.culture {
   background: rgba(180, 100, 80, 0.9);
 }
 

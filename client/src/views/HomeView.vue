@@ -122,7 +122,8 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
         if (res.code === 200) {
           localStorage.setItem('token', res.data)
           ElMessage.success('登录成功')
-          userInfo.setUserInfo(ruleFormLogin)
+          // 验证token并获取完整用户信息
+          await userInfo.validateToken()
           router.push('/home')
         } else {
           ElMessage.error(res.message || '登录失败')

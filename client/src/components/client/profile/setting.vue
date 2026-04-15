@@ -74,7 +74,7 @@
       </div>
       <div class="section-content">
         <!-- 手机号 -->
-        <div class="setting-item">
+        <!-- <div class="setting-item">
           <div class="setting-label">
             <span class="label-text">手机号</span>
           </div>
@@ -82,10 +82,10 @@
             <span class="value-text">{{ userProfile.phone || '未绑定' }}</span>
             <button class="edit-btn" @click="openEditDialog('phone', userProfile.phone)">更换</button>
           </div>
-        </div>
+        </div> -->
 
         <!-- 邮箱 -->
-        <div class="setting-item">
+        <!-- <div class="setting-item">
           <div class="setting-label">
             <span class="label-text">邮箱</span>
           </div>
@@ -93,7 +93,7 @@
             <span class="value-text">{{ userProfile.email || '未绑定' }}</span>
             <button class="edit-btn" @click="openEditDialog('email', userProfile.email)">更换</button>
           </div>
-        </div>
+        </div> -->
 
         <!-- 密码 -->
         <div class="setting-item">
@@ -136,16 +136,35 @@
         </el-form-item>
         
         <!-- 密码使用密码框 -->
-        <el-form-item v-else-if="editField === 'password'" :label="editFieldLabel" prop="value">
-          <el-input 
-            v-model="editFormData.value" 
-            type="password"
-            :placeholder="`请输入${editFieldLabel}`"
-            :maxlength="editFieldMaxLength"
-            show-password
-            show-word-limit
-          />
-        </el-form-item>
+        <template v-else-if="editField === 'password'">
+          <el-form-item label="旧密码" prop="oldPassword">
+            <el-input 
+              v-model="editFormData.oldPassword" 
+              type="password"
+              placeholder="请输入旧密码"
+              show-password
+            />
+          </el-form-item>
+          <el-form-item label="新密码" prop="value">
+            <el-input 
+              v-model="editFormData.value" 
+              type="password"
+              placeholder="请输入新密码"
+              :maxlength="editFieldMaxLength"
+              show-password
+              show-word-limit
+            />
+          </el-form-item>
+          <el-form-item label="确认新密码" prop="confirmPassword">
+            <el-input 
+              v-model="editFormData.confirmPassword" 
+              type="password"
+              placeholder="请确认新密码"
+              :maxlength="editFieldMaxLength"
+              show-password
+            />
+          </el-form-item>
+        </template>
         
         <!-- 其他字段使用普通输入框 -->
         <el-form-item v-else :label="editFieldLabel" prop="value">
@@ -178,11 +197,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { UploadProps, FormInstance, FormRules } from 'element-plus'
 import { pcaTextArr } from "element-china-area-data"
+import { getUserProfile, updateUserProfile, uploadAvatar, changePassword } from '@/api/user'
+import { useUserInfoStore } from '@/stores/userInfo'
 
 // 用户资料数据
 const userProfile = reactive({
@@ -217,15 +238,62 @@ const cascaderProps = {
   expandTrigger: 'hover' as const
 }
 
+// 创建userInfoStore实例
+const userInfoStore = useUserInfoStore()
+
+// 加载用户资料
+const loadUserProfile = async () => {
+  try {
+    const response = await getUserProfile()
+    if (response.code === 200) {
+      const data = response.data
+      userProfile.nickname = data.nickname || '未设置'
+      userProfile.bio = data.info || '暂无简介'
+      userProfile.region = data.address || '未设置'
+      imageUrl.value = data.avatar || 'https://picsum.photos/200/200?random=1'
+      // 更新userInfoStore中的用户信息
+      userInfoStore.setUserInfo({
+        username: data.username,
+        nickname: data.nickname,
+        avatar: data.avatar,
+        isLogin: true
+      })
+    } else {
+      ElMessage.error('获取用户资料失败')
+    }
+  } catch (error) {
+    console.error('加载用户资料失败:', error)
+    ElMessage.error('加载用户资料失败，请重试')
+  }
+}
+
+// 页面加载时获取用户资料
+onMounted(() => {
+  loadUserProfile()
+})
+
 // 头像相关
 const imageUrl = ref('https://picsum.photos/200/200?random=1')
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
+const handleAvatarSuccess: UploadProps['onSuccess'] = async (
   response,
   uploadFile
 ) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  ElMessage.success('头像上传成功')
+  try {
+    const file = uploadFile.raw as File
+    const res = await uploadAvatar(file)
+    if (res.code === 200) {
+      imageUrl.value = res.data
+      ElMessage.success('头像上传成功')
+      // 标记头像已修改
+      modifiedData.avatar = true
+    } else {
+      ElMessage.error('头像上传失败')
+    }
+  } catch (error) {
+    console.error('头像上传失败:', error)
+    ElMessage.error('头像上传失败，请重试')
+  }
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -246,6 +314,8 @@ const editField = ref('')
 const editFormData = reactive({
   value: '',
   code: '',
+  oldPassword: '',
+  confirmPassword: '',
   regionValue: [] as string[]  // 存储地区选择的值
 })
 
@@ -330,12 +400,26 @@ const editRules = computed<FormRules>(() => {
     }
     
     if (editField.value === 'password') {
-      rules.value.push({ 
-        min: 6, 
-        max: 20, 
-        message: '密码长度为6-20位', 
-        trigger: 'blur' 
-      } as any)
+      rules.oldPassword = [
+        { required: true, message: '请输入旧密码', trigger: 'blur' }
+      ]
+      rules.value = [
+        { required: true, message: '请输入新密码', trigger: 'blur' },
+        { min: 6, max: 20, message: '密码长度为6-20位', trigger: 'blur' }
+      ]
+      rules.confirmPassword = [
+        { required: true, message: '请确认新密码', trigger: 'blur' },
+        {
+          validator: (rule, value, callback) => {
+            if (value !== editFormData.value) {
+              callback(new Error('两次输入的密码不一致'))
+            } else {
+              callback()
+            }
+          },
+          trigger: 'blur'
+        }
+      ]
     }
     
     if (editField.value === 'bio') {
@@ -358,6 +442,8 @@ const openEditDialog = (field: string, currentValue: string) => {
   // 重置表单数据
   editFormData.value = ''
   editFormData.code = ''
+  editFormData.oldPassword = ''
+  editFormData.confirmPassword = ''
   
   if (field === 'region') {
     // 解析当前地区值，例如 "浙江省-杭州市-西湖区" 转换为 ["浙江省", "杭州市", "西湖区"]
@@ -405,6 +491,15 @@ const sendCode = async () => {
   // 实际开发中调用发送验证码接口
 }
 
+// 存储修改的数据
+const modifiedData = reactive({
+  nickname: false,
+  bio: false,
+  region: false,
+  password: false,
+  avatar: false
+})
+
 // 确认编辑
 const handleEditConfirm = async () => {
   if (!editFormRef.value) return
@@ -418,18 +513,20 @@ const handleEditConfirm = async () => {
       return
     }
 
-    // 模拟保存操作
+    // 记录修改的数据
     let newValue = ''
     
     switch (editField.value) {
       case 'nickname':
         newValue = editFormData.value
         userProfile.nickname = newValue
+        modifiedData.nickname = true
         ElMessage.success('昵称修改成功')
         break
       case 'bio':
         newValue = editFormData.value
         userProfile.bio = newValue
+        modifiedData.bio = true
         ElMessage.success('简介修改成功')
         break
       case 'region':
@@ -437,6 +534,7 @@ const handleEditConfirm = async () => {
         if (editFormData.regionValue && editFormData.regionValue.length >= 2) {
           newValue = editFormData.regionValue.join('-')
           userProfile.region = newValue
+          modifiedData.region = true
           ElMessage.success('地区修改成功')
         } else {
           ElMessage.warning('请选择完整的地区信息（至少选择到城市）')
@@ -455,9 +553,9 @@ const handleEditConfirm = async () => {
         ElMessage.success('邮箱更换成功')
         break
       case 'password':
-        newValue = editFormData.value
-        ElMessage.success('密码修改成功，请重新登录')
-        // 可跳转到登录页
+        // 密码修改需要单独处理
+        modifiedData.password = true
+        ElMessage.success('密码修改成功，将在保存后退出登录')
         break
     }
     editDialogVisible.value = false
@@ -471,9 +569,75 @@ const handleSaveAll = async () => {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'info'
-  }).then(() => {
-    // 实际开发中调用保存接口
-    ElMessage.success('所有设置已保存')
+  }).then(async () => {
+    try {
+      // 构建要更新的数据
+      const updateData: {
+        nickname?: string
+        info?: string
+        address?: string
+        sex?: string
+        birthday?: string
+      } = {}
+      if (modifiedData.nickname) {
+        updateData.nickname = userProfile.nickname
+      }
+      if (modifiedData.bio) {
+        updateData.info = userProfile.bio
+      }
+      if (modifiedData.region) {
+        updateData.address = userProfile.region
+      }
+      
+      // 批量更新用户资料
+      if (Object.keys(updateData).length > 0) {
+        const res = await updateUserProfile(updateData)
+        if (res.code === 200) {
+          // 更新userInfoStore中的用户信息
+          const data = res.data
+          userInfoStore.setUserInfo({
+            username: data.username,
+            nickname: data.nickname,
+            avatar: data.avatar,
+            isLogin: true
+          })
+        } else {
+          ElMessage.error('保存失败')
+          return
+        }
+      }
+      
+      // 处理密码修改
+      if (modifiedData.password) {
+        const res = await changePassword({ 
+          oldPassword: editFormData.oldPassword, 
+          newPassword: editFormData.value 
+        })
+        if (res.code === 200) {
+          // 清除token并退出登录
+          localStorage.removeItem('token')
+          ElMessage.success('密码修改成功，即将退出登录')
+          // 跳转到登录页
+          setTimeout(() => {
+            window.location.href = '/login'
+          }, 1500)
+          return
+        } else {
+          ElMessage.error('密码修改失败')
+          return
+        }
+      }
+      
+      // 重置修改标记
+      Object.keys(modifiedData).forEach(key => {
+        modifiedData[key as keyof typeof modifiedData] = false
+      })
+      
+      ElMessage.success('所有设置已保存')
+    } catch (error) {
+      console.error('保存失败:', error)
+      ElMessage.error('保存失败，请重试')
+    }
   }).catch(() => { })
 }
 </script>

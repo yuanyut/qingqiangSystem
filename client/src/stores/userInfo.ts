@@ -19,7 +19,7 @@ export const useUserInfoStore = defineStore('userInfo',()=>{
     
     // 检查本地存储的token是否存在
     const isLoggedIn = computed(() => {
-        return localStorage.getItem('token') !== null
+        return localStorage.getItem('token') !== null && UserInfos.isLogin
     })
     
     // 验证token有效性

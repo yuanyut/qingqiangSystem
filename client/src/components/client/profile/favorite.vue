@@ -2,8 +2,16 @@
     <div class="my-favorites">
         <!-- 头部 -->
         <div class="section-header">
-            
-            <span class="favorites-count">{{ chuliList.length }} 件</span>
+            <h3>我的收藏</h3>
+            <div class="header-actions">
+                <span class="favorites-count">{{ chuliList.length }} 件</span>
+                <button v-if="chuliList.length > 0" class="clear-btn" @click="clearAll">
+                    <svg class="clear-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
+                    </svg>
+                    清空
+                </button>
+            </div>
         </div>
 
         <!-- 筛选栏 -->
@@ -21,12 +29,12 @@
 
         <!-- 列表 -->
         <div class="favorites-list" v-if="chuliList.length > 0">
-            <div v-for="item in chuliList" :key="item.id" class="favorite-card">
+            <div v-for="item in chuliList" :key="item.id" class="favorite-card" @click="goToDetail(item.targetType, item.targetId)">
                 <!-- 封面图 -->
                 <div class="card-cover">
                     <img :src="item.coverUrl || '/default-cover.jpg'" :alt="item.title">
-                    <div class="card-type" :class="item.type">
-                        {{ getTypeName(item.type) }}
+                    <div class="card-type" :class="item.targetType">
+                        {{ getTypeName(item.targetType) }}
                     </div>
                 </div>
 
@@ -39,13 +47,13 @@
                             <svg class="time-icon" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z" fill="currentColor"/>
                             </svg>
-                            {{ item.collectTimeText }}
+                            {{ item.time }}
                         </span>
                     </div>
                 </div>
 
                 <!-- 操作区 -->
-                <button class="cancel-btn" @click="cancle(item.id)">
+                <button class="cancel-btn" @click.stop="cancle(item.id)">
                     <svg class="cancel-icon" viewBox="0 0 24 24" fill="none">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/>
                     </svg>
@@ -64,65 +72,44 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, onMounted, onActivated } from 'vue'
+import { useRouter } from 'vue-router'
+import { getUserFavorites, deleteBehavior, clearBehavior } from '@/api/user'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter()
 
 // 收藏列表数据
-const favorites = ref([
-    {
-        id: 1,
-        type: 'drama',
-        title: '三滴血',
-        subtitle: '李淑芳 · 剧目',
-        coverUrl: '/images/sandixue.jpg',
-        collectTime: '2024-03-24',
-        collectTimeText: '3天前'
-    },
-    {
-        id: 2,
-        type: 'drama',
-        title: '火焰驹',
-        subtitle: '李小锋 · 剧目',
-        coverUrl: '/images/huoyanju.jpg',
-        collectTime: '2024-03-22',
-        collectTimeText: '5天前'
-    },
-    {
-        id: 3,
-        type: 'artist',
-        title: '李淑芳',
-        subtitle: '国家一级演员',
-        coverUrl: '/images/lisf.jpg',
-        collectTime: '2024-03-18',
-        collectTimeText: '1周前'
-    },
-    {
-        id: 4,
-        type: 'news',
-        title: '秦腔艺术节',
-        subtitle: '资讯',
-        coverUrl: '/images/news.jpg',
-        collectTime: '2024-03-11',
-        collectTimeText: '2周前'
-    },
-    {
-        id: 5,
-        type: 'video',
-        title: '旦角发声技巧',
-        subtitle: '教学视频',
-        coverUrl: '/images/video.jpg',
-        collectTime: '2024-03-11',
-        collectTimeText: '2周前'
-    },
-    {
-        id: 6,
-        type: 'news',
-        title: '#三滴血话题',
-        subtitle: '热门讨论',
-        coverUrl: '',
-        collectTime: '2024-03-04',
-        collectTimeText: '3周前'
+const favorites = ref([])
+const loading = ref(false)
+
+// 加载收藏数据
+const loadFavorites = async () => {
+  try {
+    loading.value = true
+    const res = await getUserFavorites()
+    if (res.code === 200) {
+      favorites.value = res.data.list || []
+    } else {
+      ElMessage.error('获取收藏数据失败')
     }
-])
+  } catch (error) {
+    console.error('加载收藏数据失败:', error)
+    ElMessage.error('加载失败，请检查网络')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  loadFavorites()
+})
+
+// 页面激活时重新加载数据（解决从其他页面收藏后返回个人中心数据不更新的问题）
+onActivated(() => {
+  loadFavorites()
+})
 
 const cate = reactive([
     {
@@ -135,15 +122,15 @@ const cate = reactive([
     },
     {
         name: "名家",
-        type: "artist"
+        type: "actor"
     },
     {
         name: "资讯",
         type: "news"
     },
     {
-        name: "视频",
-        type: "video"
+        name: "文化",
+        type: "culture"
     },
 ])
 
@@ -153,7 +140,7 @@ const chuliList = computed(() => {
     if (currentCate.value === 'all') {
         return favorites.value
     }
-    return favorites.value.filter(item => item.type === currentCate.value)
+    return favorites.value.filter(item => item.targetType === currentCate.value)
 })
 
 const chuliCate = function (cateType) {
@@ -161,17 +148,35 @@ const chuliCate = function (cateType) {
     currentCate.value = cateType
 }
 
-const cancle = (id) => {
+const cancle = async (id) => {
+  try {
+    await deleteBehavior(id)
     favorites.value = favorites.value.filter(item => item.id !== id)
+    ElMessage.success('取消收藏成功')
+  } catch (error) {
+    console.error('取消收藏失败:', error)
+    ElMessage.error('取消收藏失败，请重试')
+  }
+}
+
+const clearAll = async () => {
+  try {
+    await clearBehavior('favorite')
+    favorites.value = []
+    ElMessage.success('清空收藏成功')
+  } catch (error) {
+    console.error('清空收藏失败:', error)
+    ElMessage.error('清空收藏失败，请重试')
+  }
 }
 
 // 获取类型名称
 const getTypeName = (type) => {
     const typeMap = {
         drama: '剧目',
-        artist: '名家',
+        actor: '名家',
         news: '资讯',
-        video: '视频'
+        culture: '文化'
     }
     return typeMap[type] || '其他'
 }
@@ -180,6 +185,11 @@ const getTypeName = (type) => {
 const goToRecommend = () => {
   // TODO: 跳转到推荐广场
   console.log('去推荐页')
+}
+
+// 跳转到详情页
+const goToDetail = (targetType, targetId) => {
+  router.push(`/${targetType}/${targetId}`)
 }
 </script>
 
@@ -196,10 +206,42 @@ const goToRecommend = () => {
 .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     margin-bottom: 32px;
     padding-bottom: 16px;
     border-bottom: 2px solid #f0e2d0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid #e6d5c4;
+    border-radius: 20px;
+    color: #9b8570;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+    background: #fef5e8;
+    border-color: #b87c4e;
+    color: #b87c4e;
+}
+
+.clear-icon {
+    width: 14px;
+    height: 14px;
 }
 
 .section-header h3 {
@@ -330,7 +372,7 @@ const goToRecommend = () => {
     background: rgba(184, 124, 78, 0.9);
 }
 
-.card-type.artist {
+.card-type.actor {
     background: rgba(100, 68, 42, 0.9);
 }
 
@@ -338,7 +380,7 @@ const goToRecommend = () => {
     background: rgba(80, 120, 100, 0.9);
 }
 
-.card-type.video {
+.card-type.culture {
     background: rgba(180, 100, 80, 0.9);
 }
 

@@ -18,7 +18,7 @@
     </div>
 
     <!-- 浏览趋势图 -->
-    <div class="trend-section">
+    <!-- <div class="trend-section">
       <h3>{{ trendData.title }}</h3>
       <div class="trend-chart">
         <div 
@@ -39,10 +39,10 @@
           <div class="trend-value">{{ trendData.values[index] }}</div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 内容偏好分析 -->
-    <div class="preference-section">
+    <!-- <div class="preference-section">
       <h3>{{ preferenceData.title }}</h3>
       <div 
         v-for="item in preferenceData.categories" 
@@ -65,7 +65,7 @@
           ></div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

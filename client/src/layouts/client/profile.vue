@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, onActivated } from 'vue'
 import type { Component } from 'vue'
 import communication from '@/components/client/profile/communication.vue';
 import data from '@/components/client/profile/data.vue';
@@ -7,6 +7,10 @@ import history from '@/components/client/profile/history.vue';
 import favorite from '@/components/client/profile/favorite.vue';
 import like from '@/components/client/profile/like.vue';
 import setting from '@/components/client/profile/setting.vue';
+import { getUserStats } from '@/api/user';
+import type { UserStats } from '@/api/user';
+import { ElMessage } from 'element-plus';
+import { useUserInfoStore } from '@/stores/userInfo';
 //组件映射表--使用Record类型
 const componentMap: Record<string, Component> = {
   data: data,
@@ -23,11 +27,11 @@ interface SideListItem {
 }
 
 const sideList = reactive<SideListItem[]>([
-  { name: "数据看板", component: "data" },
+  // { name: "数据看板", component: "data" },
   { name: "我的收藏", component: "favorite" },
   { name: "浏览历史", component: "history" },
   { name: "我的点赞", component: "like" },
-  { name: "我的评论", component: "communication" },
+  // { name: "我的评论", component: "communication" },
   { name: "账户设置", component: "setting" },
 ])
 
@@ -41,10 +45,50 @@ const currentComponent = computed<Component>(() => {
    return component!
 })
 
+// 创建userInfoStore实例
+const userInfoStore = useUserInfoStore()
+
+// 用户信息和统计数据
+const userStats = ref<UserStats | null>(null)
+const loading = ref(true)
+
 // 简化 change 函数
 const change = (item: SideListItem, index: number) => {
   currentTab.value = index
 }
+
+// 加载用户信息和统计数据
+const loadUserData = async () => {
+  try {
+    loading.value = true
+    // 验证token并获取用户信息
+    await userInfoStore.validateToken()
+    
+    // 请求统计数据
+    const statsRes = await getUserStats()
+    
+    if (statsRes.code === 200) {
+      userStats.value = statsRes.data
+    } else {
+      ElMessage.error('获取统计数据失败')
+    }
+  } catch (error) {
+    console.error('加载用户数据失败:', error)
+    ElMessage.error('加载失败，请检查网络')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  loadUserData()
+})
+
+// 页面激活时重新加载数据（解决收藏数量不更新的问题）
+onActivated(() => {
+  loadUserData()
+})
 </script>
 
 <template>
@@ -52,35 +96,35 @@ const change = (item: SideListItem, index: number) => {
     <!-- 头部个人信息卡片 - 渐变背景增强视觉 -->
     <div class="profile-header">
       <div class="avatar-wrapper">
-        <el-avatar 
-          shape="square" 
-          :size="88" 
-          src="https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png"
-          class="avatar"
-        />
-      </div>
-      
-      <div class="user-info">
-        <div class="username">username</div>
-        <div class="nickname">nickname</div>
-        <div class="address">address</div>
-        <div class="join-date">加入于 2024年</div>
-      </div>
+          <el-avatar 
+            shape="square" 
+            :size="88" 
+            :src="userInfoStore.UserInfos.avatar || 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'"
+            class="avatar"
+          />
+        </div>
+        
+        <div class="user-info">
+          <div class="username">{{ userInfoStore.UserInfos.username  }}</div>
+          <div class="nickname">昵称：{{ userInfoStore.UserInfos.nickname || '未设置昵称' }}</div>
+          <div class="address">地址：未设置地址</div>
+          <div class="join-date">加入于 未知</div>
+        </div>
       
       <div class="stats-wrapper">
         <div class="stats">
           <div class="stat-item">
-            <div class="stat-number">23</div>
+            <div class="stat-number">{{ userStats?.favoriteCount || 0 }}</div>
             <div class="stat-label">收藏</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number">23</div>
+            <div class="stat-number">{{ userStats?.viewCount || 0 }}</div>
             <div class="stat-label">浏览</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number">23</div>
+            <div class="stat-number">{{ userStats?.likeCount || 0 }}</div>
             <div class="stat-label">点赞</div>
           </div>
         </div>
@@ -99,8 +143,8 @@ const change = (item: SideListItem, index: number) => {
           @click="change(item, index)"
         >
           <span class="sidebar-icon">
-            <i v-if="item.component === 'data'" class="el-icon-data-line"></i>
-            <i v-else-if="item.component === 'favorite'" class="el-icon-star-on"></i>
+            <!-- <i v-if="item.component === 'data'" class="el-icon-data-line"></i> -->
+            <i v-if="item.component === 'favorite'" class="el-icon-star-on"></i>
             <i v-else-if="item.component === 'history'" class="el-icon-time"></i>
             <i v-else-if="item.component === 'like'" class="el-icon-thumb"></i>
             <i v-else-if="item.component === 'communication'" class="el-icon-chat-dot-round"></i>
@@ -207,7 +251,7 @@ const change = (item: SideListItem, index: number) => {
   background: var(--primary-gradient);
   background-clip: text;
   -webkit-background-clip: text;
-  color: transparent;
+  color: black;
   letter-spacing: -0.3px;
 }
 
@@ -220,11 +264,7 @@ const change = (item: SideListItem, index: number) => {
   gap: 8px;
 }
 
-.nickname::before {
-  content: '@';
-  color: #cbd5e1;
-  font-weight: 400;
-}
+
 
 .address {
   font-size: 14px;

@@ -71,4 +71,20 @@
         </if>
     </select>
 
+    <update id="updateBehaviorStatusById">
+        UPDATE user_behavior
+        SET status = #{status},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="batchUpdateBehaviorStatus">
+        UPDATE user_behavior
+        SET status = #{status},
+            update_time = NOW()
+        WHERE user_id = #{userId}
+          AND action = #{action}
+          AND status = 1
+    </update>
+
 </mapper>

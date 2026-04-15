@@ -16,6 +16,8 @@ public class User {
     private LocalDateTime updateTime;
     private Date birthday;
     private String sex;
+    private String address;
+    private String info;
 
     public Date getBirthday() {
         return birthday;
@@ -104,5 +106,21 @@ public class User {
 
     public LocalDateTime getUpdateTime() {
         return updateTime;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

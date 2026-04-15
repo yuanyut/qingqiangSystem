@@ -20,4 +20,10 @@ public interface BehaviorMapper {
 
     // 统计用户行为数量
     Long countUserBehavior(@Param("userId") Long userId, @Param("targetType") String targetType, @Param("action") String action);
+    
+    // 根据id更新行为状态
+    int updateBehaviorStatusById(@Param("id") Long id, @Param("status") Integer status);
+    
+    // 批量更新用户行为状态
+    int batchUpdateBehaviorStatus(@Param("userId") Long userId, @Param("action") String action, @Param("status") Integer status);
 }
