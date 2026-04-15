@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { Search, Loading } from '@element-plus/icons-vue'
 import CategoryNav from '@/components/client/CategoryNav.vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
@@ -9,6 +9,7 @@ import { getNewsList, getCategoryNav, getTopNews, getHotList, getRecommendList, 
 import type { News, Category } from '@/api/news'
 
 const router = useRouter()
+const route = useRoute()
 const input = ref('')
 
 // 状态管理
@@ -162,6 +163,18 @@ onMounted(() => {
   loadHotList()
   loadRecommendList()
   loadMediaList()
+})
+
+// 监听路由变化，当从详情页返回时重新加载数据
+watch(() => route.path, (newPath) => {
+  if (newPath === '/news') {
+    loadCategories()
+    loadTopNews()
+    loadNewsList()
+    loadHotList()
+    loadRecommendList()
+    loadMediaList()
+  }
 })
 </script>
 <template>

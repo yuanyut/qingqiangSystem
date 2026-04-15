@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
 import { getCultureList } from '@/api/knowledge'
@@ -8,6 +8,7 @@ import type { Content } from '@/api/knowledge'
 import { knowledgeCategories, knowledgeSortOptions } from '@/types/knowledge'
 
 const router = useRouter()
+const route = useRoute()
 const totalcount = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -92,8 +93,8 @@ const loadCultureList = async () => {
       originalCultureList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         title: item.title,
-        content: item.content,
-        cover: item.cover || '/home/banner1.png',
+        content: item.content || '',
+        cover: (item.cover || '/home/banner1.png').replace(/[`]/g, ''),
         status: item.status || 1,
         viewCount: item.viewCount || 0,
         likeCount: item.likeCount || 0,
@@ -121,6 +122,13 @@ const loadCultureList = async () => {
 
 onMounted(() => {
   loadCultureList()
+})
+
+// 监听路由变化，当从详情页返回时重新加载数据
+watch(() => route.path, (newPath) => {
+  if (newPath === '/knowledge') {
+    loadCultureList()
+  }
 })
 </script>
 <template>

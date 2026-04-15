@@ -6,18 +6,18 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface BehaviorMapper {
-    // 插入行为记录
-    int insert(@Param("tableName") String tableName, @Param("behavior") Behavior behavior);
+    // 插入行为记录到统一表
+    int insertBehavior(@Param("behavior") Behavior behavior);
 
-    // 删除行为记录
-    int delete(@Param("tableName") String tableName, @Param("userId") Long userId, @Param("targetType") String targetType, @Param("targetId") Long targetId);
+    // 更新行为状态
+    int updateBehaviorStatus(@Param("userId") Long userId, @Param("targetType") String targetType, @Param("targetId") Long targetId, @Param("action") String action, @Param("status") Integer status);
 
     // 查询行为记录
-    Behavior select(@Param("tableName") String tableName, @Param("userId") Long userId, @Param("targetType") String targetType, @Param("targetId") Long targetId);
+    Behavior selectBehavior(@Param("userId") Long userId, @Param("targetType") String targetType, @Param("targetId") Long targetId, @Param("action") String action);
 
-    // 查询行为记录列表
-    List<Behavior> selectList(@Param("tableName") String tableName, @Param("userId") Long userId, @Param("targetType") String targetType, @Param("offset") int offset, @Param("size") int size);
+    // 查询用户行为列表
+    List<Behavior> selectUserBehaviorList(@Param("userId") Long userId, @Param("targetType") String targetType, @Param("action") String action, @Param("offset") int offset, @Param("size") int size);
 
-    // 统计行为记录数量
-    Long countList(@Param("tableName") String tableName, @Param("userId") Long userId, @Param("targetType") String targetType);
+    // 统计用户行为数量
+    Long countUserBehavior(@Param("userId") Long userId, @Param("targetType") String targetType, @Param("action") String action);
 }

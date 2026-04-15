@@ -13,6 +13,9 @@
     <select id="selectList" resultType="com.qqsystem.serve.entity.Actor">
         SELECT *
         FROM actor
+        <if test="style != null and style != ''">
+            WHERE style = #{style}
+        </if>
         ORDER BY id DESC
         LIMIT #{offset}, #{size}
     </select>
@@ -20,6 +23,9 @@
     <select id="countList" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM actor
+        <if test="style != null and style != ''">
+            WHERE style = #{style}
+        </if>
     </select>
 
     <insert id="insert" parameterType="com.qqsystem.serve.entity.Actor">
@@ -73,6 +79,18 @@
         UPDATE actor
         SET view_count = view_count + 1
         WHERE id = #{id}
+    </update>
+
+    <update id="increaseLikeCount">
+        UPDATE actor
+        SET like_count = like_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="decreaseLikeCount">
+        UPDATE actor
+        SET like_count = like_count - 1
+        WHERE id = #{id} AND like_count > 0
     </update>
 
 </mapper>

@@ -23,4 +23,8 @@ public interface DramaMapper {
     int deleteById(@Param("id") Long id);
 
     int increaseViewCount(@Param("id") Long id);
+
+    int increaseLikeCount(@Param("id") Long id);
+
+    int decreaseLikeCount(@Param("id") Long id);
 }

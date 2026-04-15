@@ -17,10 +17,10 @@ public class ActorController {
     private ActorService actorService;
 
     @GetMapping("/list")
-    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size) {
+    public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String style) {
         Map<String, Object> res = new HashMap<>();
-        res.put("list", actorService.pageList(page, size));
-        res.put("total", actorService.countList());
+        res.put("list", actorService.pageList(page, size, style));
+        res.put("total", actorService.countList(style));
         return ResponseResult.success(res);
     }
 

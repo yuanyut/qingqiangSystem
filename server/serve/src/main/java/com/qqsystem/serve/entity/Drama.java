@@ -22,6 +22,8 @@ public class Drama {
 
     private Integer viewCount;
 
+    private Integer likeCount;
+
     private Date publishDate;
 
     private Date createTime;

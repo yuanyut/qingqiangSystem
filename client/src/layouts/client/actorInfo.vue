@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
 import actor_card from '@/components/client/actor_card.vue';
-import { rongYu, years, paiXu } from '@/types/actor';
+import { rongYu, years, styleTypes, paiXu } from '@/types/actor';
 import { getActorList } from '@/api/actor';
 
 const router = useRouter()
+const route = useRoute()
 const totalcount = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -18,6 +19,7 @@ const loading = ref(false)
 const input3 = ref('')
 const selectedHonor = ref<number | undefined>()
 const selectedYear = ref<string | undefined>()
+const selectedStyle = ref<string | undefined>()
 const selectedSort = ref<string | undefined>()
 
 const isLiked=ref(true)
@@ -26,6 +28,7 @@ const isFavorited=ref(true)
 // 筛选器选中状态
 const honorIndex = ref(0)
 const yearIndex = ref(0)
+const styleIndex = ref(0)
 const sortIndex = ref(0)
 
 // 是否处于搜索状态
@@ -87,6 +90,26 @@ const handleYearChange=(index: number)=>{
   loadActorList()
 }
 
+const handleStyleChange=(index: number)=>{
+  if (isSearching.value) {
+    return
+  }
+  styleIndex.value = index
+  currentPage.value = 1
+  switch(index) {
+    case 0:
+      selectedStyle.value = undefined
+      break
+    case 1:
+      selectedStyle.value = '传统派'
+      break
+    case 2:
+      selectedStyle.value = '创新派'
+      break
+  }
+  loadActorList()
+}
+
 const handleSortChange=(index: number)=>{
   if (isSearching.value) {
     return
@@ -106,10 +129,9 @@ const filterActorList=()=>{
   
   const keyword = input3.value.toLowerCase()
   actorList.value = originalActorList.value.filter(item => {
-    return (
-      item.name.toLowerCase().includes(keyword) ||
-      item.title.toLowerCase().includes(keyword)
-    )
+    const nameMatch = item.name ? item.name.toLowerCase().includes(keyword) : false
+    const titleMatch = item.title ? item.title.toLowerCase().includes(keyword) : false
+    return nameMatch || titleMatch
   })
   totalcount.value = actorList.value.length
 }
@@ -119,18 +141,21 @@ const loadActorList=async ()=>{
     loading.value = true
     const res = await getActorList(
       currentPage.value,
-      pageSize.value
+      pageSize.value,
+      selectedStyle.value
     )
     if (res.code === 200) {
       originalActorList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         name: item.name,
-        title: item.title,
-        avatar: item.avatar || '/home/banner1.png',
+        title: item.title || '',
+        avatar: (item.avatar || '/home/banner1.png').replace(/[`\s]/g, ''),
         works: item.works || [],
         fansCount: item.fansCount || 0,
         worksCount: item.worksCount || 0,
-        awardsCount: item.awardsCount || 0
+        awardsCount: item.awardsCount || 0,
+        viewCount: item.viewCount || 0,
+        likeCount: item.likeCount || 0
       }))
       actorList.value = [...originalActorList.value]
       totalcount.value = res.data.total || 0
@@ -144,6 +169,13 @@ const loadActorList=async ()=>{
 
 onMounted(()=>{
   loadActorList()
+})
+
+// 监听路由变化，当从详情页返回时重新加载数据
+watch(() => route.path, (newPath) => {
+  if (newPath === '/actorInfo') {
+    loadActorList()
+  }
 })
 </script>
 <template>
@@ -164,7 +196,7 @@ onMounted(()=>{
 
     <div class="filter-wrapper">
       <!-- 荣誉筛选 -->
-      <div class="filter-item" :class="{ disabled: isSearching }">
+      <!-- <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
           <span class="label-text">荣誉</span>
         </div>
@@ -179,19 +211,19 @@ onMounted(()=>{
             {{ item.name }}
           </span>
         </div>
-      </div>
+      </div> -->
       
-      <!-- 年代筛选 -->
+      <!-- 风格筛选 -->
       <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
-          <span class="label-text">年代</span>
+          <span class="label-text">风格</span>
         </div>
         <div class="filter-options">
           <span 
-            v-for="(item, index) in years.slice(1)" 
+            v-for="(item, index) in styleTypes.slice(1)" 
             :key="index" 
-            @click="handleYearChange(index)"
-            :class="{ active: yearIndex === index, disabled: isSearching }" 
+            @click="handleStyleChange(index)"
+            :class="{ active: styleIndex === index, disabled: isSearching }" 
             class="filter-tag"
           >
             {{ item.name }}
@@ -200,7 +232,7 @@ onMounted(()=>{
       </div>
       
       <!-- 排序 -->
-      <div class="filter-item" :class="{ disabled: isSearching }">
+      <!-- <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
           <span class="label-text">排序</span>
         </div>
@@ -215,7 +247,7 @@ onMounted(()=>{
             {{ item.name }}
           </span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <div class="playlist-container">
@@ -233,11 +265,11 @@ onMounted(()=>{
           :name="actor.name" 
           :desc="actor.title"  
           :act="actor.works[0] || '暂无作品'" 
-          watch-people="观看人数"
-          love-people="喜爱人数" 
-          favorite-count="16"
-          :is-liked="isLiked" 
-          :is-favorited="isFavorited"
+          :viewCount="actor.viewCount || 0"
+          :likeCount="actor.likeCount || 0" 
+          
+          :is-liked="actor.isLiked || false" 
+          :is-favorited="actor.isFavorited || false"
           @change-like="changeLike" 
           @change-favorite="changeFav"
         />

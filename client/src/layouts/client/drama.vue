@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref,reactive, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import cardHome from '@/components/client/card_home.vue';
 import { cate,years,paixu } from '@/types/darams';
@@ -8,6 +8,7 @@ import shaiXuanH from '@/components/client/shaiXuanH.vue';
 import { getDramaList } from '@/api/drama';
 
 const router = useRouter()
+const route = useRoute()
 const totalcount = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -147,6 +148,13 @@ const loadDramaList=async ()=>{
 
 onMounted(()=>{
   loadDramaList()
+})
+
+// 监听路由变化，当从详情页返回时重新加载数据
+watch(() => route.path, (newPath) => {
+  if (newPath === '/drama') {
+    loadDramaList()
+  }
 })
 </script>
 <template>

@@ -27,7 +27,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Content getCultureDetail(Long id) {
-        contentMapper.increaseViewCount(id);
         return contentMapper.selectCultureDetail(id);
     }
 

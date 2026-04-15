@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getCultureDetail } from '@/api/knowledge'
 import type { Content } from '@/api/knowledge'
-import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { toggleLike, toggleFavorite, addBehavior, checkBehavior } from '@/api/behavior'
 import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -24,19 +24,35 @@ const loadKnowledgeDetail = async () => {
     loading.value = true
     knowledgeItem.value = null // 清空旧数据
     const id = Number(route.params.id)
+    
+    // 增加浏览次数
+    await addBehavior('culture', id, 'view')
+    
     const response = await getCultureDetail(id)
     if (response && response.code === 200 && response.data) {
       knowledgeItem.value = {
         id: response.data.id,
         title: response.data.title,
-        content: response.data.content,
-        cover: response.data.cover || '/home/banner1.png',
+        content: response.data.content || '',
+        cover: (response.data.cover || '/home/banner1.png').replace(/[`]/g, ''),
         status: response.data.status || 1,
         viewCount: response.data.viewCount || 0,
         likeCount: response.data.likeCount || 0,
         category: response.data.category || '',
         createTime: response.data.createTime || '',
         updateTime: response.data.updateTime || ''
+      }
+      
+      if (userStore.isLoggedIn) {
+        const likeRes = await checkBehavior('culture', id, 'like')
+        if (likeRes.code === 200) {
+          isLiked.value = likeRes.data.isLiked || false
+        }
+        
+        const favoriteRes = await checkBehavior('culture', id, 'favorite')
+        if (favoriteRes.code === 200) {
+          isFavorited.value = favoriteRes.data.isFavorited || false
+        }
       }
     }
   } catch (error) {
@@ -56,7 +72,7 @@ const handleLike = async () => {
   try {
     const res = await toggleLike('culture', knowledgeItem.value?.id || 0)
     if (res.code === 200) {
-      isLiked.value = res.data.isLiked
+      isLiked.value = res.data.isLiked ??false
       if (knowledgeItem.value) {
         knowledgeItem.value.likeCount = res.data.isLiked ? knowledgeItem.value.likeCount + 1 : knowledgeItem.value.likeCount - 1
       }
@@ -80,7 +96,7 @@ const handleFavorite = async () => {
   try {
     const res = await toggleFavorite('culture', knowledgeItem.value?.id || 0)
     if (res.code === 200) {
-      isFavorited.value = res.data.isFavorited
+      isFavorited.value = res.data.isFavorited ??false
       ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
     } else {
       ElMessage.error('操作失败')
@@ -96,12 +112,17 @@ watch(() => route.params.id, (newId) => {
   if (newId) {
     isLiked.value = false
     isFavorited.value = false
-    loadKnowledgeDetail()
+    // 只有当组件已经挂载后才重新加载，避免重复调用
+    if (isMounted.value) {
+      loadKnowledgeDetail()
+    }
   }
 })
 
+const isMounted = ref(false)
 onMounted(() => {
   loadKnowledgeDetail()
+  isMounted.value = true
 })
 </script>
 <template>

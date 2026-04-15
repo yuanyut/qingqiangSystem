@@ -24,6 +24,10 @@ public interface ContentMapper {
 
     void increaseViewCount(@Param("id") Long id);
 
+    void increaseLikeCount(@Param("id") Long id);
+
+    void decreaseLikeCount(@Param("id") Long id);
+
     // 获取文化资讯分类统计
     List<Map<String, Object>> selectCultureCategories();
 

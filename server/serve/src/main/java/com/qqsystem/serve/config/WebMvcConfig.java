@@ -28,6 +28,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册浏览行为拦截器
         registry.addInterceptor(browseInterceptor)
-                .addPathPatterns("/drama/detail/**", "/news/detail/**", "/actor/detail/**");
+                .addPathPatterns("/drama/detail/**", "/news/detail/**", "/actor/detail/**", "/culture/detail/**");
     }
 }

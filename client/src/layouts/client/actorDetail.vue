@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getActorDetail } from '@/api/actor'
-import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { toggleLike, toggleFavorite, addBehavior, checkBehavior } from '@/api/behavior'
 import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -23,6 +23,10 @@ const loadActorDetail = async () => {
   try {
     loading.value = true
     actor.value = null // 清空旧数据
+    
+    // 增加浏览次数
+    await addBehavior('actor', actorId.value, 'view')
+    
     const res = await getActorDetail(actorId.value)
     if (res.code === 200) {
       actor.value = {
@@ -36,6 +40,18 @@ const loadActorDetail = async () => {
         worksCount: res.data.worksCount || 0,
         viewCount: res.data.viewCount || 0,
         joinDate: res.data.joinDate || '未知'
+      }
+      
+      if (userStore.isLoggedIn) {
+        const likeRes = await checkBehavior('actor', actorId.value, 'like')
+        if (likeRes.code === 200) {
+          isLiked.value = likeRes.data.isLiked || false
+        }
+        
+        const favoriteRes = await checkBehavior('actor', actorId.value, 'favorite')
+        if (favoriteRes.code === 200) {
+          isFavorited.value = favoriteRes.data.isFavorited || false
+        }
       }
     }
   } catch (error) {
@@ -55,7 +71,7 @@ const handleLike = async () => {
   try {
     const res = await toggleLike('actor', actorId.value)
     if (res.code === 200) {
-      isLiked.value = res.data.isLiked
+      isLiked.value = res.data.isLiked ||false
       actor.value.likeCount = res.data.isLiked ? actor.value.likeCount + 1 : actor.value.likeCount - 1
       ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
     } else {
@@ -77,7 +93,7 @@ const handleFavorite = async () => {
   try {
     const res = await toggleFavorite('actor', actorId.value)
     if (res.code === 200) {
-      isFavorited.value = res.data.isFavorited
+      isFavorited.value = res.data.isFavorited ||false
       ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
     } else {
       ElMessage.error('操作失败')
@@ -94,12 +110,17 @@ watch(() => route.params.id, (newId) => {
     actorId.value = parseInt(newId as string)
     isLiked.value = false
     isFavorited.value = false
-    loadActorDetail()
+    // 只有当组件已经挂载后才重新加载，避免重复调用
+    if (isMounted.value) {
+      loadActorDetail()
+    }
   }
 })
 
+const isMounted = ref(false)
 onMounted(() => {
   loadActorDetail()
+  isMounted.value = true
 })
 </script>
 

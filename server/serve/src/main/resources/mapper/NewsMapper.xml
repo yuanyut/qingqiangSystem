@@ -80,6 +80,18 @@
         WHERE id = #{id}
     </update>
 
+    <update id="increaseLikeCount">
+        UPDATE news
+        SET like_count = like_count + 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="decreaseLikeCount">
+        UPDATE news
+        SET like_count = like_count - 1
+        WHERE id = #{id} AND like_count > 0
+    </update>
+
     <!-- 获取新闻分类统计 -->
     <select id="selectNewsCategories" resultType="java.util.Map">
         SELECT 
@@ -105,7 +117,13 @@
     <select id="selectHotNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
-        ORDER BY view_count DESC
+        WHERE status = 1
+        ORDER BY (
+            view_count * 0.6 + 
+            like_count * 0.3 + 
+            0 * 0.1 + 
+            GREATEST(0, 100 - TIMESTAMPDIFF(HOUR, create_time, CURRENT_TIMESTAMP) * 2)
+        ) DESC
         LIMIT #{size}
     </select>
 
@@ -113,7 +131,11 @@
     <select id="selectRecommendNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
-        ORDER BY view_count DESC, create_time DESC
+        WHERE status = 1
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        ORDER BY create_time DESC
         LIMIT #{size}
     </select>
 

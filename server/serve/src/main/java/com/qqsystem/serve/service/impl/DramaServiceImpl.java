@@ -33,7 +33,6 @@ public class DramaServiceImpl implements DramaService {
 
     @Override
     public Drama getById(Long id) {
-        dramaMapper.increaseViewCount(id);
         return dramaMapper.selectById(id);
     }
 

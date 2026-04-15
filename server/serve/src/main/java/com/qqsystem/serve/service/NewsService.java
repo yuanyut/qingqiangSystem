@@ -30,7 +30,7 @@ public interface NewsService {
     List<News> getHotNews(int size);
 
     // 获取推荐阅读
-    List<News> getRecommendNews(int size);
+    List<News> getRecommendNews(int size, String category);
 
     // 获取媒体聚焦（视频类）
     List<News> getMediaNews(int size);

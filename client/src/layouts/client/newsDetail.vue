@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
 import request from '@/api/request'
-import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { toggleLike, toggleFavorite, addBehavior, checkBehavior } from '@/api/behavior'
 import { useUserInfoStore } from '@/stores/userInfo'
 import { ElMessage } from 'element-plus'
 
@@ -38,6 +38,18 @@ const loadNewsDetail = async () => {
         likeCount: res.data.likeCount || 0,
         cover: res.data.cover || '/home/banner1.png'
       }
+      
+      if (userStore.isLoggedIn) {
+        const likeRes = await checkBehavior('news', newsId.value, 'like')
+        if (likeRes.code === 200) {
+          isLiked.value = likeRes.data.isLiked || false
+        }
+        
+        const favoriteRes = await checkBehavior('news', newsId.value, 'favorite')
+        if (favoriteRes.code === 200) {
+          isFavorited.value = favoriteRes.data.isFavorited || false
+        }
+      }
     }
   } catch (error) {
     console.error('加载新闻详情失败:', error)
@@ -56,7 +68,7 @@ const handleLike = async () => {
   try {
     const res = await toggleLike('news', newsId.value)
     if (res.code === 200) {
-      isLiked.value = res.data.isLiked
+      isLiked.value = res.data.isLiked || false
       news.value.likeCount = res.data.isLiked ? news.value.likeCount + 1 : news.value.likeCount - 1
       ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
     } else {
@@ -78,7 +90,7 @@ const handleFavorite = async () => {
   try {
     const res = await toggleFavorite('news', newsId.value)
     if (res.code === 200) {
-      isFavorited.value = res.data.isFavorited
+      isFavorited.value = res.data.isFavorited || false
       ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
     } else {
       ElMessage.error('操作失败')

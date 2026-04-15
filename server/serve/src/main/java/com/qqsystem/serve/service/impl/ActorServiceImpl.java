@@ -27,19 +27,18 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     public Actor getById(Long id) {
-        actorMapper.increaseViewCount(id);
         return actorMapper.selectById(id);
     }
 
     @Override
-    public List<Actor> pageList(int page, int size) {
+    public List<Actor> pageList(int page, int size, String style) {
         int offset = (page - 1) * size;
-        return actorMapper.selectList(offset, size);
+        return actorMapper.selectList(offset, size, style);
     }
 
     @Override
-    public Long countList() {
-        return actorMapper.countList();
+    public Long countList(String style) {
+        return actorMapper.countList(style);
     }
 
     @Override

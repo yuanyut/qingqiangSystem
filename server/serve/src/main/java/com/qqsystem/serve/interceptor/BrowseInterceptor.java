@@ -20,6 +20,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
     private static final Pattern DRAMA_PATTERN = Pattern.compile("/drama/detail/(\\d+)");
     private static final Pattern NEWS_PATTERN = Pattern.compile("/news/detail/(\\d+)");
     private static final Pattern ACTOR_PATTERN = Pattern.compile("/actor/detail/(\\d+)");
+    private static final Pattern CULTURE_PATTERN = Pattern.compile("/culture/detail/(\\d+)");
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -37,7 +38,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = DRAMA_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
-            behaviorService.recordBrowse(userId, "drama", targetId);
+            behaviorService.addBehavior(userId, "drama", targetId, "view");
             return true;
         }
 
@@ -45,7 +46,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = NEWS_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
-            behaviorService.recordBrowse(userId, "news", targetId);
+            behaviorService.addBehavior(userId, "news", targetId, "view");
             return true;
         }
 
@@ -53,7 +54,15 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = ACTOR_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
-            behaviorService.recordBrowse(userId, "actor", targetId);
+            behaviorService.addBehavior(userId, "actor", targetId, "view");
+            return true;
+        }
+
+        // 检查是否是文化内容详情接口
+        matcher = CULTURE_PATTERN.matcher(path);
+        if (matcher.matches()) {
+            Long targetId = Long.parseLong(matcher.group(1));
+            behaviorService.addBehavior(userId, "culture", targetId, "view");
             return true;
         }
 

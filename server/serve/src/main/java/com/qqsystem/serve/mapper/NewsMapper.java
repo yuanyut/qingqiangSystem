@@ -21,6 +21,10 @@ public interface NewsMapper {
 
     void increaseView(@Param("id") Long id);
 
+    void increaseLikeCount(@Param("id") Long id);
+
+    void decreaseLikeCount(@Param("id") Long id);
+
     // 获取新闻分类统计
     List<Map<String, Object>> selectNewsCategories();
 
@@ -31,7 +35,7 @@ public interface NewsMapper {
     List<News> selectHotNews(@Param("size") int size);
 
     // 获取推荐阅读
-    List<News> selectRecommendNews(@Param("size") int size);
+    List<News> selectRecommendNews(@Param("size") int size, @Param("category") String category);
 
     // 获取媒体聚焦（视频类）
     List<News> selectMediaNews(@Param("size") int size);

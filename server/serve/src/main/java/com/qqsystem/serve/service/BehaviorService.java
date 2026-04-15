@@ -5,27 +5,18 @@ import com.qqsystem.serve.entity.Behavior;
 import java.util.List;
 
 public interface BehaviorService {
-    // 浏览记录
-    void recordBrowse(Long userId, String targetType, Long targetId);
+    // 添加行为记录
+    void addBehavior(Long userId, String targetType, Long targetId, String action);
 
-    // 点赞/取消点赞
-    boolean toggleLike(Long userId, String targetType, Long targetId);
+    // 切换行为状态（点赞/收藏）
+    boolean toggleBehavior(Long userId, String targetType, Long targetId, String action);
 
-    // 收藏/取消收藏
-    boolean toggleFavorite(Long userId, String targetType, Long targetId);
+    // 检查行为是否存在
+    boolean isBehaviorExists(Long userId, String targetType, Long targetId, String action);
 
-    // 检查是否已点赞
-    boolean isLiked(Long userId, String targetType, Long targetId);
+    // 获取用户行为列表
+    List<Behavior> getUserBehaviorList(Long userId, String targetType, String action, int page, int size);
 
-    // 检查是否已收藏
-    boolean isFavorited(Long userId, String targetType, Long targetId);
-
-    // 获取用户点赞列表
-    List<Behavior> getLikeList(Long userId, String targetType, int page, int size);
-
-    // 获取用户收藏列表
-    List<Behavior> getFavoriteList(Long userId, String targetType, int page, int size);
-
-    // 获取用户浏览历史
-    List<Behavior> getBrowseHistory(Long userId, String targetType, int page, int size);
+    // 统计用户行为数量
+    Long countUserBehavior(Long userId, String targetType, String action);
 }

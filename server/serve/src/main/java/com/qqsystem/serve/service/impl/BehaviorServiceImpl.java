@@ -1,9 +1,14 @@
 package com.qqsystem.serve.service.impl;
 
 import com.qqsystem.serve.entity.Behavior;
+import com.qqsystem.serve.mapper.ActorMapper;
 import com.qqsystem.serve.mapper.BehaviorMapper;
+import com.qqsystem.serve.mapper.ContentMapper;
+import com.qqsystem.serve.mapper.DramaMapper;
+import com.qqsystem.serve.mapper.NewsMapper;
 import com.qqsystem.serve.service.BehaviorService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
 import java.util.List;
@@ -14,83 +19,179 @@ public class BehaviorServiceImpl implements BehaviorService {
     @Resource
     private BehaviorMapper behaviorMapper;
 
-    private static final String TABLE_LIKE = "`like`";
-    private static final String TABLE_FAVORITE = "favorite";
-    private static final String TABLE_BROWSE_HISTORY = "browse_history";
+    @Resource
+    private ContentMapper contentMapper;
+
+    @Resource
+    private DramaMapper dramaMapper;
+
+    @Resource
+    private ActorMapper actorMapper;
+
+    @Resource
+    private NewsMapper newsMapper;
 
     @Override
-    public void recordBrowse(Long userId, String targetType, Long targetId) {
-        // 检查是否已存在浏览记录
-        Behavior existing = behaviorMapper.select(TABLE_BROWSE_HISTORY, userId, targetType, targetId);
-        if (existing == null) {
-            // 不存在则插入新记录
+    @Transactional
+    public void addBehavior(Long userId, String targetType, Long targetId, String action) {
+        Behavior existing = behaviorMapper.selectBehavior(userId, targetType, targetId, action);
+        if (existing != null) {
+            // If exists, update status to 1
+            behaviorMapper.updateBehaviorStatus(userId, targetType, targetId, action, 1);
+        } else {
+            // If not exists, insert new record
             Behavior behavior = new Behavior();
             behavior.setUserId(userId);
             behavior.setTargetType(targetType);
             behavior.setTargetId(targetId);
-            behaviorMapper.insert(TABLE_BROWSE_HISTORY, behavior);
+            behavior.setAction(action);
+            behaviorMapper.insertBehavior(behavior);
+        }
+
+        // Update view count based on biz_type
+        if ("view".equals(action)) {
+            updateViewCount(targetType, targetId);
         }
     }
 
     @Override
-    public boolean toggleLike(Long userId, String targetType, Long targetId) {
-        return toggleBehavior(TABLE_LIKE, userId, targetType, targetId);
-    }
-
-    @Override
-    public boolean toggleFavorite(Long userId, String targetType, Long targetId) {
-        return toggleBehavior(TABLE_FAVORITE, userId, targetType, targetId);
-    }
-
-    @Override
-    public boolean isLiked(Long userId, String targetType, Long targetId) {
-        return isBehaviorExists(TABLE_LIKE, userId, targetType, targetId);
-    }
-
-    @Override
-    public boolean isFavorited(Long userId, String targetType, Long targetId) {
-        return isBehaviorExists(TABLE_FAVORITE, userId, targetType, targetId);
-    }
-
-    @Override
-    public List<Behavior> getLikeList(Long userId, String targetType, int page, int size) {
-        int offset = (page - 1) * size;
-        return behaviorMapper.selectList(TABLE_LIKE, userId, targetType, offset, size);
-    }
-
-    @Override
-    public List<Behavior> getFavoriteList(Long userId, String targetType, int page, int size) {
-        int offset = (page - 1) * size;
-        return behaviorMapper.selectList(TABLE_FAVORITE, userId, targetType, offset, size);
-    }
-
-    @Override
-    public List<Behavior> getBrowseHistory(Long userId, String targetType, int page, int size) {
-        int offset = (page - 1) * size;
-        return behaviorMapper.selectList(TABLE_BROWSE_HISTORY, userId, targetType, offset, size);
-    }
-
-    // 通用的行为切换逻辑
-    private boolean toggleBehavior(String tableName, Long userId, String targetType, Long targetId) {
-        Behavior existing = behaviorMapper.select(tableName, userId, targetType, targetId);
+    @Transactional
+    public boolean toggleBehavior(Long userId, String targetType, Long targetId, String action) {
+        Behavior existing = behaviorMapper.selectBehavior(userId, targetType, targetId, action);
         if (existing != null) {
-            // 已存在则删除（取消）
-            behaviorMapper.delete(tableName, userId, targetType, targetId);
-            return false;
+            // Toggle status: if 1 -> 0, if 0 -> 1
+            int newStatus = existing.getStatus() == 1 ? 0 : 1;
+            behaviorMapper.updateBehaviorStatus(userId, targetType, targetId, action, newStatus);
+
+            // Update like count based on status change
+            if ("like".equals(action)) {
+                if (newStatus == 1) {
+                    // Status 0 -> 1: increase like count
+                    increaseLikeCount(targetType, targetId);
+                } else {
+                    // Status 1 -> 0: decrease like count
+                    decreaseLikeCount(targetType, targetId);
+                }
+            }
+
+            return newStatus == 1;
         } else {
-            // 不存在则插入（添加）
-            Behavior behavior = new Behavior();
-            behavior.setUserId(userId);
-            behavior.setTargetType(targetType);
-            behavior.setTargetId(targetId);
-            behaviorMapper.insert(tableName, behavior);
+            // If not exists, insert with status 1
+            addBehavior(userId, targetType, targetId, action);
+
+            // Increase like count for first time like
+            if ("like".equals(action)) {
+                increaseLikeCount(targetType, targetId);
+            }
+
             return true;
         }
     }
 
-    // 检查行为是否存在
-    private boolean isBehaviorExists(String tableName, Long userId, String targetType, Long targetId) {
-        Behavior existing = behaviorMapper.select(tableName, userId, targetType, targetId);
-        return existing != null;
+    @Override
+    public boolean isBehaviorExists(Long userId, String targetType, Long targetId, String action) {
+        Behavior existing = behaviorMapper.selectBehavior(userId, targetType, targetId, action);
+        return existing != null && existing.getStatus() == 1;
+    }
+
+    @Override
+    public List<Behavior> getUserBehaviorList(Long userId, String targetType, String action, int page, int size) {
+        int offset = (page - 1) * size;
+        return behaviorMapper.selectUserBehaviorList(userId, targetType, action, offset, size);
+    }
+
+    @Override
+    public Long countUserBehavior(Long userId, String targetType, String action) {
+        return behaviorMapper.countUserBehavior(userId, targetType, action);
+    }
+
+    /**
+     * Update view count based on biz_type
+     * Only drama and culture update content table
+     * actor and news only update their own tables
+     */
+    private void updateViewCount(String targetType, Long targetId) {
+        switch (targetType) {
+            case "drama":
+                // drama: content.view_count +1, drama.view_count +1
+                contentMapper.increaseViewCount(targetId);
+                dramaMapper.increaseViewCount(targetId);
+                break;
+            case "culture":
+                // culture: content.view_count +1
+                contentMapper.increaseViewCount(targetId);
+                break;
+            case "actor":
+                // actor: actor.view_count +1
+                actorMapper.increaseViewCount(targetId);
+                break;
+            case "news":
+                // news: news.view_count +1
+                newsMapper.increaseView(targetId);
+                break;
+            default:
+                // Do nothing for unknown types
+                break;
+        }
+    }
+
+    /**
+     * Increase like count based on biz_type
+     * Only drama and culture update content table
+     * actor and news only update their own tables
+     */
+    private void increaseLikeCount(String targetType, Long targetId) {
+        switch (targetType) {
+            case "drama":
+                // drama: content.like_count +1, drama.like_count +1
+                contentMapper.increaseLikeCount(targetId);
+                dramaMapper.increaseLikeCount(targetId);
+                break;
+            case "culture":
+                // culture: content.like_count +1
+                contentMapper.increaseLikeCount(targetId);
+                break;
+            case "actor":
+                // actor: actor.like_count +1
+                actorMapper.increaseLikeCount(targetId);
+                break;
+            case "news":
+                // news: news.like_count +1
+                newsMapper.increaseLikeCount(targetId);
+                break;
+            default:
+                // Do nothing for unknown types
+                break;
+        }
+    }
+
+    /**
+     * Decrease like count based on biz_type
+     * Only drama and culture update content table
+     * actor and news only update their own tables
+     */
+    private void decreaseLikeCount(String targetType, Long targetId) {
+        switch (targetType) {
+            case "drama":
+                // drama: content.like_count -1, drama.like_count -1
+                contentMapper.decreaseLikeCount(targetId);
+                dramaMapper.decreaseLikeCount(targetId);
+                break;
+            case "culture":
+                // culture: content.like_count -1
+                contentMapper.decreaseLikeCount(targetId);
+                break;
+            case "actor":
+                // actor: actor.like_count -1
+                actorMapper.decreaseLikeCount(targetId);
+                break;
+            case "news":
+                // news: news.like_count -1
+                newsMapper.decreaseLikeCount(targetId);
+                break;
+            default:
+                // Do nothing for unknown types
+                break;
+        }
     }
 }

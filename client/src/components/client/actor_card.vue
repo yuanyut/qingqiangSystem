@@ -6,8 +6,8 @@ const props = defineProps<{
   desc?: string
   cate?: string
   act?: string
-  watchPeople?: string | number
-  lovePeople?: string | number
+  viewCount?: string | number
+  likeCount?: string | number
   isLiked?:number | boolean
   isFavorited?:number |boolean
   favoriteCount?:string | number
@@ -53,33 +53,12 @@ const changeFavorite = () => {
       <div class="card_attr">
         <div class="attr_item">
           <span class="attr_icon">👁️</span>
-          <span class="attr_value">{{ props.watchPeople }}</span>
+          <span class="attr_value">{{ props.viewCount }}</span>
         </div>
         <div class="attr_item">
           <span class="attr_icon">❤️</span>
-          <span class="attr_value">{{ props.lovePeople }}</span>
+          <span class="attr_value">{{ props.likeCount }}</span>
         </div>
-      </div>
-      <div class="card_footer">
-        
-        <div 
-          class="action-btn like-btn"
-         
-        >
-          <span class="icon" @click.stop="changeLike">{{ props.isLiked ? '❤️' : '🤍' }}</span>
-  
-        </div>
-        
-        <div 
-          class="action-btn favorite-btn"
-         
-         
-        >
-          <span class="icon" @click.stop="changeFavorite">{{props.isFavorited ? '⭐' : '☆' }}</span>
-          <span class="count">{{props.favoriteCount }}</span>
-        </div>
-        
-        
       </div>
     </div>
   </div>

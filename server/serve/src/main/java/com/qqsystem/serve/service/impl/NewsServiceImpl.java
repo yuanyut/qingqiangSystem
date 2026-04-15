@@ -17,7 +17,6 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public News getById(Long id) {
-        newsMapper.increaseView(id);
         return newsMapper.selectById(id);
     }
 
@@ -71,8 +70,8 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public List<News> getRecommendNews(int size) {
-        return newsMapper.selectRecommendNews(size);
+    public List<News> getRecommendNews(int size, String category) {
+        return newsMapper.selectRecommendNews(size, category);
     }
 
     @Override

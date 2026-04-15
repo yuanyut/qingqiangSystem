@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDramaDetail } from '@/api/drama'
-import { toggleLike, toggleFavorite } from '@/api/behavior'
+import { toggleLike, toggleFavorite, addBehavior, checkBehavior } from '@/api/behavior'
 import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -22,22 +22,33 @@ const goBack = () => {
 const loadDramaDetail = async () => {
   try {
     loading.value = true
-    drama.value = null // 清空旧数据
+    drama.value = null
+    
+    // 增加浏览次数
+    await addBehavior('drama', dramaId.value, 'view')
+    
     const res = await getDramaDetail(dramaId.value)
     if (res.code === 200) {
       drama.value = {
         ...res.data,
-        // @ts-ignore - API返回字段为name，但类型定义可能不匹配
-        title: res.data.name,
-        // @ts-ignore - API返回字段为intro，但类型定义可能不匹配
-        description: res.data.intro,
-        
-        // @ts-ignore - API返回字段为cover，但类型定义可能不匹配
-        coverImage: res.data.cover ? res.data.cover.replace(/[`\s]/g, '') : '/home/banner1.png',
-        // @ts-ignore - API返回字段为viewCount，但类型定义可能不匹配
-        watchCount: res.data.viewCount || 0,
+        title: res.data.title,
+        description: res.data.description || '',
+        coverImage: (res.data as any).cover ? (res.data as any).cover.replace(/[`\s]/g, '') : '/home/banner1.png',
+        watchCount: (res.data as any).viewCount || 0,
         likeCount: res.data.likeCount || 0,
         categoryName: res.data.categoryId === 1 ? '传统剧目' : '现代剧目'
+      }
+      
+      if (userStore.isLoggedIn) {
+        const likeRes = await checkBehavior('drama', dramaId.value, 'like')
+        if (likeRes.code === 200) {
+          isLiked.value = likeRes.data.isLiked || false
+        }
+        
+        const favoriteRes = await checkBehavior('drama', dramaId.value, 'favorite')
+        if (favoriteRes.code === 200) {
+          isFavorited.value = favoriteRes.data.isFavorited || false
+        }
       }
     }
   } catch (error) {
@@ -47,7 +58,6 @@ const loadDramaDetail = async () => {
   }
 }
 
-// 处理点赞/取消点赞
 const handleLike = async () => {
   if (!userStore.isLoggedIn) {
     ElMessage.warning('请先登录')
@@ -57,7 +67,7 @@ const handleLike = async () => {
   try {
     const res = await toggleLike('drama', dramaId.value)
     if (res.code === 200) {
-      isLiked.value = res.data.isLiked
+      isLiked.value = res.data.isLiked || false
       drama.value.likeCount = res.data.isLiked ? drama.value.likeCount + 1 : drama.value.likeCount - 1
       ElMessage.success(res.data.isLiked ? '点赞成功' : '取消点赞成功')
     } else {
@@ -69,7 +79,6 @@ const handleLike = async () => {
   }
 }
 
-// 处理收藏/取消收藏
 const handleFavorite = async () => {
   if (!userStore.isLoggedIn) {
     ElMessage.warning('请先登录')
@@ -79,7 +88,7 @@ const handleFavorite = async () => {
   try {
     const res = await toggleFavorite('drama', dramaId.value)
     if (res.code === 200) {
-      isFavorited.value = res.data.isFavorited
+      isFavorited.value = res.data.isFavorited || false
       ElMessage.success(res.data.isFavorited ? '收藏成功' : '取消收藏成功')
     } else {
       ElMessage.error('操作失败')
@@ -90,7 +99,6 @@ const handleFavorite = async () => {
   }
 }
 
-// 监听路由参数变化
 watch(() => route.params.id, (newId) => {
   if (newId) {
     dramaId.value = parseInt(newId as string)
@@ -131,6 +139,7 @@ onMounted(() => {
           />
         </div>
         <div class="drama-info">
+          <div class="drama-style">{{ drama.name }}</div>
           <h1 class="drama-title">{{ drama.title }}</h1>
           <div class="drama-meta">
             <span class="meta-item">

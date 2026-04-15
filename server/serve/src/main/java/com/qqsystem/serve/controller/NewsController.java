@@ -92,8 +92,8 @@ public class NewsController {
 
     // 获取推荐阅读
     @GetMapping("/recommend")
-    public ResponseResult<List<News>> getRecommend(@RequestParam int size) {
-        List<News> recommendList = newsService.getRecommendNews(size);
+    public ResponseResult<List<News>> getRecommend(@RequestParam int size, @RequestParam(required = false) String category) {
+        List<News> recommendList = newsService.getRecommendNews(size, category);
         return ResponseResult.success(recommendList);
     }
 

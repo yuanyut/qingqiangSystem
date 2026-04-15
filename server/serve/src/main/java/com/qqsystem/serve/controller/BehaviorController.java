@@ -18,78 +18,80 @@ public class BehaviorController {
     @Resource
     private BehaviorService behaviorService;
 
-    // 点赞/取消点赞
-    @PostMapping("/like/toggle")
-    public ResponseResult<Map<String, Object>> toggleLike(@RequestParam String targetType, @RequestParam Long targetId, HttpServletRequest request) {
-        // 从请求上下文中获取userId（由JWT Filter解析并放入）
+    // 统一行为接口：添加行为
+    @PostMapping("/add")
+    public ResponseResult<String> addBehavior(@RequestParam String targetType, @RequestParam Long targetId, @RequestParam String action, HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null && !"view".equals(action)) {
+            return ResponseResult.badRequest("未登录");
+        }
+        
+        if (userId != null) {
+            behaviorService.addBehavior(userId, targetType, targetId, action);
+        }
+        
+        return ResponseResult.success("行为记录成功");
+    }
+
+    // 统一行为接口：切换行为状态（点赞/收藏）
+    @PostMapping("/toggle")
+    public ResponseResult<Map<String, Object>> toggleBehavior(@RequestParam String targetType, @RequestParam Long targetId, @RequestParam String action, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
             return ResponseResult.badRequest("未登录");
         }
         
+        boolean isActive = behaviorService.toggleBehavior(userId, targetType, targetId, action);
+        
         Map<String, Object> result = new HashMap<>();
-        boolean isLiked = behaviorService.toggleLike(userId, targetType, targetId);
-        result.put("isLiked", isLiked);
+        if ("like".equals(action)) {
+            result.put("isLiked", isActive);
+        } else if ("favorite".equals(action)) {
+            result.put("isFavorited", isActive);
+        }
+        
         return ResponseResult.success(result);
     }
 
-    // 收藏/取消收藏
-    @PostMapping("/favorite/toggle")
-    public ResponseResult<Map<String, Object>> toggleFavorite(@RequestParam String targetType, @RequestParam Long targetId, HttpServletRequest request) {
-        // 从请求上下文中获取userId（由JWT Filter解析并放入）
+    // 查询当前用户行为
+    @GetMapping("/my")
+    public ResponseResult<Map<String, Object>> getMyBehaviors(@RequestParam(required = false) String targetType, @RequestParam(required = false) String action, @RequestParam int page, @RequestParam int size, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
             return ResponseResult.badRequest("未登录");
         }
         
-        Map<String, Object> result = new HashMap<>();
-        boolean isFavorited = behaviorService.toggleFavorite(userId, targetType, targetId);
-        result.put("isFavorited", isFavorited);
-        return ResponseResult.success(result);
-    }
-
-    // 获取用户点赞列表
-    @GetMapping("/like/list")
-    public ResponseResult<Map<String, Object>> getLikeList(@RequestParam(required = false) String targetType, @RequestParam int page, @RequestParam int size, HttpServletRequest request) {
-        // 从请求上下文中获取userId（由JWT Filter解析并放入）
-        Long userId = (Long) request.getAttribute("userId");
-        if (userId == null) {
-            return ResponseResult.badRequest("未登录");
-        }
+        List<Behavior> list = behaviorService.getUserBehaviorList(userId, targetType, action, page, size);
+        Long total = behaviorService.countUserBehavior(userId, targetType, action);
         
         Map<String, Object> result = new HashMap<>();
-        List<Behavior> list = behaviorService.getLikeList(userId, targetType, page, size);
         result.put("list", list);
+        result.put("total", total);
+        
         return ResponseResult.success(result);
     }
 
-    // 获取用户收藏列表
-    @GetMapping("/favorite/list")
-    public ResponseResult<Map<String, Object>> getFavoriteList(@RequestParam(required = false) String targetType, @RequestParam int page, @RequestParam int size, HttpServletRequest request) {
-        // 从请求上下文中获取userId（由JWT Filter解析并放入）
+    // 检查行为状态
+    @GetMapping("/check")
+    public ResponseResult<Map<String, Object>> checkBehavior(@RequestParam String targetType, @RequestParam Long targetId, @RequestParam String action, HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-        if (userId == null) {
-            return ResponseResult.badRequest("未登录");
-        }
         
         Map<String, Object> result = new HashMap<>();
-        List<Behavior> list = behaviorService.getFavoriteList(userId, targetType, page, size);
-        result.put("list", list);
-        return ResponseResult.success(result);
-    }
-
-    // 获取用户浏览历史
-    @GetMapping("/browse/list")
-    public ResponseResult<Map<String, Object>> getBrowseHistory(@RequestParam(required = false) String targetType, @RequestParam int page, @RequestParam int size, HttpServletRequest request) {
-        // 从请求上下文中获取userId（由JWT Filter解析并放入）
-        Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
-            return ResponseResult.badRequest("未登录");
+            if ("like".equals(action)) {
+                result.put("isLiked", false);
+            } else if ("favorite".equals(action)) {
+                result.put("isFavorited", false);
+            }
+        } else {
+            boolean exists = behaviorService.isBehaviorExists(userId, targetType, targetId, action);
+            if ("like".equals(action)) {
+                result.put("isLiked", exists);
+            } else if ("favorite".equals(action)) {
+                result.put("isFavorited", exists);
+            }
         }
         
-        Map<String, Object> result = new HashMap<>();
-        List<Behavior> list = behaviorService.getBrowseHistory(userId, targetType, page, size);
-        result.put("list", list);
         return ResponseResult.success(result);
     }
 }

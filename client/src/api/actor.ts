@@ -34,14 +34,18 @@ export interface ActorListResponse {
   total: number
 }
 
-export const getActorList = (page: number, size: number) => {
+export const getActorList = (page: number, size: number, style?: string) => {
+  const params: any = {
+    page,
+    size
+  }
+  if (style !== undefined && style !== '') {
+    params.style = style
+  }
   return request<ActorListResponse>({
     url: '/actor/list',
     method: 'get',
-    params: {
-      page,
-      size
-    }
+    params
   })
 }
 

@@ -15,5 +15,11 @@ public class Behavior {
 
     private Long targetId;
 
+    private String action;
+
+    private Integer status;
+
     private Date createTime;
+
+    private Date updateTime;
 }

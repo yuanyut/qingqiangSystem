@@ -71,12 +71,13 @@ export const getHotList = (size: number) => {
 }
 
 // 获取推荐阅读
-export const getRecommendList = (size: number) => {
+export const getRecommendList = (size: number, category?: string) => {
   return request<News[]>({
     url: '/news/recommend',
     method: 'get',
     params: {
-      size
+      size,
+      category
     }
   })
 }

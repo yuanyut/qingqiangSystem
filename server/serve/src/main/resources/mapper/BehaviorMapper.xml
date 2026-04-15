@@ -4,50 +4,70 @@
 
 <mapper namespace="com.qqsystem.serve.mapper.BehaviorMapper">
 
-    <insert id="insert">
-        INSERT INTO ${tableName} (
+    <insert id="insertBehavior">
+        INSERT INTO user_behavior (
             user_id,
             target_type,
-            target_id
+            target_id,
+            action,
+            status,
+            create_time,
+            update_time
         ) VALUES (
                      #{behavior.userId},
                      #{behavior.targetType},
-                     #{behavior.targetId}
+                     #{behavior.targetId},
+                     #{behavior.action},
+                     1,
+                     NOW(),
+                     NOW()
                  )
     </insert>
 
-    <delete id="delete">
-        DELETE FROM ${tableName}
+    <update id="updateBehaviorStatus">
+        UPDATE user_behavior
+        SET status = #{status},
+            update_time = NOW()
         WHERE user_id = #{userId}
           AND target_type = #{targetType}
           AND target_id = #{targetId}
-    </delete>
+          AND action = #{action}
+    </update>
 
-    <select id="select" resultType="com.qqsystem.serve.entity.Behavior">
+    <select id="selectBehavior" resultType="com.qqsystem.serve.entity.Behavior">
         SELECT *
-        FROM ${tableName}
+        FROM user_behavior
         WHERE user_id = #{userId}
           AND target_type = #{targetType}
           AND target_id = #{targetId}
+          AND action = #{action}
     </select>
 
-    <select id="selectList" resultType="com.qqsystem.serve.entity.Behavior">
+    <select id="selectUserBehaviorList" resultType="com.qqsystem.serve.entity.Behavior">
         SELECT *
-        FROM ${tableName}
+        FROM user_behavior
         WHERE user_id = #{userId}
+          AND status = 1
         <if test="targetType != null and targetType != ''">
             AND target_type = #{targetType}
+        </if>
+        <if test="action != null and action != ''">
+            AND action = #{action}
         </if>
         ORDER BY create_time DESC
         LIMIT #{offset}, #{size}
     </select>
 
-    <select id="countList" resultType="java.lang.Long">
+    <select id="countUserBehavior" resultType="java.lang.Long">
         SELECT COUNT(*)
-        FROM ${tableName}
+        FROM user_behavior
         WHERE user_id = #{userId}
+          AND status = 1
         <if test="targetType != null and targetType != ''">
             AND target_type = #{targetType}
+        </if>
+        <if test="action != null and action != ''">
+            AND action = #{action}
         </if>
     </select>
 

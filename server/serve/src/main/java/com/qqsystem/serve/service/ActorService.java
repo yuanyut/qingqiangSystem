@@ -9,9 +9,9 @@ public interface ActorService {
 
     Actor getDetailWithRelation(Long id);
 
-    List<Actor> pageList(int page, int size);
+    List<Actor> pageList(int page, int size, String style);
 
-    Long countList();
+    Long countList(String style);
 
     boolean add(Actor actor);
 
