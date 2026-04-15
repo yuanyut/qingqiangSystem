@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qqsystem.serve.mapper.DailyStatsMapper">
+    <insert id="insertOrUpdate" parameterType="com.qqsystem.serve.entity.DailyStats">
+        INSERT INTO daily_stats (
+            stat_date, pv, uv, new_user_count, user_total_count, 
+            drama_count, content_count, like_count, comment_count, 
+            favorite_count, share_count, create_time, update_time
+        ) VALUES (
+            #{statDate}, #{pv}, #{uv}, #{newUserCount}, #{userTotalCount}, 
+            #{dramaCount}, #{contentCount}, #{likeCount}, #{commentCount}, 
+            #{favoriteCount}, #{shareCount}, NOW(), NOW()
+        ) ON DUPLICATE KEY UPDATE
+            pv = #{pv},
+            uv = #{uv},
+            new_user_count = #{newUserCount},
+            user_total_count = #{userTotalCount},
+            drama_count = #{dramaCount},
+            content_count = #{contentCount},
+            like_count = #{likeCount},
+            comment_count = #{commentCount},
+            favorite_count = #{favoriteCount},
+            share_count = #{shareCount},
+            update_time = NOW()
+    </insert>
+    
+    <select id="countPvByDate" parameterType="String" resultType="Integer">
+        SELECT COUNT(*) FROM user_behavior 
+        WHERE DATE(create_time) = #{date}
+    </select>
+    
+    <select id="countUvByDate" parameterType="String" resultType="Integer">
+        SELECT COUNT(DISTINCT user_id) FROM login_log 
+        WHERE DATE(login_time) = #{date}
+    </select>
+    
+    <select id="countNewUserByDate" parameterType="String" resultType="Integer">
+        SELECT COUNT(*) FROM user 
+        WHERE DATE(create_time) = #{date}
+    </select>
+    
+    <select id="countTotalUser" resultType="Integer">
+        SELECT COUNT(*) FROM user
+    </select>
+    
+    <select id="countDrama" resultType="Integer">
+        SELECT COUNT(*) FROM drama
+    </select>
+    
+    <select id="countContent" resultType="Integer">
+        SELECT COUNT(*) FROM content
+    </select>
+    
+    <select id="countBehaviorByDateAndAction" resultType="Integer">
+        SELECT COUNT(*) FROM user_behavior 
+        WHERE DATE(create_time) = #{date} AND action = #{action}
+    </select>
+</mapper>
