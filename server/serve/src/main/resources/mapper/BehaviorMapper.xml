@@ -87,4 +87,16 @@
           AND status = 1
     </update>
 
+    <!-- 查询行为趋势 -->
+    <select id="selectBehaviorTrend" resultType="java.util.Map">
+        SELECT 
+            DATE(create_time) as date, 
+            action, 
+            COUNT(*) as count 
+        FROM user_behavior 
+        WHERE create_time >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        GROUP BY DATE(create_time), action 
+        ORDER BY date ASC, action ASC
+    </select>
+
 </mapper>

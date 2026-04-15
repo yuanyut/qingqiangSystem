@@ -114,4 +114,15 @@
         WHERE id = #{id} AND like_count > 0
     </update>
 
+    <select id="countByCategory" resultType="java.util.Map">
+        SELECT category_id as category, COUNT(*) as count FROM drama GROUP BY category_id
+    </select>
+
+    <!-- 查询剧目TOP10 -->
+    <select id="selectDramaTop10" resultType="java.util.Map">
+        SELECT id, name, view_count as viewCount, like_count as likeCount FROM drama 
+        ORDER BY view_count DESC 
+        LIMIT 10
+    </select>
+
 </mapper>

@@ -42,4 +42,7 @@ public interface ContentMapper {
 
     // 获取媒体聚焦（视频类）
     List<Content> selectMediaCulture(@Param("size") int size);
+
+    // 获取内容新增趋势
+    List<Map<String, Object>> selectContentTrend(@Param("type") String type, @Param("days") int days);
 }

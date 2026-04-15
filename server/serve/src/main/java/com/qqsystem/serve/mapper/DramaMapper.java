@@ -1,30 +1,23 @@
 package com.qqsystem.serve.mapper;
 
 import com.qqsystem.serve.entity.Drama;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DramaMapper {
-    Drama selectById(@Param("id") Long id);
-
-    List<Drama> selectList(@Param("offset") int offset,
-                           @Param("size") int size,
-                           @Param("categoryId") Long categoryId,
-                           @Param("keyword") String keyword);
-
-    Long countList(@Param("categoryId") Long categoryId,
-                 @Param("keyword") String keyword);
-
+    List<Drama> selectAll();
+    Drama selectById(Long id);
     int insert(Drama drama);
-
+    void update(Drama drama);
+    void delete(Long id);
     int updateById(Drama drama);
-
-    int deleteById(@Param("id") Long id);
-
-    int increaseViewCount(@Param("id") Long id);
-
-    int increaseLikeCount(@Param("id") Long id);
-
-    int decreaseLikeCount(@Param("id") Long id);
+    int deleteById(Long id);
+    List<Map<String, Object>> countByCategory();
+    List<Map<String, Object>> selectDramaTop10();
+    void increaseViewCount(Long id);
+    void increaseLikeCount(Long id);
+    void decreaseLikeCount(Long id);
+    List<Drama> selectList(int offset, int size, Long categoryId, String keyword);
+    Long countList(Long categoryId, String keyword);
 }

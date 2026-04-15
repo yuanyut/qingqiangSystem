@@ -64,4 +64,16 @@
             update_time = NOW()
         WHERE id = #{userId}
     </update>
+
+    <!-- 查询用户所在省份统计 -->
+    <select id="selectUserProvinceStats" resultType="java.util.Map">
+        SELECT 
+            address as province, 
+            COUNT(*) as count 
+        FROM user 
+        WHERE address IS NOT NULL AND address != ''
+        GROUP BY address 
+        ORDER BY count DESC
+    </select>
+
 </mapper>

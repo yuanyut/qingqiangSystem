@@ -4,6 +4,7 @@ import com.qqsystem.serve.entity.Behavior;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BehaviorMapper {
     // 插入行为记录到统一表
@@ -26,4 +27,7 @@ public interface BehaviorMapper {
     
     // 批量更新用户行为状态
     int batchUpdateBehaviorStatus(@Param("userId") Long userId, @Param("action") String action, @Param("status") Integer status);
+
+    // 查询行为趋势
+    List<Map<String, Object>> selectBehaviorTrend(@Param("type") String type, @Param("days") int days);
 }
