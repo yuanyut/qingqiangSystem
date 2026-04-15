@@ -14,7 +14,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()   // 👈 全放行
+                        .requestMatchers("/upload/**").permitAll() // 明确放行静态资源
+                        .anyRequest().permitAll()   // 全放行
                 );
 
         return http.build();

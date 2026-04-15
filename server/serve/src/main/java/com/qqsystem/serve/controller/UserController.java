@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
@@ -354,6 +355,7 @@ public class UserController {
                 data.put("birthday", user.getBirthday() != null ? user.getBirthday() : "");
                 data.put("address", user.getAddress() != null ? user.getAddress() : "");
                 data.put("info", user.getInfo() != null ? user.getInfo() : "");
+                data.put("createTime", user.getCreateTime() != null ? user.getCreateTime().toString() : "");
                 return ResponseResult.success(data);
             } else {
                 return ResponseResult.badRequest("用户不存在");
@@ -458,10 +460,10 @@ public class UserController {
             // 7. 生成文件名
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String filename = userId + "_" + System.currentTimeMillis() + extension;
+            String filename = UUID.randomUUID().toString() + extension;
 
             // 8. 保存文件
-            String uploadPath = "D:/uploads/avatars/";
+            String uploadPath = "D:/qin-opera-promotion-system/upload/avatar/";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -470,12 +472,15 @@ public class UserController {
             file.transferTo(dest);
 
             // 9. 生成头像URL
-            String avatarUrl = "/uploads/avatars/" + filename;
+            String avatarUrl = "http://localhost:8081/upload/avatar/" + filename;
 
             // 10. 更新用户头像
             int result = userService.updateUserAvatar(userId, avatarUrl);
             if (result > 0) {
-                return ResponseResult.success(avatarUrl);
+                Map<String, Object> response = new HashMap<>();
+                response.put("code", 200);
+                response.put("url", avatarUrl);
+                return ResponseResult.success(response);
             } else {
                 return ResponseResult.badRequest("上传失败");
             }

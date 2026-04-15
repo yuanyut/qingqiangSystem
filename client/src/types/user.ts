@@ -4,4 +4,6 @@ export interface UserInfo {
     nickname?: string
     avatar?: string
     isLogin?: boolean
+    address?: string   // 用户地址
+    createTime?: string // 创建时间
 }

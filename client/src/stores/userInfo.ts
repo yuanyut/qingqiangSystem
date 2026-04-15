@@ -15,6 +15,13 @@ export const useUserInfoStore = defineStore('userInfo',()=>{
         UserInfos.nickname=userInfo.nickname
         UserInfos.avatar=userInfo.avatar
         UserInfos.isLogin=true
+        // 设置可选字段
+        if (userInfo.address !== undefined) {
+            UserInfos.address = userInfo.address
+        }
+        if (userInfo.createTime !== undefined) {
+            UserInfos.createTime = userInfo.createTime
+        }
     }
     
     // 检查本地存储的token是否存在

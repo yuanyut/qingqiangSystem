@@ -20,14 +20,14 @@
           </div>
           <div class="setting-value">
             <div class="avatar-wrapper">
-              <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar-img" />
-                <el-icon v-else class="avatar-uploader-icon">
-                  <Plus />
-                </el-icon>
-              </el-upload>
-            </div>
+          <el-upload class="avatar-uploader"
+            :show-file-list="false" :on-change="handleAvatarChange" :before-upload="beforeAvatarUpload" :auto-upload="false">
+            <img v-if="imageUrl" :src="imageUrl" class="avatar-img" />
+            <el-icon v-else class="avatar-uploader-icon">
+              <Plus />
+            </el-icon>
+          </el-upload>
+        </div>
           </div>
         </div>
 
@@ -202,16 +202,17 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { UploadProps, FormInstance, FormRules } from 'element-plus'
 import { pcaTextArr } from "element-china-area-data"
-import { getUserProfile, updateUserProfile, uploadAvatar, changePassword } from '@/api/user'
+import { getUserProfile, updateUserProfile, changePassword } from '@/api/user'
 import { useUserInfoStore } from '@/stores/userInfo'
+import service from '@/api/request'
 
 // 用户资料数据
 const userProfile = reactive({
-  nickname: '山野的风',
-  bio: '喜欢旅行、摄影和美食，记录生活中的美好瞬间。',
-  region: '浙江省-杭州市-西湖区',
-  phone: '159****1234',
-  email: 'user@example.com'
+  nickname: '',
+  bio: '',
+  region: '',
+  phone: '',
+  email: ''
 })
 
 // 隐私设置
@@ -274,25 +275,17 @@ onMounted(() => {
 
 // 头像相关
 const imageUrl = ref('https://picsum.photos/200/200?random=1')
+const uploadUrl = 'http://localhost:8081/user/avatar/upload'
+const selectedAvatarFile = ref<File | null>(null)
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = async (
-  response,
-  uploadFile
-) => {
-  try {
-    const file = uploadFile.raw as File
-    const res = await uploadAvatar(file)
-    if (res.code === 200) {
-      imageUrl.value = res.data
-      ElMessage.success('头像上传成功')
-      // 标记头像已修改
-      modifiedData.avatar = true
-    } else {
-      ElMessage.error('头像上传失败')
-    }
-  } catch (error) {
-    console.error('头像上传失败:', error)
-    ElMessage.error('头像上传失败，请重试')
+const handleAvatarChange = (file: any) => {
+  const rawFile = file.raw
+  if (rawFile) {
+    // 创建预览URL
+    imageUrl.value = URL.createObjectURL(rawFile)
+    selectedAvatarFile.value = rawFile
+    // 标记头像已修改
+    modifiedData.avatar = true
   }
 }
 
@@ -571,6 +564,37 @@ const handleSaveAll = async () => {
     type: 'info'
   }).then(async () => {
     try {
+      // 先上传头像
+      if (modifiedData.avatar && selectedAvatarFile.value) {
+        ElMessage.info('正在上传头像...')
+        const formData = new FormData()
+        formData.append('file', selectedAvatarFile.value)
+        
+        const uploadRes = await service({
+          url: '/user/avatar/upload',
+          method: 'post',
+          data: formData
+        })
+        
+        console.log('Upload response:', uploadRes)
+        
+        if (uploadRes.code === 200 && uploadRes.data) {
+          // 更新头像URL
+          imageUrl.value = uploadRes.data.url
+          ;(userProfile as any).avatar = uploadRes.data.url
+          // 立即更新userInfoStore中的头像
+          userInfoStore.setUserInfo({
+            username: userInfoStore.UserInfos.username,
+            nickname: userInfoStore.UserInfos.nickname,
+            avatar: uploadRes.data.url,
+            isLogin: true
+          })
+        } else {
+          ElMessage.error('头像上传失败')
+          return
+        }
+      }
+      
       // 构建要更新的数据
       const updateData: {
         nickname?: string
@@ -598,7 +622,7 @@ const handleSaveAll = async () => {
           userInfoStore.setUserInfo({
             username: data.username,
             nickname: data.nickname,
-            avatar: data.avatar,
+            avatar: data.avatar || imageUrl.value, // 如果返回的avatar为空，使用本地更新的avatar
             isLogin: true
           })
         } else {

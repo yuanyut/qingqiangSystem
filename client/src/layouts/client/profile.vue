@@ -7,7 +7,7 @@ import history from '@/components/client/profile/history.vue';
 import favorite from '@/components/client/profile/favorite.vue';
 import like from '@/components/client/profile/like.vue';
 import setting from '@/components/client/profile/setting.vue';
-import { getUserStats } from '@/api/user';
+import { getUserStats, getUserInfo, getUserProfile } from '@/api/user';
 import type { UserStats } from '@/api/user';
 import { ElMessage } from 'element-plus';
 import { useUserInfoStore } from '@/stores/userInfo';
@@ -47,7 +47,7 @@ const currentComponent = computed<Component>(() => {
 
 // 创建userInfoStore实例
 const userInfoStore = useUserInfoStore()
-
+console.log(userInfoStore.UserInfos)
 // 用户信息和统计数据
 const userStats = ref<UserStats | null>(null)
 const loading = ref(true)
@@ -61,8 +61,19 @@ const change = (item: SideListItem, index: number) => {
 const loadUserData = async () => {
   try {
     loading.value = true
-    // 验证token并获取用户信息
-    await userInfoStore.validateToken()
+    // 获取完整的用户信息（包括address和createTime）
+    const profileRes = await getUserProfile()
+    if (profileRes.code === 200) {
+      const data = profileRes.data
+      userInfoStore.setUserInfo({
+        username: data.username,
+        nickname: data.nickname,
+        avatar: data.avatar,
+        address: data.address,
+        createTime: data.createTime,
+        isLogin: true
+      })
+    }
     
     // 请求统计数据
     const statsRes = await getUserStats()
@@ -105,10 +116,10 @@ onActivated(() => {
         </div>
         
         <div class="user-info">
-          <div class="username">{{ userInfoStore.UserInfos.username  }}</div>
+          <div class="username">{{ userInfoStore.UserInfos.username }}</div>
           <div class="nickname">昵称：{{ userInfoStore.UserInfos.nickname || '未设置昵称' }}</div>
-          <div class="address">地址：未设置地址</div>
-          <div class="join-date">加入于 未知</div>
+          <div class="address">地址：{{ userInfoStore.UserInfos.address || '未设置地址' }}</div>
+          <div class="join-date">加入于 {{ userInfoStore.UserInfos.createTime ? new Date(userInfoStore.UserInfos.createTime).getFullYear() + '年' : '未知' }}</div>
         </div>
       
       <div class="stats-wrapper">

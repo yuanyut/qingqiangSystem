@@ -96,6 +96,11 @@ public class JwtFilter extends OncePerRequestFilter {
      * 判断是否为公共接口（无需登录）
      */
     private boolean isPublicApi(String uri) {
+        // 静态资源
+        if (uri.startsWith("/upload/")) {
+            return true;
+        }
+
         // 登录注册接口
         if (uri.equals("/user/login")
                 || uri.equals("/user/register")
