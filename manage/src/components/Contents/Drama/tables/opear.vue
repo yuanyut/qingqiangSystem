@@ -27,8 +27,8 @@
             </div>
         </div>
 
-        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加"
-            opear="0" />
+        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" :title="editContent.value?.id ? '编辑视频' : '增加视频'"
+            :opear="editContent.value?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)" />
     </div>
 </template>
 
@@ -49,6 +49,7 @@ interface FormItemUser {
 const editContent = defineModel<any>('editContent')
 const selects = defineModel('selects')
 const multipleSelection: any = defineModel('multipleSelection')
+const emit = defineEmits(['batch-delete', 'confirm'])
 
 console.log('666666', editContent.value)
 
@@ -72,7 +73,7 @@ watch(editContent, (newVal) => {
 }, { deep: true, immediate: true })
 
 const deleteUser = () => {
-    selects.value = true
+    emit('batch-delete')
 }
 
 console.log('初始化时 content.value:', editContent.value)

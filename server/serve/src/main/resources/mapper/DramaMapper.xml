@@ -128,4 +128,13 @@
         LIMIT 10
     </select>
 
+    <!-- 批量删除 -->
+    <delete id="batchDelete" parameterType="java.util.List">
+        DELETE FROM drama
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>

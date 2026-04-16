@@ -11,6 +11,10 @@ const opearIndex = ref(0)
 const editContent = ref()
 const selects = defineModel('selects')
 const safeForm: any = defineModel('formHeader')
+const currentPage = defineModel('currentPage', { default: 1 })
+const pageSize = defineModel('pageSize', { default: 10 })
+const total = defineModel('total', { default: 0 })
+const emit = defineEmits(['edit-click', 'delete-click', 'confirm', 'page-change', 'size-change'])
 
 // 当前正在播放的视频（用于控制同一时间只有一个视频播放）
 const currentPlayingVideo = ref<string | null>(null)
@@ -18,8 +22,8 @@ const currentPlayingVideo = ref<string | null>(null)
 // 删除单个视频
 const deleteClick = (value: any) => {
     opearIndex.value = value
-    deleteModul.value = true
-    console.log('fu', deleteModul.value)
+    // 触发删除点击事件，传递当前行的id
+    emit('delete-click', tableData.value[value].id)
 }
 
 // 确认删除（支持单个和批量）
@@ -27,13 +31,7 @@ const deleteClicks = () => {
     console.log(selects.value)
     if (selects.value === false) {
         deleteModul.value = false
-        tableData.value.splice(opearIndex.value, 1)
     } else if (selects.value === true) {
-        multipleSelection.value.forEach((item1: any) => {
-            const index = tableData.value.findIndex((item: any) => item.id === item1.id)
-            console.log(`视频 ${item1.title} 在 tableData 的索引:`, index)
-            tableData.value.splice(index, 1)
-        })
         selects.value = false
     }
 }
@@ -43,6 +41,8 @@ const editClick = (value: any) => {
     editModul.value = true
     console.log(value)
     editContent.value = value
+    // 触发编辑点击事件，传递当前行数据
+    emit('edit-click', value)
 }
 
 const multipleSelection: any = defineModel('multipleSelection')
@@ -81,18 +81,19 @@ watch(editContent, (newVal) => {
 }, { deep: true })
 
 // 分页配置
-const currentPage3 = ref(1)
-const pageSize3 = ref(100)
 const small = ref(false)
 const background = ref(false)
 const disabled = ref(false)
 
 const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
+    pageSize.value = val
+    emit('size-change', val)
 }
-
 const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
+    currentPage.value = val
+    emit('page-change', val)
 }
 
 // 处理视频播放事件（暂停其他视频）
@@ -198,13 +199,13 @@ const formatViewCount = (count: number) => {
         <!-- 分页 -->
         <div style="margin-top: 25px;">
             <el-pagination 
-                v-model:currentPage="currentPage3" 
-                v-model:page-size="pageSize3" 
+                v-model:currentPage="currentPage" 
+                v-model:page-size="pageSize" 
                 :small="small"
                 :disabled="disabled" 
                 :background="background" 
                 layout="prev, pager, next, jumper" 
-                :total="1000"
+                :total="total"
                 @size-change="handleSizeChange" 
                 @current-change="handleCurrentChange" 
             />
@@ -216,7 +217,7 @@ const formatViewCount = (count: number) => {
         </div>
         
         <!-- 编辑弹窗 -->
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑视频" opear="0"></edit>
+        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" :title="editContent?.id ? '编辑视频' : '新增视频'" :opear="editContent?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)"></edit>
     </div>
 </template>
 

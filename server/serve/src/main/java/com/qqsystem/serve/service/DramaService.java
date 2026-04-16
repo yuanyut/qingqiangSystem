@@ -19,5 +19,7 @@ public interface DramaService {
 
     boolean delete(Long id);
 
+    boolean batchDelete(List<Long> ids);
+
     void increaseView(Long id);
 }

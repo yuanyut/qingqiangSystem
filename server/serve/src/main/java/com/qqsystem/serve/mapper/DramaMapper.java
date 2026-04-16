@@ -20,4 +20,5 @@ public interface DramaMapper {
     void decreaseLikeCount(Long id);
     List<Drama> selectList(int offset, int size, Long categoryId, String keyword);
     Long countList(Long categoryId, String keyword);
+    int batchDelete(List<Long> ids);
 }

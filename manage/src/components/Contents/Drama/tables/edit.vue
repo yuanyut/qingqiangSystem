@@ -24,6 +24,7 @@ const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
 const content = defineModel('content', { default: () => ({}) })
 const selects = defineModel('selects')
 const formLabelWidth = '140px'
+const emit = defineEmits(['confirm'])
 
 // 上传相关状态
 const uploadLoading = ref(false)
@@ -184,6 +185,8 @@ const handleConfirm = async () => {
         // 编辑模式：修改属性
         Object.assign(content.value, form)
     }
+    // 触发confirm事件，通知父组件执行相应的逻辑
+    emit('confirm', { ...form })
     dialogFormVisible.value = false
 }
 

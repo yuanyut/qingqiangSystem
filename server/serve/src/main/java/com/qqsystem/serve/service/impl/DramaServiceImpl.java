@@ -125,6 +125,14 @@ public class DramaServiceImpl implements DramaService {
     }
 
     @Override
+    public boolean batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        return dramaMapper.batchDelete(ids) > 0;
+    }
+
+    @Override
     public void increaseView(Long id) {
         dramaMapper.increaseViewCount(id);
     }

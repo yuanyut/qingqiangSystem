@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -77,6 +78,16 @@ public class DramaController {
             return ResponseResult.success("删除成功");
         } else {
             return ResponseResult.badRequest("删除失败");
+        }
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseResult<?> batchDelete(@RequestBody List<Long> ids) {
+        boolean success = dramaService.batchDelete(ids);
+        if (success) {
+            return ResponseResult.success("批量删除成功");
+        } else {
+            return ResponseResult.badRequest("批量删除失败");
         }
     }
 }

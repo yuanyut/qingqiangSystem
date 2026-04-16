@@ -164,3 +164,40 @@ export const deleteUser = (id: number | string | (number | string)[]) =>
   Array.isArray(id) 
     ? api.delete<ResponseResult<any>>('/user/admin/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/user/admin/${id}`)
+
+// 剧目管理相关API
+export interface DramaListParams {
+  page: number;
+  size: number;
+  categoryId?: number;
+  keyword?: string;
+}
+
+export interface DramaData {
+  id?: number;
+  name: string;
+  cover: string;
+  intro: string;
+  categoryId: number;
+  status: number;
+  viewCount?: number;
+  likeCount?: number;
+  publishDate?: string;
+}
+
+export const getDramaList = (params: DramaListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/drama/list', params)
+
+export const getDramaById = (id: number) => 
+  api.get<ResponseResult<any>>(`/drama/detail/${id}`)
+
+export const addDrama = (data: DramaData) => 
+  api.post<ResponseResult<any>>('/drama/add', data)
+
+export const updateDrama = (data: DramaData) => 
+  api.put<ResponseResult<any>>('/drama/update', data)
+
+export const deleteDrama = (id: number | number[] | string | string[]) => 
+  Array.isArray(id) 
+    ? api.delete<ResponseResult<any>>('/drama/batch', { data: id })
+    : api.delete<ResponseResult<any>>(`/drama/${id}`)
