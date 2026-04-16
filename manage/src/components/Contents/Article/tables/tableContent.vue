@@ -2,6 +2,8 @@
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
 import edit from '@/components/Contents/Article/tables/edit.vue'
+import { deleteCulture } from '@/api/api'
+import { ElMessage } from 'element-plus'
 
 const search = defineModel('search')
 const tableData: any = defineModel('tableData')
@@ -13,24 +15,48 @@ const selects = defineModel('selects')
 const safeForm: any = defineModel('formHeader')
 const multipleSelection: any = defineModel('multipleSelection')
 
+// 加载状态
+const loading = ref(false)
+
 const deleteClick = (value: any) => {
     opearIndex.value = value
     deleteModul.value = true
     console.log('fu', deleteModul.value)
 }
 
-const deleteClicks = () => {
-    console.log(selects.value)
-    if (selects.value === false) {
+const deleteClicks = async () => {
+    loading.value = true
+    try {
+        if (selects.value === false) {
+            // 单个删除
+            const item = tableData.value[opearIndex.value]
+            if (item && item.id) {
+                await deleteCulture(item.id)
+                tableData.value.splice(opearIndex.value, 1)
+                ElMessage.success('删除成功')
+            }
+        } else if (selects.value === true) {
+            // 批量删除
+            const ids = multipleSelection.value.map((item: any) => item.id)
+            if (ids.length > 0) {
+                await deleteCulture(ids)
+                // 从表格中删除选中的项
+                multipleSelection.value.forEach((item1: any) => {
+                    const index = tableData.value.findIndex((item: any) => item.id === item1.id)
+                    if (index !== -1) {
+                        tableData.value.splice(index, 1)
+                    }
+                })
+                ElMessage.success('批量删除成功')
+                selects.value = false
+            }
+        }
+    } catch (error) {
+        console.error('删除失败:', error)
+        ElMessage.error('删除失败，请重试')
+    } finally {
+        loading.value = false
         deleteModul.value = false
-        tableData.value.splice(opearIndex.value, 1)
-    } else if (selects.value === true) {
-        multipleSelection.value.forEach((item1: any) => {
-            const index = tableData.value.findIndex((item: any) => item.id === item1.id)
-            console.log(`文章 ${item1.id} 在 tableData 的索引:`, index)
-            tableData.value.splice(index, 1)
-        })
-        selects.value = false
     }
 }
 
@@ -87,7 +113,7 @@ const handleCurrentChange = (val: number) => {
 <template>
     <div>
         <div>
-            <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading">
                 <!-- ✅ 多选框列 -->
                 <el-table-column type="selection" width="55" />
                 
@@ -116,11 +142,11 @@ const handleCurrentChange = (val: number) => {
                 
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
-                        <el-button link type="primary" size="small" @click="editClick(scope.row)">
+                        <el-button link type="primary" size="small" @click="editClick(scope.row)" :disabled="loading">
                             编辑
                         </el-button>
                         <el-button link type="primary" size="small"
-                            @click.prevent="deleteClick(scope.$index)">删除</el-button>
+                            @click.prevent="deleteClick(scope.$index)" :disabled="loading">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -133,7 +159,7 @@ const handleCurrentChange = (val: number) => {
         </div>
         
         <div>
-            <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
+            <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks" :loading="loading"></dialog-visible>
         </div>
         
         <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑" opear="0"></edit>

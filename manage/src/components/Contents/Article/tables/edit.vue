@@ -2,6 +2,7 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import { addCulture, updateCulture, CultureData } from '@/api/api'
 
 const formRef = ref<FormInstance>()
 
@@ -40,6 +41,9 @@ const form = reactive<ArticleFormData>({
 })
 
 const props = defineProps<{ title: string, opear: string }>()
+
+// 加载状态
+const loading = ref(false)
 
 // 隐藏的文件上传input
 const fileInputRef = ref<HTMLInputElement>()
@@ -89,16 +93,59 @@ watch(content, (newVal) => {
     }
 }, { deep: true, immediate: true })
 
-// 确定按钮：将修改后的数据传回父组件
-const handleConfirm = () => {
-    if (props.opear === '0') {
-        // 新增：直接赋值
-        content.value = { ...form }
-    } else {
-        // 编辑：修改属性
-        Object.assign(content.value, form)
+// 确定按钮：调用后端API进行新增或编辑
+const handleConfirm = async () => {
+    // 验证必填字段
+    if (!form.title) {
+        ElMessage.error('请输入标题')
+        return
     }
-    dialogFormVisible.value = false
+    if (!form.content) {
+        ElMessage.error('请输入内容')
+        return
+    }
+    if (!form.category) {
+        ElMessage.error('请选择分类')
+        return
+    }
+
+    loading.value = true
+    try {
+        // 准备数据
+        const cultureData: CultureData = {
+            id: content.value?.id,
+            title: form.title,
+            content: form.content,
+            category: form.category,
+            cover: form.coverUrl,
+            viewCount: form.viewCount,
+            likeCount: form.likeCount
+        }
+
+        if (props.opear === '0') {
+            // 新增
+            await addCulture(cultureData)
+            ElMessage.success('添加成功')
+        } else {
+            // 编辑
+            await updateCulture(cultureData)
+            ElMessage.success('更新成功')
+        }
+
+        // 更新父组件数据
+        if (props.opear === '0') {
+            content.value = { ...form }
+        } else {
+            Object.assign(content.value, form)
+        }
+        
+        dialogFormVisible.value = false
+    } catch (error) {
+        console.error('操作失败:', error)
+        ElMessage.error('操作失败，请重试')
+    } finally {
+        loading.value = false
+    }
 }
 
 // 取消按钮：重置表单
@@ -130,7 +177,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
             <el-form-item label="封面" prop="coverUrl">
                 <div class="cover-upload">
                     <!-- 有封面时显示图片，可点击更换 -->
-                    <div v-if="form.coverUrl" class="cover-preview" @click="triggerUpload">
+                    <div v-if="form.coverUrl" class="cover-preview" @click="triggerUpload" :disabled="loading">
                         <el-image 
                             :src="form.coverUrl" 
                             fit="cover"
@@ -140,7 +187,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                         </div>
                     </div>
                     <!-- 无封面时显示上传按钮 -->
-                    <div v-else class="cover-placeholder" @click="triggerUpload">
+                    <div v-else class="cover-placeholder" @click="triggerUpload" :disabled="loading">
                         <el-icon><Plus /></el-icon>
                         <span>点击上传封面</span>
                     </div>
@@ -152,18 +199,19 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                         style="display: none"
                         accept="image/jpeg,image/png,image/gif,image/webp"
                         @change="handleFileChange"
+                        :disabled="loading"
                     />
                 </div>
             </el-form-item>
 
             <!-- 标题 -->
             <el-form-item label="标题" prop="title">
-                <el-input v-model="form.title" autocomplete="off" placeholder="请输入文章标题" />
+                <el-input v-model="form.title" autocomplete="off" placeholder="请输入文章标题" :disabled="loading" />
             </el-form-item>
 
             <!-- 分类 -->
             <el-form-item label="分类" prop="category">
-                <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
+                <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%" :disabled="loading">
                     <el-option label="文化研究" value="文化研究" />
                     <el-option label="剧目赏析" value="剧目赏析" />
                     <el-option label="人物专访" value="人物专访" />
@@ -176,7 +224,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
 
             <!-- 作者 -->
             <el-form-item label="作者" prop="author">
-                <el-input v-model="form.author" autocomplete="off" placeholder="请输入作者" />
+                <el-input v-model="form.author" autocomplete="off" placeholder="请输入作者" :disabled="loading" />
             </el-form-item>
 
             <!-- 发布时间 -->
@@ -193,6 +241,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                     placeholder="请输入文章摘要"
                     maxlength="200"
                     show-word-limit
+                    :disabled="loading"
                 />
             </el-form-item>
 
@@ -203,12 +252,13 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                     type="textarea" 
                     :rows="6" 
                     placeholder="请输入文章内容"
+                    :disabled="loading"
                 />
             </el-form-item>
 
             <!-- 状态 -->
             <el-form-item label="状态" prop="statusText">
-                <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%">
+                <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%" :disabled="loading">
                     <el-option label="草稿" value="草稿" />
                     <el-option label="已发布" value="已发布" />
                     <el-option label="已下架" value="已下架" />
@@ -218,8 +268,8 @@ const handleCancel = (formEl: FormInstance | undefined) => {
         
         <template #footer>
             <div class="dialog-footer">
-                <el-button @click="handleCancel(formRef)">取消</el-button>
-                <el-button type="primary" @click="handleConfirm">确定</el-button>
+                <el-button @click="handleCancel(formRef)" :disabled="loading">取消</el-button>
+                <el-button type="primary" @click="handleConfirm" :loading="loading">{{ loading ? '处理中...' : '确定' }}</el-button>
             </div>
         </template>
     </el-dialog>

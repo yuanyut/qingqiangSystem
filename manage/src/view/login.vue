@@ -3,6 +3,8 @@ import { reactive, ref, } from 'vue'
 import router from '@/router/index'
 import { mockMenu } from '@/types/meaus'
 import { useUserInfoStore } from '@/stores/userInfo'
+import { ElMessage } from 'element-plus'
+import { loginAdmin } from '@/api/api'
 const userInfoStore = useUserInfoStore()
 
 import type { FormInstance, FormRules } from 'element-plus'
@@ -35,12 +37,22 @@ const rules1 = reactive<FormRules>({
 //登录提交
 const submitLoginForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
-      // console.log('submit!')
-      // console.log(ruleFormLogin)
-      userInfoStore.setUserInfo(ruleFormLogin)
-       router.push(`/manage/${mockMenu[0]?.path}`)
+      try {
+        // 调用后端登录 API
+        const response = await loginAdmin(ruleFormLogin)
+        if (response && response.data) {
+          // 存储 token 和用户信息
+          console.log(response.data)
+          localStorage.setItem('token', response.data)
+          // userInfoStore.setUserInfo(response.data.user)
+          router.push(`/manage/${mockMenu[0]?.path}`)
+        }
+      } catch (error) {
+        console.error('登录失败:', error)
+        ElMessage.error('登录失败，请检查账号密码')
+      }
     } else {
       console.log('error submit!', fields)
     }

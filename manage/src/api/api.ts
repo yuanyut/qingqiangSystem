@@ -225,3 +225,44 @@ export interface DramaCategory {
 
 export const getDramaCategoryList = () => 
   api.get<ResponseResult<DramaCategory[]>>('/drama/category/list')
+
+// 文化内容相关API
+export interface CultureListParams {
+  page: number;
+  size: number;
+  category?: string;
+  keyword?: string;
+}
+
+export interface CultureData {
+  id?: number;
+  title: string;
+  content: string;
+  category: string;
+  cover: string;
+  viewCount?: number;
+  likeCount?: number;
+  createTime?: string;
+  updateTime?: string;
+}
+
+export const getCultureList = (params: CultureListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/content/culture/admin/list', params)
+
+export const getCultureById = (id: number) => 
+  api.get<ResponseResult<any>>(`/content/culture/detail/${id}`)
+
+export const addCulture = (data: CultureData) => 
+  api.post<ResponseResult<any>>('/content/culture/add', data)
+
+export const updateCulture = (data: CultureData) => 
+  api.put<ResponseResult<any>>('/content/culture/update', data)
+
+export const deleteCulture = (id: number | number[] | string | string[]) => 
+  Array.isArray(id) 
+    ? api.delete<ResponseResult<any>>('/content/culture/batch', { data: id })
+    : api.delete<ResponseResult<any>>(`/content/culture/${id}`)
+
+// 登录相关API
+export const loginAdmin = (data: { username: string; password: string }) => 
+  api.post<ResponseResult<any>>('/admin/login', data)
