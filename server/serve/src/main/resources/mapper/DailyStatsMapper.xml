@@ -5,11 +5,11 @@
     <insert id="insertOrUpdate" parameterType="com.qqsystem.serve.entity.DailyStats">
         INSERT INTO daily_stats (
             stat_date, pv, uv, new_user_count, user_total_count, 
-            drama_count, content_count, like_count, comment_count, 
+            drama_count, content_count, view_count, like_count, comment_count, 
             favorite_count, share_count, create_time, update_time
         ) VALUES (
             #{statDate}, #{pv}, #{uv}, #{newUserCount}, #{userTotalCount}, 
-            #{dramaCount}, #{contentCount}, #{likeCount}, #{commentCount}, 
+            #{dramaCount}, #{contentCount}, #{viewCount}, #{likeCount}, #{commentCount}, 
             #{favoriteCount}, #{shareCount}, NOW(), NOW()
         ) ON DUPLICATE KEY UPDATE
             pv = #{pv},
@@ -18,6 +18,7 @@
             user_total_count = #{userTotalCount},
             drama_count = #{dramaCount},
             content_count = #{contentCount},
+            view_count = #{viewCount},
             like_count = #{likeCount},
             comment_count = #{commentCount},
             favorite_count = #{favoriteCount},
@@ -52,8 +53,24 @@
         SELECT COUNT(*) FROM content
     </select>
     
+    <select id="countViewCount" resultType="Integer">
+        SELECT COALESCE(SUM(view_count), 0) FROM content
+    </select>
+    
     <select id="countBehaviorByDateAndAction" resultType="Integer">
         SELECT COUNT(*) FROM user_behavior 
         WHERE DATE(create_time) = #{date} AND action = #{action}
+    </select>
+    
+    <!-- 获取剧目热度趋势 -->
+    <select id="selectDramaHeatTrend" parameterType="int" resultType="java.util.Map">
+        SELECT 
+            stat_date as date, 
+            view_count as visitCount, 
+            favorite_count as collectCount, 
+            like_count as shareCount 
+        FROM daily_stats 
+        WHERE stat_date >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        ORDER BY stat_date ASC
     </select>
 </mapper>

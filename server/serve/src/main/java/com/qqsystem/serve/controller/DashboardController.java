@@ -59,4 +59,9 @@ public class DashboardController {
     public ResponseResult getUserGenderDistribution() {
         return ResponseResult.success(dashboardService.getUserGenderDistribution());
     }
+
+    @GetMapping("/drama-heat-trend")
+    public ResponseResult getDramaHeatTrend(@RequestParam(defaultValue = "day") String type) {
+        return ResponseResult.success(dashboardService.getDramaHeatTrend(type));
+    }
 }

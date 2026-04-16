@@ -157,25 +157,25 @@ export const mockMenu = [
       }
     ]
   },
-  {
-    "name": "评论审核",
-    "path": "/comment",
-    "icon": "ChatLineSquare",
-    "children": [
-      {
-        "name": "评论列表",
-        "path": "comment/list",
-        "component": "/src/components/Comment/List/index.vue",
-        "permission": "comment:list"
-      },
-      {
-        "name": "审核操作",
-        "path": "comment/audit",
-        "component": "/src/components/Comment/Audit/index.vue",
-        "permission": "comment:audit:list"
-      }
-    ]
-  },
+  // {
+  //   "name": "评论审核",
+  //   "path": "/comment",
+  //   "icon": "ChatLineSquare",
+  //   "children": [
+  //     {
+  //       "name": "评论列表",
+  //       "path": "comment/list",
+  //       "component": "/src/components/Comment/List/index.vue",
+  //       "permission": "comment:list"
+  //     },
+  //     {
+  //       "name": "审核操作",
+  //       "path": "comment/audit",
+  //       "component": "/src/components/Comment/Audit/index.vue",
+  //       "permission": "comment:audit:list"
+  //     }
+  //   ]
+  // },
    {
     "name": "个人管理",
     "path": "/mine",

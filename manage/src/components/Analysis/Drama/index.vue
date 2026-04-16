@@ -7,7 +7,7 @@ import threeLine from '@/components/charts/threeLine.vue'
 import Bar from '@/components/charts/Bar.vue'
 import doubleBar from '@/components/charts/doubleBar.vue'
 import chinaMap from '@/components/charts/chinaMap.vue'
-import { getDramaCategory, getDramaTop10 } from '@/api/api'
+import { getDramaCategory, getDramaTop10, getDramaHeatTrend } from '@/api/api'
 interface totalItem {
     name: string,
     data: number,
@@ -113,12 +113,40 @@ const trend = reactive<trendIntergace>({
     "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
     "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
 })
-const changeTrend = (trendValue: trendIntergace,index:number) => {
+const changeTrend = async (trendValue: trendIntergace,index:number) => {
+    // 先设置为默认数据，避免页面闪烁
     trend.time = trendValue.time
     trend.collectCount = trendValue.collectCount
     trend.shareCount = trendValue.shareCount
     trend.visitCount = trendValue.visitCount
     activeDaram.value=index
+    
+    // 根据index确定类型
+    let type = 'day'
+    if (index === 1) {
+        type = 'week'
+    } else if (index === 2) {
+        type = 'month'
+    }
+    
+    // 调用API获取剧目热度趋势数据
+    try {
+        const heatTrendData = await getDramaHeatTrend(type)
+        console.log('剧目热度趋势数据:', heatTrendData)
+        if (heatTrendData && heatTrendData.data) {
+            const times = heatTrendData.data.map((item) => item.date)
+            const visitCounts = heatTrendData.data.map((item) => item.visitCount || 0)
+            const collectCounts = heatTrendData.data.map((item) => item.collectCount || 0)
+            const shareCounts = heatTrendData.data.map((item) => item.shareCount || 0)
+            
+            trend.time = times
+            trend.visitCount = visitCounts
+            trend.collectCount = collectCounts
+            trend.shareCount = shareCounts
+        }
+    } catch (error) {
+        console.error('获取剧目热度趋势数据失败:', error)
+    }
 }
 const topDrama = reactive([
     { name: "三滴血", clicks: 1520 },
@@ -196,6 +224,25 @@ onMounted(async () => {
     } catch (error) {
       console.error('获取剧目TOP10数据失败:', error)
     }
+    
+    // 获取剧目热度趋势数据
+    try {
+      const heatTrendData = await getDramaHeatTrend('day')
+      console.log('剧目热度趋势数据:', heatTrendData)
+      if (heatTrendData && heatTrendData.data) {
+        const times = heatTrendData.data.map((item) => item.date)
+        const visitCounts = heatTrendData.data.map((item) => item.visitCount || 0)
+        const collectCounts = heatTrendData.data.map((item) => item.collectCount || 0)
+        const shareCounts = heatTrendData.data.map((item) => item.shareCount || 0)
+        
+        trend.time = times
+        trend.visitCount = visitCounts
+        trend.collectCount = collectCounts
+        trend.shareCount = shareCounts
+      }
+    } catch (error) {
+      console.error('获取剧目热度趋势数据失败:', error)
+    }
 })
 onUnmounted(() => {
     if (timer.value) clearInterval(timer.value)
@@ -238,7 +285,7 @@ const activeDaram=ref(0)
                         <div @click="changeTrend(weekTrend,1)" :class="{active:activeDaram==1}">每周</div>
                         <div @click="changeTrend(monthTrend,2)" :class="{active:activeDaram==2}">每月</div>
                     </div>
-                    <threeLine :datas="trend" wd="100%" ht="320px" name1="访问量" name2="收藏" name3="分享"></threeLine>
+                    <threeLine :datas="trend" wd="100%" ht="320px" name1="访问量" name2="收藏" name3="点赞"></threeLine>
                 </div>
                 
             </div>

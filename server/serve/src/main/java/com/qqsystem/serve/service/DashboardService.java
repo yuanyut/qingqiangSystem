@@ -17,4 +17,6 @@ public interface DashboardService {
     List<Map<String, Object>> getUserAgeDistribution();
 
     List<Map<String, Object>> getUserGenderDistribution();
+
+    List<Map<String, Object>> getDramaHeatTrend(String type);
 }

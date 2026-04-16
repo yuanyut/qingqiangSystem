@@ -123,3 +123,16 @@ export interface GenderData {
 export const getUserGenderDistribution = () => {
   return api.get<ResponseResult<GenderData[]>>('/manage/dashboard/user-gender-distribution')
 }
+
+// 剧目热度趋势数据类型
+export interface DramaHeatTrendData {
+  date: string
+  visitCount: number
+  collectCount: number
+  shareCount: number
+}
+
+// 剧目热度趋势
+export const getDramaHeatTrend = (type: string = 'day') => {
+  return api.get<ResponseResult<DramaHeatTrendData[]>>('/manage/dashboard/drama-heat-trend', { type })
+}

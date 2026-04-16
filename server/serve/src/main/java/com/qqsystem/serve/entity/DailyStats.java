@@ -11,6 +11,7 @@ public class DailyStats {
     private Integer userTotalCount;
     private Integer dramaCount;
     private Integer contentCount;
+    private Integer viewCount;
     private Integer likeCount;
     private Integer commentCount;
     private Integer favoriteCount;
@@ -81,6 +82,14 @@ public class DailyStats {
 
     public void setContentCount(Integer contentCount) {
         this.contentCount = contentCount;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
     }
 
     public Integer getLikeCount() {

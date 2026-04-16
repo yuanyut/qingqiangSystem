@@ -148,4 +148,17 @@ public class DashboardServiceImpl implements DashboardService {
         // 查询用户性别占比数据
         return userMapper.selectUserGenderDistribution();
     }
+
+    @Override
+    public List<Map<String, Object>> getDramaHeatTrend(String type) {
+        // 根据type参数确定查询的天数
+        int days = 7; // 默认查询7天
+        if ("week".equals(type)) {
+            days = 14;
+        } else if ("month".equals(type)) {
+            days = 30;
+        }
+        // 查询剧目热度趋势数据
+        return dailyStatsMapper.selectDramaHeatTrend(days);
+    }
 }

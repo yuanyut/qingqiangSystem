@@ -10,5 +10,7 @@ public interface DailyStatsMapper {
     Integer countTotalUser();
     Integer countDrama();
     Integer countContent();
+    Integer countViewCount();
     Integer countBehaviorByDateAndAction(String date, String action);
+    java.util.List<java.util.Map<String, Object>> selectDramaHeatTrend(int days);
 }
