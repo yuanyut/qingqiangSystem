@@ -7,6 +7,7 @@ import threeLine from '@/components/charts/threeLine.vue'
 import Bar from '@/components/charts/Bar.vue'
 import doubleBar from '@/components/charts/doubleBar.vue'
 import chinaMap from '@/components/charts/chinaMap.vue'
+import { getDramaCategory, getDramaTop10 } from '@/api/api'
 interface totalItem {
     name: string,
     data: number,
@@ -36,24 +37,6 @@ interface qualityScore {
         value: number[]
     }
 }
-const qualityScoreData = reactive<qualityScore>({
-    overview: {
-        avgUserRating: 4.3,
-        avgCommentQuality: 76,
-        highQualityContentRate: 0.61,
-        activeContentCount: 289,
-        contentCount: 356
-    },
-    radar: {
-        indicator: [
-            { name: '用户评分', max: 5 },
-            { name: '点赞热度', max: 5 },
-            { name: '收藏热度', max: 5 },
-            { name: '评论质量', max: 5 }
-        ],
-        value: [4.3, 4.1, 3.6, 3.8]
-    }
-})
 
 const total = reactive<totalItem[]>([
     { name: '今日访问量', data: 10 },
@@ -176,9 +159,43 @@ const updataTime = () => {
     currentTime.value = now.toLocaleString()
 }
 const timer = ref<number>(0)
-onMounted(() => {
+onMounted(async () => {
     updataTime()
     timer.value = setInterval(updataTime, 1000)
+    
+    // 获取剧目分类饼图数据
+    try {
+      const categoryData = await getDramaCategory()
+      console.log('剧目分类数据:', categoryData)
+      if (categoryData && categoryData.data) {
+        const newCateJumu = categoryData.data.map((item:any) => ({
+          value: item.count,
+          name: item.category
+        }))
+        cateJumu.length = 0
+        newCateJumu.forEach((item) => cateJumu.push(item))
+      }
+    } catch (error) {
+      console.error('获取剧目分类数据失败:', error)
+    }
+    
+    // 获取剧目TOP10数据
+    try {
+      const top10Data = await getDramaTop10()
+      console.log('剧目TOP10数据:', top10Data)
+      if (top10Data && top10Data.data) {
+        // 替换整个数组，而不是使用push
+        const newTopDrama = top10Data.data.map((item) => ({
+          name: item.name,
+          clicks: item.viewCount
+        }))
+        // 清空原数组并添加新数据
+        topDrama.length = 0
+        newTopDrama.forEach((item) => topDrama.push(item))
+      }
+    } catch (error) {
+      console.error('获取剧目TOP10数据失败:', error)
+    }
 })
 onUnmounted(() => {
     if (timer.value) clearInterval(timer.value)

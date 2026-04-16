@@ -142,4 +142,10 @@ public class DashboardServiceImpl implements DashboardService {
         // 查询用户年龄段分布数据
         return userMapper.selectUserAgeDistribution();
     }
+
+    @Override
+    public List<Map<String, Object>> getUserGenderDistribution() {
+        // 查询用户性别占比数据
+        return userMapper.selectUserGenderDistribution();
+    }
 }

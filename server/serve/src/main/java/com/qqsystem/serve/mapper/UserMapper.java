@@ -17,4 +17,5 @@ public interface UserMapper{
     int updatePassword(@Param("userId") Long userId, @Param("password") String password);
     List<Map<String, Object>> selectUserProvinceStats();
     List<Map<String, Object>> selectUserAgeDistribution();
+    List<Map<String, Object>> selectUserGenderDistribution();
 }

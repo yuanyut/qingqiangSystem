@@ -110,4 +110,23 @@
             END
     </select>
 
+    <!-- 查询用户性别占比 -->
+    <select id="selectUserGenderDistribution" resultType="java.util.Map">
+        SELECT 
+            CASE 
+                WHEN sex = '2' THEN '男'
+                WHEN sex = '1' THEN '女'
+                ELSE '未知'
+            END as name,
+            COUNT(*) as value
+        FROM user
+        GROUP BY name
+        ORDER BY 
+            CASE 
+                WHEN name = '男' THEN 1
+                WHEN name = '女' THEN 2
+                ELSE 3
+            END
+    </select>
+
 </mapper>

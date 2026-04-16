@@ -54,4 +54,9 @@ public class DashboardController {
     public ResponseResult getUserAgeDistribution() {
         return ResponseResult.success(dashboardService.getUserAgeDistribution());
     }
+
+    @GetMapping("/user-gender-distribution")
+    public ResponseResult getUserGenderDistribution() {
+        return ResponseResult.success(dashboardService.getUserGenderDistribution());
+    }
 }

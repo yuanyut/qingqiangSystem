@@ -112,3 +112,14 @@ export interface AgeData {
   name: string
   clicks: number
 }
+
+// 用户性别占比数据类型
+export interface GenderData {
+  name: string
+  value: number
+}
+
+// 用户性别占比
+export const getUserGenderDistribution = () => {
+  return api.get<ResponseResult<GenderData[]>>('/manage/dashboard/user-gender-distribution')
+}

@@ -25,7 +25,7 @@ const updateChart = () => {
         if (item > max2.value)
             max2.value = item+100
     })
-    const pieChart = echarts.init(chartRef.value)
+    const pieChart = echarts.init(chartRef.value as HTMLElement)
 
     const option = reactive({
         tooltip: {

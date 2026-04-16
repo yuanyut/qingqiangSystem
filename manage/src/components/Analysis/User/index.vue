@@ -4,6 +4,7 @@ import pie from '@/components/charts/pie.vue'
 
 import Bar from '@/components/charts/Bar.vue'
 import chinaMap from '@/components/charts/chinaMap.vue'
+import { getGeo, getUserAgeDistribution, getUserGenderDistribution } from '@/api/api'
 interface totalItem {
     name: string,
     data: number,
@@ -44,9 +45,59 @@ const updataTime = () => {
     currentTime.value = now.toLocaleString()
 }
 const timer = ref<number>(0)
-onMounted(() => {
+onMounted(async () => {
     updataTime()
     timer.value = setInterval(updataTime, 1000)
+    
+    // 获取登录地图数据
+    try {
+      const geoData = await getGeo()
+      console.log('登录地图数据:', geoData)
+      if (geoData && geoData.data) {
+        const newMapValue = geoData.data.map((item) => ({
+          name: item.province,
+          value: item.count
+        }))
+        mapValue.length = 0
+        newMapValue.forEach((item) => mapValue.push(item))
+      }
+    } catch (error) {
+      console.error('获取登录地图数据失败:', error)
+    }
+    
+    // 获取用户年龄段分布数据
+    try {
+      const ageDistributionData = await getUserAgeDistribution()
+      console.log('用户年龄段分布数据:', ageDistributionData)
+      if (ageDistributionData && ageDistributionData.data) {
+        ageData.length = 0
+        ageDistributionData.data.forEach((item) => {
+          ageData.push({
+            name: item.name,
+            clicks: item.clicks
+          })
+        })
+      }
+    } catch (error) {
+      console.error('获取用户年龄段分布数据失败:', error)
+    }
+    
+    // 获取用户性别占比数据
+    try {
+      const genderDistributionData = await getUserGenderDistribution()
+      console.log('用户性别占比数据:', genderDistributionData)
+      if (genderDistributionData && genderDistributionData.data) {
+        sex.length = 0
+        genderDistributionData.data.forEach((item) => {
+          sex.push({
+            name: item.name,
+            value: item.value
+          })
+        })
+      }
+    } catch (error) {
+      console.error('获取用户性别占比数据失败:', error)
+    }
 })
 onUnmounted(() => {
     if (timer.value) clearInterval(timer.value)
