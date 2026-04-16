@@ -76,4 +76,38 @@
         ORDER BY count DESC
     </select>
 
+    <!-- 查询用户年龄段分布 -->
+    <select id="selectUserAgeDistribution" resultType="java.util.Map">
+        SELECT 
+            CASE 
+                WHEN age &lt; 18 THEN '18以下'
+                WHEN age BETWEEN 18 AND 25 THEN '18-25'
+                WHEN age BETWEEN 26 AND 35 THEN '25-35'
+                WHEN age BETWEEN 36 AND 50 THEN '35-50'
+                WHEN age &gt; 50 THEN '50+'
+                ELSE '未知'
+            END as name,
+            COUNT(*) as clicks
+        FROM (
+            SELECT 
+                CASE 
+                    WHEN birthday IS NOT NULL AND STR_TO_DATE(birthday, '%Y-%m-%d') IS NOT NULL THEN TIMESTAMPDIFF(YEAR, STR_TO_DATE(birthday, '%Y-%m-%d'), CURDATE())
+                    ELSE NULL
+                END as age
+            FROM user
+            WHERE birthday IS NOT NULL
+        ) as age_data
+        WHERE age IS NOT NULL
+        GROUP BY name
+        ORDER BY 
+            CASE 
+                WHEN name = '18以下' THEN 1
+                WHEN name = '18-25' THEN 2
+                WHEN name = '25-35' THEN 3
+                WHEN name = '35-50' THEN 4
+                WHEN name = '50+' THEN 5
+                ELSE 6
+            END
+    </select>
+
 </mapper>

@@ -9,6 +9,10 @@ public interface DashboardService {
     List<Map<String, Object>> getContentTrend(String type);
     List<Map<String, Object>> getBehaviorTrend(String type);
     List<Map<String, Object>> getDramaTop10();
+
     Map<String, Object> getQualityScore();
+
     List<Map<String, Object>> getGeoData();
+
+    List<Map<String, Object>> getUserAgeDistribution();
 }

@@ -136,4 +136,10 @@ public class DashboardServiceImpl implements DashboardService {
         // 查询用户所在省份统计数据
         return userMapper.selectUserProvinceStats();
     }
+
+    @Override
+    public List<Map<String, Object>> getUserAgeDistribution() {
+        // 查询用户年龄段分布数据
+        return userMapper.selectUserAgeDistribution();
+    }
 }

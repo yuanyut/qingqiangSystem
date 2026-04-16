@@ -49,4 +49,9 @@ public class DashboardController {
     public ResponseResult getGeoData() {
         return ResponseResult.success(dashboardService.getGeoData());
     }
+
+    @GetMapping("/user-age-distribution")
+    public ResponseResult getUserAgeDistribution() {
+        return ResponseResult.success(dashboardService.getUserAgeDistribution());
+    }
 }

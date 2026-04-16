@@ -115,7 +115,10 @@
     </update>
 
     <select id="countByCategory" resultType="java.util.Map">
-        SELECT category_id as category, COUNT(*) as count FROM drama GROUP BY category_id
+        SELECT dc.name as category, COUNT(*) as count 
+        FROM drama d
+        JOIN drama_category dc ON d.category_id = dc.id
+        GROUP BY dc.id, dc.name
     </select>
 
     <!-- 查询剧目TOP10 -->

@@ -7,7 +7,7 @@ import Radar from '@/components/charts/radar.vue'
 import Bar from '@/components/charts/Bar.vue'
 
 import chinaMap from '@/components/charts/chinaMap.vue'
-import { getOverview, getDramaCategory, getContentTrend, getBehaviorTrend, getDramaTop10, getQualityScore, getGeo } from '@/api/api'
+import { getOverview, getDramaCategory, getContentTrend, getBehaviorTrend, getDramaTop10, getQualityScore, getGeo, getUserAgeDistribution } from '@/api/api'
 interface totalItem {
   name: string,
   data: number,
@@ -103,9 +103,14 @@ const change = async (daram: daramValue, index: number) => {
     const trendData = await getContentTrend(type)
     console.log('内容新增趋势数据:', trendData)
     if (trendData && trendData.data) {
-      Dram.time = trendData.data.time || []
-      Dram.dramaCount = trendData.data.dramaCount || []
-      Dram.articleCount = trendData.data.articleCount || []
+      // 处理后端返回的数据结构，将数组转换为前端期望的格式
+      const time = trendData.data.map(item => item.date)
+      const dramaCount = trendData.data.map(item => item.dramaCount)
+      const cultureCount = trendData.data.map(item => item.cultureCount)
+      
+      Dram.time = time
+      Dram.dramaCount = dramaCount
+      Dram.articleCount = cultureCount // 文章数量改为文化数量
       activeDaram.value = index
     }
   } catch (error) {
@@ -239,12 +244,17 @@ onMounted(async () => {
     const trendData = await getContentTrend('day')
     console.log('内容新增趋势数据:', trendData)
     if (trendData && trendData.data) {
-      everyDram.time = trendData.data.time || []
-      everyDram.dramaCount = trendData.data.dramaCount || []
-      everyDram.articleCount = trendData.data.articleCount || []
-      Dram.time = trendData.data.time || []
-      Dram.dramaCount = trendData.data.dramaCount || []
-      Dram.articleCount = trendData.data.articleCount || []
+      // 处理后端返回的数据结构，将数组转换为前端期望的格式
+      const time = trendData.data.map(item => item.date)
+      const dramaCount = trendData.data.map(item => item.dramaCount)
+      const cultureCount = trendData.data.map(item => item.cultureCount)
+      
+      everyDram.time = time
+      everyDram.dramaCount = dramaCount
+      everyDram.articleCount = cultureCount // 文章数量改为文化数量
+      Dram.time = time
+      Dram.dramaCount = dramaCount
+      Dram.articleCount = cultureCount // 文章数量改为文化数量
     }
   } catch (error) {
     console.error('获取内容新增趋势数据失败:', error)
@@ -312,6 +322,23 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('获取登录地图数据失败:', error)
+  }
+  
+  // 获取用户年龄段分布数据
+  try {
+    const ageDistributionData = await getUserAgeDistribution()
+    console.log('用户年龄段分布数据:', ageDistributionData)
+    if (ageDistributionData && ageDistributionData.data) {
+      ageData.length = 0
+      ageDistributionData.data.forEach((item) => {
+        ageData.push({
+          name: item.name,
+          clicks: item.clicks
+        })
+      })
+    }
+  } catch (error) {
+    console.error('获取用户年龄段分布数据失败:', error)
   }
 })
 onUnmounted(() => {

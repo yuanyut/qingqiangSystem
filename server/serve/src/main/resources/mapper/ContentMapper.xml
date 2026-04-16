@@ -153,12 +153,12 @@
     <!-- 获取内容新增趋势 -->
     <select id="selectContentTrend" resultType="java.util.Map">
         SELECT 
-            DATE(create_time) as date, 
-            COUNT(*) as count 
-        FROM content 
-        WHERE create_time >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
-        GROUP BY DATE(create_time) 
-        ORDER BY date ASC
+            stat_date as date, 
+            drama_count as dramaCount, 
+            (content_count - drama_count) as cultureCount 
+        FROM daily_stats 
+        WHERE stat_date >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        ORDER BY stat_date ASC
     </select>
 
 </mapper>

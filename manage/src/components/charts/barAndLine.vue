@@ -18,12 +18,12 @@ const updateChart = () => {
     const max1 = ref(0)
     props.datas.articleCount?.forEach((item) => {
         if (item > max1.value)
-            max1.value = item
+            max1.value = item+100
     })
     const max2 = ref(0)
     props.datas.dramaCount?.forEach((item) => {
         if (item > max2.value)
-            max2.value = item
+            max2.value = item+100
     })
     const pieChart = echarts.init(chartRef.value)
 
@@ -55,7 +55,7 @@ const updateChart = () => {
             },
             {
                 type: 'value',
-                name: '文章数量',
+                name: '文化篇数量',
                 min: 0,
                 max: max1,
                 position: 'left',
@@ -72,7 +72,7 @@ const updateChart = () => {
                 data: props.datas.dramaCount
             },
             {
-                name: '文章数量',
+                name: '文化篇数量',
                 type: 'line',
 
                 yAxisIndex: 1,

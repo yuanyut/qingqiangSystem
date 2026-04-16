@@ -24,10 +24,13 @@ export interface CategoryData {
 
 // 内容新增趋势数据类型
 export interface ContentTrendData {
-  time: string[]
-  dramaCount: number[]
-  articleCount: number[]
+  date: string
+  dramaCount: number
+  cultureCount: number
 }
+
+// 内容新增趋势响应数据类型
+export type ContentTrendResponse = ContentTrendData[]
 
 // 行为趋势数据类型
 export interface BehaviorTrendData {
@@ -76,7 +79,7 @@ export const getDramaCategory = () => {
 
 // 内容新增趋势
 export const getContentTrend = (type: string = 'day') => {
-  return api.get<ResponseResult<ContentTrendData>>('/manage/dashboard/content-trend', { type })
+  return api.get<ResponseResult<ContentTrendResponse>>('/manage/dashboard/content-trend', { type })
 }
 
 // 行为趋势
@@ -97,4 +100,15 @@ export const getQualityScore = () => {
 // 登录地图
 export const getGeo = () => {
   return api.get<ResponseResult<GeoData[]>>('/manage/dashboard/geo')
+}
+
+// 用户年龄段分布
+export const getUserAgeDistribution = () => {
+  return api.get<ResponseResult<AgeData[]>>('/manage/dashboard/user-age-distribution')
+}
+
+// 用户年龄段数据类型
+export interface AgeData {
+  name: string
+  clicks: number
 }
