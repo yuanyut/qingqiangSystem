@@ -68,11 +68,11 @@
     <!-- 查询用户所在省份统计 -->
     <select id="selectUserProvinceStats" resultType="java.util.Map">
         SELECT 
-            address as province, 
+            SUBSTRING_INDEX(address, '-', 1) as province, 
             COUNT(*) as count 
         FROM user 
         WHERE address IS NOT NULL AND address != ''
-        GROUP BY address 
+        GROUP BY SUBSTRING_INDEX(address, '-', 1) 
         ORDER BY count DESC
     </select>
 

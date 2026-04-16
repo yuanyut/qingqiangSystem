@@ -15,24 +15,36 @@ console.log(
 )
 const nameArr=reactive<string[]>([])
 const clicksArr=reactive<number[]>([])
-props.datas.forEach(element => {
-    nameArr.push(element.name)
-});
-props.datas.forEach(ele=>{
-    clicksArr.push(ele.clicks)
-})
 const chartRef=ref(null)
-onMounted(()=>{
-    const pieChart=echarts.init(chartRef.value)
-const option=reactive({
-    tooltip: {
-    trigger: 'item'//显示数据
-  },
-    legend:{
-        orient:'vertical',
-        left:'left'
-    },
-    xAxis: [
+let pieChart: echarts.ECharts | null = null
+
+// 初始化数据
+const initData = () => {
+    nameArr.length = 0
+    clicksArr.length = 0
+    props.datas.forEach(element => {
+        nameArr.push(element.name)
+    })
+    props.datas.forEach(ele => {
+        clicksArr.push(ele.clicks)
+    })
+}
+
+// 渲染图表
+const renderChart = () => {
+    if (!chartRef.value) return
+    if (!pieChart) {
+        pieChart = echarts.init(chartRef.value)
+    }
+    const option = {
+        tooltip: {
+            trigger: 'item'//显示数据
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left'
+        },
+        xAxis: [
             {
                 type: 'category',
                 axisTick: {
@@ -51,23 +63,35 @@ const option=reactive({
                 }
             },
         ],
-    series:[
-       {
-        type:'bar',
-        data:clicksArr,
-        emphasis:{
-            itemStyle:{
-                shadowBlur:10,
-                shadowOffsetX:0,
-                shadowColor:'rgba(0,0,0,0.5)'
+        series: [
+            {
+                type: 'bar',
+                data: clicksArr,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0,0,0,0.5)'
+                    }
+                }
             }
-        }
-       }
 
-    ]
-})
+        ]
+    }
     pieChart.setOption(option)
+}
+
+onMounted(() => {
+    initData()
+    renderChart()
 })
+
+// 监听数据变化
+watch(() => props.datas, () => {
+    console.log('数据变化了:', props.datas)
+    initData()
+    renderChart()
+}, { deep: true })
 
 </script>
 <template>

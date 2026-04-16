@@ -95,13 +95,39 @@ public class DashboardServiceImpl implements DashboardService {
     public Map<String, Object> getQualityScore() {
         // 实现内容质量维度查询
         Map<String, Object> result = new HashMap<>();
-        // 这里可以根据实际需求计算内容质量评分
-        // 例如：基于浏览量、点赞数、评论数等指标
-        result.put("averageScore", 85);
-        result.put("totalContent", 100);
-        result.put("highQuality", 60);
-        result.put("mediumQuality", 30);
-        result.put("lowQuality", 10);
+        
+        // 构建overview对象
+        Map<String, Object> overview = new HashMap<>();
+        overview.put("avgUserRating", 4.3);
+        overview.put("avgCommentQuality", 76);
+        overview.put("highQualityContentRate", 0.61);
+        overview.put("activeContentCount", 289);
+        overview.put("contentCount", 356);
+        result.put("overview", overview);
+        
+        // 构建radar对象
+        Map<String, Object> radar = new HashMap<>();
+        
+        // 构建indicator数组
+        List<Map<String, Object>> indicator = new ArrayList<>();
+        indicator.add(Map.of("name", "用户评分", "max", 5));
+        indicator.add(Map.of("name", "评论质量", "max", 100));
+        indicator.add(Map.of("name", "高质量内容占比", "max", 1));
+        indicator.add(Map.of("name", "活跃内容数", "max", 400));
+        indicator.add(Map.of("name", "内容总数", "max", 400));
+        radar.put("indicator", indicator);
+        
+        // 构建value数组
+        List<Double> value = new ArrayList<>();
+        value.add(4.3);
+        value.add(76.0);
+        value.add(0.61);
+        value.add(289.0);
+        value.add(356.0);
+        radar.put("value", value);
+        
+        result.put("radar", radar);
+        
         return result;
     }
 

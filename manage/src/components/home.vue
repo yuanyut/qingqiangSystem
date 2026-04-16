@@ -7,6 +7,7 @@ import Radar from '@/components/charts/radar.vue'
 import Bar from '@/components/charts/Bar.vue'
 
 import chinaMap from '@/components/charts/chinaMap.vue'
+import { getOverview, getDramaCategory, getContentTrend, getBehaviorTrend, getDramaTop10, getQualityScore, getGeo } from '@/api/api'
 interface totalItem {
   name: string,
   data: number,
@@ -59,8 +60,8 @@ const total = reactive<totalItem[]>([
   { name: '今日访问量', data: 10 },
   { name: '剧目总数', data: 50 },
   { name: '用户总数', data: 50, status: 'up', changeNum: 5 },
-  { name: 'pv(页面浏览量)', data: 100, status: 'up', changeNum: 5, changeWeiDu: '较昨天比较' },
-  { name: 'uv(独立访客)', data: 100, status: 'down', changeNum: 5, changeWeiDu: '较昨天比较' },
+  { name: 'pv(页面浏览量)', data: 100, },
+  { name: 'uv(独立访客)', data: 100 },
 ])
 const cateJumu = reactive<PieItem[]>([{
   value: 50, name: '传统剧目'
@@ -93,12 +94,23 @@ const Dram = reactive<daramValue>({
   "articleCount": [1, 2, 1, 2, 1, 3, 2, 2, 1, 4, 2, 3, 2, 1]
 })
 
-const change = (daram: daramValue, index: number) => {
-  Dram.time = daram.time
-  Dram.dramaCount = daram.dramaCount
-  Dram.articleCount = daram.articleCount
-  activeDaram.value = index
-  console.log(activeDaram.value)
+const change = async (daram: daramValue, index: number) => {
+  let type = 'day'
+  if (index === 1) type = 'week'
+  if (index === 2) type = 'month'
+  
+  try {
+    const trendData = await getContentTrend(type)
+    console.log('内容新增趋势数据:', trendData)
+    if (trendData && trendData.data) {
+      Dram.time = trendData.data.time || []
+      Dram.dramaCount = trendData.data.dramaCount || []
+      Dram.articleCount = trendData.data.articleCount || []
+      activeDaram.value = index
+    }
+  } catch (error) {
+    console.error('获取内容新增趋势数据失败:', error)
+  }
 }
 interface trendIntergace {
   time: string[],
@@ -130,13 +142,25 @@ const trend = reactive<trendIntergace>({
   "collectCount": [30, 28, 35, 25, 32, 40, 38, 42, 45, 40, 43, 47, 50, 48],
   "shareCount": [12, 15, 10, 8, 14, 16, 15, 18, 20, 17, 19, 22, 25, 23]
 })
-const changeTrend = (trendValue: trendIntergace) => {
-  trend.time = trendValue.time
-  trend.collectCount = trendValue.collectCount
-  trend.shareCount = trendValue.shareCount
-  trend.visitCount = trendValue.visitCount
+const changeTrend = async (type: string = 'day') => {
+  try {
+    const behaviorData = await getBehaviorTrend(type)
+    console.log('行为趋势数据:', behaviorData)
+    if (behaviorData && behaviorData.data) {
+      trend.time = behaviorData.data.time || []
+      trend.visitCount = behaviorData.data.visitCount || []
+      trend.collectCount = behaviorData.data.collectCount || []
+      trend.shareCount = behaviorData.data.shareCount || []
+    }
+  } catch (error) {
+    console.error('获取行为趋势数据失败:', error)
+  }
 }
-const topDrama = reactive([
+interface topDramaItem {
+  name: string,
+  clicks: number
+}
+const topDrama = reactive<topDramaItem[]>([
   { name: "三滴血", clicks: 1520 },
   { name: "白蛇传", clicks: 1380 },
   { name: "周仁回府", clicks: 1265 },
@@ -175,9 +199,120 @@ const updataTime = () => {
   currentTime.value = now.toLocaleString()
 }
 const timer = ref<number>(0)
-onMounted(() => {
+onMounted(async () => {
   updataTime()
   timer.value = setInterval(updataTime, 1000)
+  
+  // 获取总览数据
+  try {
+    const overviewData = await getOverview()
+    console.log('总览数据:', overviewData)
+    if (overviewData) {
+      total[0].data = overviewData?.data?.todayVisit || 0
+      total[1].data = overviewData?.data?.dramaCount || 0
+      total[2].data = overviewData?.data?.userTotal || 0
+      total[3].data = overviewData?.data?.pv || 0
+      total[4].data = overviewData?.data?.uv || 0
+    }
+  } catch (error) {
+    console.error('获取总览数据失败:', error)
+  }
+  
+  // 获取剧目分类饼图数据
+  try {
+    const categoryData = await getDramaCategory()
+    console.log('剧目分类数据:', categoryData)
+    if (categoryData && categoryData.data) {
+      const newCateJumu = categoryData.data.map((item:any) => ({
+        value: item.count,
+        name: item.category
+      }))
+      cateJumu.length = 0
+      newCateJumu.forEach((item) => cateJumu.push(item))
+    }
+  } catch (error) {
+    console.error('获取剧目分类数据失败:', error)
+  }
+  
+  // 获取内容新增趋势数据
+  try {
+    const trendData = await getContentTrend('day')
+    console.log('内容新增趋势数据:', trendData)
+    if (trendData && trendData.data) {
+      everyDram.time = trendData.data.time || []
+      everyDram.dramaCount = trendData.data.dramaCount || []
+      everyDram.articleCount = trendData.data.articleCount || []
+      Dram.time = trendData.data.time || []
+      Dram.dramaCount = trendData.data.dramaCount || []
+      Dram.articleCount = trendData.data.articleCount || []
+    }
+  } catch (error) {
+    console.error('获取内容新增趋势数据失败:', error)
+  }
+  
+  // 获取行为趋势数据
+  try {
+    const behaviorData = await getBehaviorTrend('day')
+    console.log('行为趋势数据:', behaviorData)
+    if (behaviorData && behaviorData.data) {
+      everyTrend.time = behaviorData.data.time || []
+      everyTrend.visitCount = behaviorData.data.visitCount || []
+      everyTrend.collectCount = behaviorData.data.collectCount || []
+      everyTrend.shareCount = behaviorData.data.shareCount || []
+      trend.time = behaviorData.data.time || []
+      trend.visitCount = behaviorData.data.visitCount || []
+      trend.collectCount = behaviorData.data.collectCount || []
+      trend.shareCount = behaviorData.data.shareCount || []
+    }
+  } catch (error) {
+    console.error('获取行为趋势数据失败:', error)
+  }
+  
+  // 获取剧目TOP10数据
+  try {
+    const top10Data = await getDramaTop10()
+    console.log('剧目TOP10数据:', top10Data)
+    if (top10Data && top10Data.data) {
+      // 替换整个数组，而不是使用push
+      const newTopDrama = top10Data.data.map((item) => ({
+        name: item.name,
+        clicks: item.viewCount
+      }))
+      // 清空原数组并添加新数据
+      topDrama.length = 0
+      newTopDrama.forEach((item) => topDrama.push(item))
+    }
+  } catch (error) {
+    console.error('获取剧目TOP10数据失败:', error)
+  }
+  
+  // 获取内容质量维度数据
+  try {
+    const qualityData = await getQualityScore()
+    console.log('内容质量维度数据:', qualityData)
+    if (qualityData && qualityData.data) {
+      qualityScoreData.overview = qualityData.data.overview || {}
+      qualityScoreData.radar = qualityData.data.radar || {}
+    }
+  } catch (error) {
+    console.error('获取内容质量维度数据失败:', error)
+  }
+  
+  // 获取登录地图数据
+  try {
+    const geoData = await getGeo()
+    console.log('登录地图数据:', geoData)
+    if (geoData && geoData.data) {
+      const newMapValue = geoData.data.map((item) => ({
+        name: item.province,
+        value: item.count
+      }))
+      mapValue.length = 0
+      newMapValue.forEach((item) => mapValue.push(item))
+    }
+  } catch (error) {
+    console.error('获取登录地图数据失败:', error)
+  }
 })
 onUnmounted(() => {
   if (timer.value) clearInterval(timer.value)
@@ -195,7 +330,7 @@ const activeDaram = ref(0)
       <div v-for="(item, index) in total" :key="index" class="stat-card">
         <div class="stat-name">{{ item.name }}</div>
         <div class="stat-data">{{ item.data }}</div>
-        <div v-if="item.status" class="stat-change">
+        <!-- <div v-if="item.status" class="stat-change">
           <span v-if="item.changeNum! > 0" :class="item.status">
             <svg v-if="item.status === 'up'" width="12" height="12" viewBox="0 0 1024 1024">
               <path d="M508.8 64l188.8 316.8-156.288-84.672v673.92h-64V296L320 380.8 508.8 64z" fill="#00b42a"></path>
@@ -207,7 +342,7 @@ const activeDaram = ref(0)
           </span>
           <span v-else-if="item.changeNum === 0" class="equal">无变化</span>
           <span v-if="item.changeWeiDu" class="change-desc">{{ item.changeWeiDu }}</span>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -265,9 +400,9 @@ const activeDaram = ref(0)
       <!-- <div class="chart-card">
                     <div class="chart-title">剧目热度趋势</div>
                     <div class="chart-tabs">
-                        <div @click="changeTrend(everyTrend)">每日</div>
-                        <div @click="changeTrend(weekTrend)">每周</div>
-                        <div @click="changeTrend(monthTrend)">每月</div>
+                        <div @click="changeTrend('day')">每日</div>
+                        <div @click="changeTrend('week')">每周</div>
+                        <div @click="changeTrend('month')">每月</div>
                     </div>
                     <threeLine :datas="trend" wd="100%" ht="320px" name1="访问量" name2="收藏" name3="分享"></threeLine>
                 </div>
