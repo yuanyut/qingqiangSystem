@@ -101,6 +101,48 @@ public class DramaServiceImpl implements DramaService {
         int offset = (page - 1) * size;
         return dramaMapper.selectList(offset, size, categoryId, keyword);
     }
+    
+    @Override
+    public List<Drama> pageListWithRelation(int page, int size, Long categoryId, String keyword) {
+        int offset = (page - 1) * size;
+        List<Drama> dramas = dramaMapper.selectList(offset, size, categoryId, keyword);
+        
+        for (Drama drama : dramas) {
+            if (drama != null) {
+                // 查询关联的演员
+                List<DramaActor> actors = dramaActorMapper.selectByDramaId(drama.getId());
+                List<DramaActor> validActors = new ArrayList<>();
+                List<Actor> actorDetails = new ArrayList<>();
+                for (DramaActor actor : actors) {
+                    if (actor != null) {
+                        validActors.add(actor);
+                        // 查询完整的演员信息
+                        Actor actorDetail = actorMapper.selectById(actor.getActorId());
+                        if (actorDetail != null) {
+                            actorDetails.add(actorDetail);
+                        }
+                    }
+                }
+                drama.setActors(validActors);
+                drama.setActorDetails(actorDetails);
+                
+                // 查询关联的内容
+                List<DramaContent> relations = dramaContentMapper.selectByDramaId(drama.getId());
+                List<Content> contents = new ArrayList<>();
+                for (DramaContent dc : relations) {
+                    if (dc != null) {
+                        Content c = contentMapper.selectById(dc.getContentId());
+                        if (c != null) {
+                            contents.add(c);
+                        }
+                    }
+                }
+                drama.setContents(contents);
+            }
+        }
+        
+        return dramas;
+    }
 
     @Override
     public Long countList(Long categoryId, String keyword) {

@@ -24,7 +24,7 @@ public class DramaController {
                                     @RequestParam(required = false) String keyword) {
 
         Map<String, Object> res = new HashMap<>();
-        res.put("list", dramaService.pageList(page, size, categoryId, keyword));
+        res.put("list", dramaService.pageListWithRelation(page, size, categoryId, keyword));
         res.put("total", dramaService.countList(categoryId, keyword));
         return ResponseResult.success(res);
     }

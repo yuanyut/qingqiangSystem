@@ -88,10 +88,11 @@ const fetchDramaList = async () => {
       response.data.list.forEach((item: any) => {
         tableData.push({
           id: item.id,
-          videoUrl: item.cover || '',
+          videoUrl: item.cover ? item.cover.replace(/`/g, '') : '',
           title: item.name,
           description: item.intro || '',
-          actor: '未知', // 暂时使用默认值，后续可以从关联表中获取
+          contents: item.contents || [], // 保存关联的content内容
+          actor: item.actorDetails && item.actorDetails.length > 0 ? item.actorDetails.map(actor => actor.name).join('、') : '未知',
           category: item.categoryId === 1 ? '传统剧目' : 
                     item.categoryId === 2 ? '历史剧' : 
                     item.categoryId === 3 ? '爱情剧' : 
@@ -104,7 +105,7 @@ const fetchDramaList = async () => {
           duration: 0, // 暂时使用默认值
           clickCount: item.viewCount || 0,
           likeCount: item.likeCount || 0,
-          publishTime: item.publishDate ? new Date(item.publishDate).toLocaleString() : '',
+          publishTime: item.publishDate ? new Date(item.publishDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '',
           statusText: item.status === 1 ? '已发布' : '已下架'
         });
       });
