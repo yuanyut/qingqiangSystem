@@ -370,4 +370,47 @@ public class UserService {
         loginLog.setLoginTime(new java.util.Date());
         loginLogMapper.insertLoginLog(loginLog);
     }
+
+    // 批量查询用户列表
+    public Map<String, Object> getUserList(int page, int size, String username, String nickname, Integer status) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username);
+        params.put("nickname", nickname);
+        params.put("status", status);
+        params.put("offset", (page - 1) * size);
+        params.put("limit", size);
+
+        List<User> userList = userMapper.selectUserList(params);
+        int total = userMapper.selectUserCount(params);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", userList);
+        result.put("total", total);
+        return result;
+    }
+
+    // 根据ID删除用户
+    public int deleteUserById(Long id) {
+        return userMapper.deleteUserById(id);
+    }
+
+    // 批量删除用户
+    public int deleteUserByIds(List<Long> ids) {
+        return userMapper.deleteUserByIds(ids);
+    }
+
+    // 更新用户状态
+    public int updateUserStatus(Long id, Integer status) {
+        return userMapper.updateUserStatus(id, status);
+    }
+
+    // 更新用户信息
+    public int updateUser(User user) {
+        return userMapper.updateUser(user);
+    }
+
+    // 新增用户
+    public int addUser(User user) {
+        return userMapper.insert(user);
+    }
 }

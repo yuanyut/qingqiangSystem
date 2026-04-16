@@ -18,4 +18,10 @@ public interface UserMapper{
     List<Map<String, Object>> selectUserProvinceStats();
     List<Map<String, Object>> selectUserAgeDistribution();
     List<Map<String, Object>> selectUserGenderDistribution();
+    List<User> selectUserList(@Param("params") Map<String, Object> params);
+    int selectUserCount(@Param("params") Map<String, Object> params);
+    int deleteUserById(@Param("id") Long id);
+    int deleteUserByIds(@Param("ids") List<Long> ids);
+    int updateUserStatus(@Param("id") Long id, @Param("status") Integer status);
+    int updateUser(User user);
 }

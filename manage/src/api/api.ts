@@ -125,14 +125,42 @@ export const getUserGenderDistribution = () => {
 }
 
 // 剧目热度趋势数据类型
-export interface DramaHeatTrendData {
-  date: string
-  visitCount: number
-  collectCount: number
-  shareCount: number
+export interface DramaHeatTrendData { date: string; visitCount: number; collectCount: number; shareCount: number }
+export const getDramaHeatTrend = (type: string = 'day') => 
+  api.get<ResponseResult<DramaHeatTrendData[]>>('/manage/dashboard/drama-heat-trend', { type })
+
+// 用户管理相关API
+export interface UserListParams {
+  page: number;
+  size: number;
+  username?: string;
+  nickname?: string;
+  status?: number;
 }
 
-// 剧目热度趋势
-export const getDramaHeatTrend = (type: string = 'day') => {
-  return api.get<ResponseResult<DramaHeatTrendData[]>>('/manage/dashboard/drama-heat-trend', { type })
+export interface UserData {
+  id?: number | string;
+  username: string;
+  nickname: string;
+  phone: number | string;
+  password: string;
+  role: string;
+  status: number;
 }
+
+export const getUserList = (params: UserListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/user/admin/list', params)
+
+export const getUserById = (id: number | string) => 
+  api.get<ResponseResult<any>>(`/user/admin/${id}`)
+
+export const addUser = (data: UserData) => 
+  api.post<ResponseResult<any>>('/user/admin', data)
+
+export const updateUser = (id: number | string, data: UserData) => 
+  api.put<ResponseResult<any>>(`/user/admin/${id}`, data)
+
+export const deleteUser = (id: number | string | (number | string)[]) => 
+  Array.isArray(id) 
+    ? api.delete<ResponseResult<any>>('/user/admin/batch', { data: id })
+    : api.delete<ResponseResult<any>>(`/user/admin/${id}`)

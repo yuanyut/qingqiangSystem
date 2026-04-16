@@ -41,7 +41,13 @@ const api = {
   post: <T = any>(url: string, data?: object): Promise<T> => {
     return service.post(url, data)
   },
-  // 可以扩展 put / delete / patch
+  put: <T = any>(url: string, data?: object): Promise<T> => {
+    return service.put(url, data)
+  },
+  delete: <T = any>(url: string, config?: object): Promise<T> => {
+    return service.delete(url, config)
+  },
+  // 可以扩展 patch
 }
 
 export default api

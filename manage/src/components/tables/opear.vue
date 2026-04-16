@@ -27,8 +27,8 @@
             </div>
         </div>
 
-        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加"
-            opear="0" />
+        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" :title="editContent.value?.id ? '编辑' : '增加'"
+            :opear="editContent.value?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)" />
     </div>
 </template>
 
@@ -40,8 +40,7 @@ import edit from '@/utils/edit.vue'
 interface FormItemUser {
     username: string
     nickname: string
-    phone: string
-    role: string[]
+    role: string
     status: string
     createdAt?: string
 }
@@ -60,8 +59,8 @@ const addUser = () => {
         createdAt: '',
         username: '',
         nickname: '',
-        phone: '',
-        role: [],
+        password: '',
+        role: '',
         status: ''
     }
     editModul.value = true
@@ -71,8 +70,10 @@ watch(editContent, (newVal) => {
     console.log('content 变化:', newVal)
 }, { deep: true, immediate: true })
 
+const emit = defineEmits(['batch-delete', 'confirm'])
+
 const deleteUser = () => {
-    selects.value = true
+    emit('batch-delete')
 }
 
 console.log('初始化时 content.value:', editContent.value)

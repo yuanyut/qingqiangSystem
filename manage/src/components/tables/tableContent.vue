@@ -10,25 +10,27 @@ const opearIndex = ref(0)
 const editContent = ref()
 const selects = defineModel('selects')
 const safeForm: any = defineModel('formHeader')
-const deleteClick = (value: any) => {
+const currentPage = defineModel('currentPage', { default: 1 })
+const pageSize = defineModel('pageSize', { default: 10 })
+const total = defineModel('total', { default: 0 })
+const emit = defineEmits(['edit-click', 'delete-click', 'confirm', 'page-change', 'size-change'])
 
+const deleteClick = (value: any) => {
     opearIndex.value = value
-    deleteModul.value = true
+    // deleteModul.value = true
     console.log('fu', deleteModul.value)
+    // 触发删除点击事件，传递当前行的id
+    emit('delete-click', tableData.value[value].id)
 }
 const deleteClicks = () => {
     console.log(selects.value)
     if (selects.value === false) {
         deleteModul.value = false
-        tableData.value.splice(opearIndex.value, 1)
+        // 这里不再直接修改tableData，而是由父组件通过API删除后重新获取数据
     }
 
     else if (selects.value === true) {
-        multipleSelection.value.forEach((item1: any) => {
-            const index = tableData.value.findIndex((item: any) => item.username === item1.username)
-            console.log(`用户名 ${item1.username} 在 tableData 的索引:`, index)
-            tableData.value.splice(index, 1)
-        })
+        // 这里不再直接修改tableData，而是由父组件通过API删除后重新获取数据
         selects.value = false
     }
 
@@ -37,6 +39,8 @@ const editClick = (value: any) => {
     editModul.value = true
     console.log(value)
     editContent.value = value
+    // 触发编辑点击事件，传递当前行数据
+    emit('edit-click', value)
 }
 const multipleSelection: any = defineModel('multipleSelection')
 
@@ -69,16 +73,18 @@ watch(editContent,(newVal)=>{
         }
     }
 },{deep:true})
-const currentPage3 = ref(1)
-const pageSize3 = ref(100)
 const small = ref(false)
 const background = ref(false)
 const disabled = ref(false)
 const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
+    pageSize.value = val
+    emit('size-change', val)
 }
 const handleCurrentChange = (val: number) => {
     console.log(`current page: ${val}`)
+    currentPage.value = val
+    emit('page-change', val)
 }
 </script>
 <template>
@@ -88,7 +94,7 @@ const handleCurrentChange = (val: number) => {
                 <el-table-column type="selection" width="55" />
                 <el-table-column property="username" label="用户名" width="120" />
                 <el-table-column property="nickname" label="昵称" width="120" />
-                <el-table-column property="phone" label="电话" width="120" />
+
                 <el-table-column property="password" label="密码" width="120" />
                 <el-table-column property="role" label="角色" width="240" show-overflow-tooltip />
                 <el-table-column property="status" label="状态" />
@@ -107,14 +113,14 @@ const handleCurrentChange = (val: number) => {
             </el-table>
         </div>
         <div style="margin-top: 25px;">
-            <el-pagination v-model:currentPage="currentPage3" v-model:page-size="pageSize3" :small="small"
-                :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="1000"
+            <el-pagination v-model:currentPage="currentPage" v-model:page-size="pageSize" :small="small"
+                :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="total"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑" opear="0"></edit>
+        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" :title="editContent?.id ? '编辑' : '增加'" :opear="editContent?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)"></edit>
     </div>
 
 </template>

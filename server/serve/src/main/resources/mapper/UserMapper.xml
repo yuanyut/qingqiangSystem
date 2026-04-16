@@ -129,4 +129,75 @@
             END
     </select>
 
+    <!-- 批量查询用户列表 -->
+    <select id="selectUserList" resultType="com.qqsystem.serve.entity.User">
+        SELECT *
+        FROM user
+        WHERE 1=1
+        <if test="params.username != null and params.username != ''">
+            AND username LIKE CONCAT('%', #{params.username}, '%')
+        </if>
+        <if test="params.nickname != null and params.nickname != ''">
+            AND nickname LIKE CONCAT('%', #{params.nickname}, '%')
+        </if>
+        <if test="params.status != null">
+            AND status = #{params.status}
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{params.offset}, #{params.limit}
+    </select>
+
+    <!-- 查询用户总数 -->
+    <select id="selectUserCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user
+        WHERE 1=1
+        <if test="params.username != null and params.username != ''">
+            AND username LIKE CONCAT('%', #{params.username}, '%')
+        </if>
+        <if test="params.nickname != null and params.nickname != ''">
+            AND nickname LIKE CONCAT('%', #{params.nickname}, '%')
+        </if>
+        <if test="params.status != null">
+            AND status = #{params.status}
+        </if>
+    </select>
+
+    <!-- 根据ID删除用户 -->
+    <delete id="deleteUserById">
+        DELETE FROM user
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除用户 -->
+    <delete id="deleteUserByIds">
+        DELETE FROM user
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新用户状态 -->
+    <update id="updateUserStatus">
+        UPDATE user
+        SET status = #{status},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新用户信息 -->
+    <update id="updateUser">
+        UPDATE user
+        SET
+            <if test="username != null">username = #{username},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+    
+            <if test="password != null">password = #{password},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
 </mapper>

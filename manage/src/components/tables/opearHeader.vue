@@ -73,7 +73,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                 </el-form-item>
             </div>
 
-            <div class="form-row" v-if="props.lable.lable3 || props.lable.lable4">
+            <!-- <div class="form-row" v-if="props.lable.lable3 || props.lable.lable4">
                 <el-form-item :label="props.lable.lable3" v-if="props.lable.lable3" prop="juese">
                     <el-select v-model="form.juese" placeholder="请选择角色" clearable class="full-width">
                         <el-option label="超级管理员" value="超级管理员">
@@ -163,7 +163,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                         </el-option>
                     </el-select>
                 </el-form-item>
-            </div>
+            </div> -->
             <!-- 剧目 -->
             <div class="form-row">
                 <el-form-item :label="props.lable.lable5" prop="name" v-if="props.lable.lable5 ">

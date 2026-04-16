@@ -7,9 +7,8 @@ const formRef = ref<FormInstance>()
 interface FormItemUser {
     username: string
     nickname: string
-    phone: string
     password: string
-    role: string[]
+    role: string
     status: string
     createdAt?: string
 }
@@ -24,9 +23,8 @@ const form = reactive<FormItemUser>({
     createdAt: '',
     username: '',
     nickname: '',
-    phone: '',
     password: '',
-    role: [],
+    role: '',
     status: ''
 })
 const props = defineProps<{ title: string, opear: string }>()
@@ -40,6 +38,17 @@ watch(content, (newVal) => {
     }
 }, { deep: true, immediate: true })
 
+// 监听 dialogFormVisible 变化，当对话框打开时，确保密码字段被清空
+watch(dialogFormVisible, (newVal) => {
+    if (newVal && props.opear === '0') {
+        // 新增模式，清空密码字段
+        form.password = ''
+    }
+})
+
+// 定义emit事件
+const emit = defineEmits(['confirm'])
+
 // 确定按钮：将修改后的数据传回父组件
 const handleConfirm = () => {
     if (props.opear === '0') {
@@ -50,12 +59,13 @@ const handleConfirm = () => {
         Object.assign(content.value, form)
 
     }
+    // 触发confirm事件，通知父组件执行相应的逻辑
+    emit('confirm', { ...form })
     form.createdAt = '',
         form.username = '',
         form.nickname = '',
-        form.phone = '',
         form.password = '',
-        form.role = [],
+        form.role = '',
         form.status = ''
     dialogFormVisible.value = false
 }
@@ -73,10 +83,7 @@ const rules = reactive({
     nickname: [
         { required: true, message: '输入昵称', trigger: 'blur' }
     ],
-    phone: [
-        { required: true, message: '输入电话', trigger: 'blur' },
-        { min: 11, max: 11, message: '电话号码11位' }
-    ],
+
     password: [
         { required: true, message: '输入密码', trigger: 'blur' },
         { min: 6, message: '密码长度至少6位', trigger: 'blur' }
@@ -102,21 +109,18 @@ const rules = reactive({
             <el-form-item label="昵称" :label-width="formLabelWidth" prop="nickname">
                 <el-input v-model="form.nickname" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
-                <el-input v-model="form.phone" autocomplete="off" />
-            </el-form-item>
+
             <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
                 <el-input v-model="form.password" type="password" show-password autocomplete="off"
                     placeholder="请输入密码" />
             </el-form-item>
             <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
                 <el-select v-model="form.role" placeholder="请选择角色" >
-                    <el-option label="管理员" value="超级管理员" />
+                    <el-option label="管理员" value="admin" />
                     <!-- <el-option label="内容管理员" value="内容管理员" />
                     <el-option label="数据分析员" value="数据分析员" />
                     <el-option label="互动审核员" value="互动审核员" /> -->
-                    <el-option label="普通用户" value="普通用户" />
-                    <el-option label="访客" value="访客" />
+                    <el-option label="普通用户" value="user" />
                 </el-select>
             </el-form-item>
             <el-form-item label="状态" :label-width="formLabelWidth" prop="status">

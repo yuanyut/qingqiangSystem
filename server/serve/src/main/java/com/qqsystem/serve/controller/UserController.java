@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.UUID;
@@ -538,4 +539,139 @@ public class UserController {
             return ResponseResult.badRequest("Token无效或已过期");
         }
     }
+
+    /**
+     * 批量查询用户列表
+     * 用于后台管理
+     */
+    @GetMapping("/admin/list")
+    public ResponseResult<?> getUserList(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size, 
+                                        @RequestParam(required = false) String username, @RequestParam(required = false) String nickname, 
+                                        @RequestParam(required = false) Integer status) {
+        try {
+            Map<String, Object> result = userService.getUserList(page, size, username, nickname, status);
+            return ResponseResult.success(result);
+        } catch (Exception e) {
+            System.out.println("获取用户列表失败: " + e.getMessage());
+            return ResponseResult.badRequest("获取用户列表失败");
+        }
+    }
+
+    /**
+     * 根据ID删除用户
+     * 用于后台管理
+     */
+    @DeleteMapping("/admin/{id}")
+    public ResponseResult<?> deleteUserById(@PathVariable Long id) {
+        try {
+            int result = userService.deleteUserById(id);
+            if (result > 0) {
+                return ResponseResult.success("删除成功");
+            } else {
+                return ResponseResult.badRequest("删除失败");
+            }
+        } catch (Exception e) {
+            System.out.println("删除用户失败: " + e.getMessage());
+            return ResponseResult.badRequest("删除用户失败");
+        }
+    }
+
+    /**
+     * 批量删除用户
+     * 用于后台管理
+     */
+    @DeleteMapping("/admin/batch")
+    public ResponseResult<?> deleteUserByIds(@RequestBody List<Long> ids) {
+        try {
+            int result = userService.deleteUserByIds(ids);
+            if (result > 0) {
+                return ResponseResult.success("批量删除成功");
+            } else {
+                return ResponseResult.badRequest("批量删除失败");
+            }
+        } catch (Exception e) {
+            System.out.println("批量删除用户失败: " + e.getMessage());
+            return ResponseResult.badRequest("批量删除用户失败");
+        }
+    }
+
+    /**
+     * 更新用户状态
+     * 用于后台管理
+     */
+    @PutMapping("/admin/status/{id}")
+    public ResponseResult<?> updateUserStatus(@PathVariable Long id, @RequestParam Integer status) {
+        try {
+            int result = userService.updateUserStatus(id, status);
+            if (result > 0) {
+                return ResponseResult.success("更新状态成功");
+            } else {
+                return ResponseResult.badRequest("更新状态失败");
+            }
+        } catch (Exception e) {
+            System.out.println("更新用户状态失败: " + e.getMessage());
+            return ResponseResult.badRequest("更新用户状态失败");
+        }
+    }
+
+    /**
+     * 更新用户信息
+     * 用于后台管理
+     */
+    @PutMapping("/admin/{id}")
+    public ResponseResult<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+        try {
+            user.setId(id);
+            int result = userService.updateUser(user);
+            if (result > 0) {
+                return ResponseResult.success("更新成功");
+            } else {
+                return ResponseResult.badRequest("更新失败");
+            }
+        } catch (Exception e) {
+            System.out.println("更新用户信息失败: " + e.getMessage());
+            return ResponseResult.badRequest("更新用户信息失败");
+        }
+    }
+
+    /**
+     * 新增用户
+     * 用于后台管理
+     */
+    @PostMapping("/admin")
+    public ResponseResult<?> addUser(@RequestBody User user) {
+        try {
+            // 设置默认值
+            user.setStatus(1); // 默认为启用状态
+            int result = userService.addUser(user);
+            if (result > 0) {
+                return ResponseResult.success("新增成功");
+            } else {
+                return ResponseResult.badRequest("新增失败");
+            }
+        } catch (Exception e) {
+            System.out.println("新增用户失败: " + e.getMessage());
+            return ResponseResult.badRequest("新增用户失败");
+        }
+    }
+
+    /**
+     * 根据ID获取用户详情
+     * 用于后台管理
+     */
+    @GetMapping("/admin/{id}")
+    public ResponseResult<?> getUserById(@PathVariable Long id) {
+        try {
+            User user = userService.getUserProfile(id);
+            if (user != null) {
+                return ResponseResult.success(user);
+            } else {
+                return ResponseResult.badRequest("用户不存在");
+            }
+        } catch (Exception e) {
+            System.out.println("获取用户详情失败: " + e.getMessage());
+            return ResponseResult.badRequest("获取用户详情失败");
+        }
+    }
 }
+
