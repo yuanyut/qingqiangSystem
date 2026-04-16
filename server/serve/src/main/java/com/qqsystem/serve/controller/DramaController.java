@@ -2,13 +2,18 @@ package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.entity.Drama;
+import com.qqsystem.serve.entity.DramaCategory;
 import com.qqsystem.serve.service.DramaService;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/drama")
@@ -24,8 +29,20 @@ public class DramaController {
                                     @RequestParam(required = false) String keyword) {
 
         Map<String, Object> res = new HashMap<>();
-        res.put("list", dramaService.pageListWithRelation(page, size, categoryId, keyword));
-        res.put("total", dramaService.countList(categoryId, keyword));
+        res.put("list", dramaService.pageListWithRelation(page, size, categoryId, keyword, false));
+        res.put("total", dramaService.countList(categoryId, keyword, false));
+        return ResponseResult.success(res);
+    }
+
+    @GetMapping("/admin/list")
+    public ResponseResult<Map<String, Object>> adminList(@RequestParam int page,
+                                    @RequestParam int size,
+                                    @RequestParam(required = false) Long categoryId,
+                                    @RequestParam(required = false) String keyword) {
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("list", dramaService.pageListWithRelation(page, size, categoryId, keyword, true));
+        res.put("total", dramaService.countList(categoryId, keyword, true));
         return ResponseResult.success(res);
     }
 
@@ -88,6 +105,45 @@ public class DramaController {
             return ResponseResult.success("批量删除成功");
         } else {
             return ResponseResult.badRequest("批量删除失败");
+        }
+    }
+    
+    @GetMapping("/category/list")
+    public ResponseResult<List<DramaCategory>> categoryList() {
+        List<DramaCategory> categories = dramaService.getCategoryList();
+        return ResponseResult.success(categories);
+    }
+    
+    @PostMapping("/upload")
+    public ResponseResult<Map<String, String>> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseResult.badRequest("文件为空");
+        }
+        
+        // 确保上传目录存在
+        String uploadDir = "D:\\qin-opera-promotion-system\\server\\serve\\src\\main\\resources\\static\\drama";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        
+        // 生成唯一文件名
+        String originalFilename = file.getOriginalFilename();
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = UUID.randomUUID() + suffix;
+        String filePath = uploadDir + "\\" + fileName;
+        
+        try {
+            // 保存文件
+            file.transferTo(new File(filePath));
+            
+            // 返回相对路径，前端访问时会加上base url
+            Map<String, String> result = new HashMap<>();
+            result.put("url", "/drama/" + fileName);
+            return ResponseResult.success(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseResult.badRequest("上传失败");
         }
     }
 }

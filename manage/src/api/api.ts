@@ -188,11 +188,21 @@ export interface DramaData {
 export const getDramaList = (params: DramaListParams) => 
   api.get<ResponseResult<{ list: any[]; total: number }>>('/drama/list', params)
 
+export const getAdminDramaList = (params: DramaListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/drama/admin/list', params)
+
 export const getDramaById = (id: number) => 
   api.get<ResponseResult<any>>(`/drama/detail/${id}`)
 
 export const addDrama = (data: DramaData) => 
   api.post<ResponseResult<any>>('/drama/add', data)
+
+export const uploadVideo = (data: FormData) => 
+  api.post<ResponseResult<{ url: string }>>('/drama/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 
 export const updateDrama = (data: DramaData) => 
   api.put<ResponseResult<any>>('/drama/update', data)
@@ -201,3 +211,17 @@ export const deleteDrama = (id: number | number[] | string | string[]) =>
   Array.isArray(id) 
     ? api.delete<ResponseResult<any>>('/drama/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/drama/${id}`)
+
+// 剧目分类相关API
+export interface DramaCategory {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  sortOrder: number;
+  status: number;
+  icon: string;
+}
+
+export const getDramaCategoryList = () => 
+  api.get<ResponseResult<DramaCategory[]>>('/drama/category/list')

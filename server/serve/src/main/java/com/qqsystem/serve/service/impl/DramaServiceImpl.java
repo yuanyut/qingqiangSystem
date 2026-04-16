@@ -102,13 +102,13 @@ public class DramaServiceImpl implements DramaService {
     @Override
     public List<Drama> pageList(int page, int size, Long categoryId, String keyword) {
         int offset = (page - 1) * size;
-        return dramaMapper.selectList(offset, size, categoryId, keyword);
+        return dramaMapper.selectList(offset, size, categoryId, keyword, false);
     }
     
     @Override
-    public List<Drama> pageListWithRelation(int page, int size, Long categoryId, String keyword) {
+    public List<Drama> pageListWithRelation(int page, int size, Long categoryId, String keyword, boolean includeAllStatus) {
         int offset = (page - 1) * size;
-        List<Drama> dramas = dramaMapper.selectList(offset, size, categoryId, keyword);
+        List<Drama> dramas = dramaMapper.selectList(offset, size, categoryId, keyword, includeAllStatus);
         
         for (Drama drama : dramas) {
             if (drama != null) {
@@ -154,8 +154,8 @@ public class DramaServiceImpl implements DramaService {
     }
 
     @Override
-    public Long countList(Long categoryId, String keyword) {
-        return dramaMapper.countList(categoryId, keyword);
+    public Long countList(Long categoryId, String keyword, boolean includeAllStatus) {
+        return dramaMapper.countList(categoryId, keyword, includeAllStatus);
     }
 
     @Override
@@ -186,5 +186,10 @@ public class DramaServiceImpl implements DramaService {
     @Override
     public void increaseView(Long id) {
         dramaMapper.increaseViewCount(id);
+    }
+    
+    @Override
+    public List<DramaCategory> getCategoryList() {
+        return dramaCategoryMapper.selectAll();
     }
 }

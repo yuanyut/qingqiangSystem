@@ -29,15 +29,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册浏览行为拦截器
         registry.addInterceptor(browseInterceptor)
-                .addPathPatterns("/drama/detail/**", "/news/detail/**", "/actor/detail/**", "/culture/detail/**")
-                .excludePathPatterns("/upload/**"); // 排除静态资源路径
+                .addPathPatterns("/drama/detail/**", "/news/detail/**", "/actor/detail/**", "/culture/detail/**");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 静态资源映射
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:D:/qin-opera-promotion-system/upload/")
-                .setCachePeriod(0); // 禁用缓存，确保更新立即生效
+        // 配置静态资源映射，将/drama/**路径映射到upload/drama目录
+        registry.addResourceHandler("/drama/**")
+                .addResourceLocations("file:///D:/qin-opera-promotion-system/upload/drama/");
     }
+
 }

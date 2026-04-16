@@ -18,7 +18,8 @@ public interface DramaMapper {
     void increaseViewCount(Long id);
     void increaseLikeCount(Long id);
     void decreaseLikeCount(Long id);
-    List<Drama> selectList(int offset, int size, Long categoryId, String keyword);
-    Long countList(Long categoryId, String keyword);
+    List<Drama> selectList(int offset, int size, Long categoryId, String keyword, boolean includeAllStatus);
+
+    Long countList(Long categoryId, String keyword, boolean includeAllStatus);
     int batchDelete(List<Long> ids);
 }

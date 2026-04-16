@@ -27,56 +27,47 @@
             </div>
         </div>
 
-        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" :title="editContent.value?.id ? '编辑视频' : '增加视频'"
-            :opear="editContent.value?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)" />
+        <add v-model:dialogFormVisible="addModul" v-model:content="addContent" title="增加视频" opear="0" @confirm="handleAddConfirm" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import { Plus, Delete, InfoFilled, Check } from '@element-plus/icons-vue'
-import edit from '@/components/Contents/Drama/tables/edit.vue'
+import add from '@/components/Contents/Drama/tables/add.vue'
 
-interface FormItemUser {
-    username: string
-    nickname: string
-    phone: string
-    role: string[]
-    status: string
-    createdAt?: string
-}
-
-const editContent = defineModel<any>('editContent')
+const addContent = ref<any>({})
+const addModul = ref(false)
 const selects = defineModel('selects')
 const multipleSelection: any = defineModel('multipleSelection')
 const emit = defineEmits(['batch-delete', 'confirm'])
 
-console.log('666666', editContent.value)
-
-const editModul = ref(false)
-
 const addUser = () => {
     console.log('addUser 被调用')
-    editContent.value = {
-        createdAt: '',
-        username: '',
-        nickname: '',
-        phone: '',
-        role: [],
-        status: ''
+    addContent.value = {
+        id: undefined,
+        videoUrl: '',
+        title: '',
+        description: '',
+        actor: '',
+        category: '',
+        duration: 0,
+        clickCount: 0,
+        likeCount: 0,
+        publishTime: '',
+        statusText: '已发布'
     }
-    editModul.value = true
+    addModul.value = true
 }
-
-watch(editContent, (newVal) => {
-    console.log('content 变化:', newVal)
-}, { deep: true, immediate: true })
 
 const deleteUser = () => {
     emit('batch-delete')
 }
 
-console.log('初始化时 content.value:', editContent.value)
+const handleAddConfirm = (data: any) => {
+    emit('confirm', data)
+    addModul.value = false
+}
 </script>
 
 <style scoped>

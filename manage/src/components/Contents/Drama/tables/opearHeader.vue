@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {
     Search,
@@ -16,7 +16,8 @@ import {
     Refresh,
     Phone
 } from '@element-plus/icons-vue'
-
+import { getDramaCategoryList } from '@/api/api'
+import type { DramaCategory } from '@/api/api'
 interface FormHeaderItem {
     name: string
     phone: string
@@ -44,6 +45,26 @@ const form = reactive<FormHeaderItem>({
     phone: '',
     juese: '',
     status: ''
+})
+
+// 分类列表
+const categoryList = ref<DramaCategory[]>([])
+
+// 获取分类列表
+const fetchCategoryList = async () => {
+    try {
+        const response = await getDramaCategoryList()
+        if (response && response.data) {
+            categoryList.value = response.data
+        }
+    } catch (error) {
+        console.error('获取分类列表失败:', error)
+    }
+}
+
+// 初始化
+onMounted(() => {
+    fetchCategoryList()
 })
 
 const onSubmit = () => {
@@ -180,49 +201,17 @@ const resetForm = (formEl: FormInstance | undefined) => {
                                 <span>全部分类</span>
                             </div>
                         </el-option>
-                        <el-option label="传统剧目" value="传统剧目">
+                        <el-option v-for="category in categoryList" :key="category.id" :label="category.name" :value="category.name">
                             <div class="option-item">
                                 <el-icon>
                                     <Edit />
                                 </el-icon>
-                                <span>传统剧目</span>
-                            </div>
-                        </el-option>
-                        <el-option label="现代改编" value="现代改编">
-                            <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>现代改编</span>
-                            </div>
-                        </el-option>
-                        <el-option label="实验秦腔" value="实验秦腔">
-                            <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>实验秦腔</span>
-                            </div>
-                        </el-option>
-                        <el-option label="折子戏" value="折子戏">
-                            <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>折子戏</span>
-                            </div>
-                        </el-option>
-                        <el-option label="名家专场" value="名家专场">
-                            <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>名家专场</span>
+                                <span>{{ category.name }}</span>
                             </div>
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
+                <!-- <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
                     <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
                         <el-option label="全部" value="全部">
                             <div class="option-item">
@@ -230,14 +219,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
                                     <CircleCheck />
                                 </el-icon>
                                 <span class="status-active">全部</span>
-                            </div>
-                        </el-option>
-                        <el-option label="草稿" value="草稿">
-                            <div class="option-item">
-                                <el-icon>
-                                    <CircleClose />
-                                </el-icon>
-                                <span class="status-disabled">草稿</span>
                             </div>
                         </el-option>
                         <el-option label="已发布" value="已发布">
@@ -257,7 +238,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                             </div>
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
             </div>
             <div class="form-actions">
                 <el-button @click="resetForm(formRef)" class="reset-btn">

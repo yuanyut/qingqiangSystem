@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, onMounted } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage, ElUpload } from 'element-plus'
-
+import { getDramaCategoryList } from '@/api/api'
+import type { DramaCategory } from '@/api/api'
 const formRef = ref<FormInstance>()
 
 // 修正类型定义 - 适配视频数据格式
@@ -54,6 +55,10 @@ watch(content, (newVal) => {
     if (newVal) {
         // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
+        // 确保 statusText 正确设置
+        if ('status' in newVal && newVal.status !== undefined) {
+            form.statusText = newVal.status === 1 ? '已发布' : '已下架'
+        }
         console.log('form 更新后:', form)
     }
 }, { deep: true, immediate: true })
@@ -206,12 +211,50 @@ const resetForm = () => {
     videoFile.value = null
 }
 
-const handleCancel = (formEl: FormInstance | undefined) => {
-    dialogFormVisible.value = false
-    if (!formEl) return
-    formEl.resetFields()
+const handleCancel = () => {
+    // 先重置表单数据
     resetForm()
+    // 重置content数据
+    content.value = {
+        id: undefined,
+        videoUrl: '',
+        title: '',
+        description: '',
+        actor: '',
+        category: '',
+        duration: 0,
+        clickCount: 0,
+        likeCount: 0,
+        publishTime: '',
+        statusText: ''
+    }
+    // 再关闭对话框
+    dialogFormVisible.value = false
+    // 重置表单校验状态
+    if (formRef.value) {
+        formRef.value.resetFields()
+    }
 }
+
+// 分类列表
+const categoryList = ref<DramaCategory[]>([])
+
+// 获取分类列表
+const fetchCategoryList = async () => {
+    try {
+        const response = await getDramaCategoryList()
+        if (response && response.data) {
+            categoryList.value = response.data
+        }
+    } catch (error) {
+        console.error('获取分类列表失败:', error)
+    }
+}
+
+// 初始化
+onMounted(() => {
+    fetchCategoryList()
+})
 
 // 规则验证
 const rules = {
@@ -305,22 +348,13 @@ const rules = {
             <!-- 分类 -->
             <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
                 <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
-                    <el-option label="传统剧目" value="传统剧目" />
-                    <el-option label="历史剧" value="历史剧" />
-                    <el-option label="爱情剧" value="爱情剧" />
-                    <el-option label="忠义剧" value="忠义剧" />
-                    <el-option label="神话剧" value="神话剧" />
-                    <el-option label="悲剧" value="悲剧" />
-                    <el-option label="公案剧" value="公案剧" />
-                    <el-option label="折子戏" value="折子戏" />
-                    <el-option label="现代戏" value="现代戏" />
+                    <el-option v-for="category in categoryList" :key="category.id" :label="category.name" :value="category.name" />
                 </el-select>
             </el-form-item>
 
             <!-- 状态 -->
             <el-form-item label="状态" :label-width="formLabelWidth" prop="statusText">
                 <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%">
-                    <el-option label="草稿" value="草稿" />
                     <el-option label="已发布" value="已发布" />
                     <el-option label="已下架" value="已下架" />
                 </el-select>
@@ -339,7 +373,7 @@ const rules = {
 
         <template #footer>
             <div class="dialog-footer">
-                <el-button @click="handleCancel(formRef)">取消</el-button>
+                <el-button @click="handleCancel">取消</el-button>
                 <el-button type="primary" @click="handleConfirm" :loading="uploadLoading">确定</el-button>
             </div>
         </template>

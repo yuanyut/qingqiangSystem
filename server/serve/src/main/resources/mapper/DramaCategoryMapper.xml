@@ -9,5 +9,12 @@
         FROM drama_category
         WHERE id = #{id}
     </select>
+    
+    <select id="selectAll" resultType="com.qqsystem.serve.entity.DramaCategory">
+        SELECT *
+        FROM drama_category
+        WHERE status = 1
+        ORDER BY sort_order ASC
+    </select>
 
 </mapper>

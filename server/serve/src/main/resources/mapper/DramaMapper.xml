@@ -13,12 +13,23 @@
     <select id="selectList" resultType="com.qqsystem.serve.entity.Drama">
         SELECT *
         FROM drama
-        WHERE status = 1
-        <if test="categoryId != null">
+        <if test="includeAllStatus == false">
+            WHERE status = 1
+        </if>
+        <if test="includeAllStatus == false and categoryId != null">
             AND category_id = #{categoryId}
         </if>
+        <if test="includeAllStatus == true and categoryId != null">
+            WHERE category_id = #{categoryId}
+        </if>
         <if test="keyword != null and keyword != ''">
-            AND (name LIKE CONCAT('%', #{keyword}, '%')
+            <if test="(includeAllStatus == false and categoryId == null) or (includeAllStatus == true and categoryId != null)">
+                AND
+            </if>
+            <if test="includeAllStatus == true and categoryId == null">
+                WHERE
+            </if>
+            (name LIKE CONCAT('%', #{keyword}, '%')
                  OR id IN (
                      SELECT DISTINCT drama_id
                      FROM drama_actor
@@ -36,12 +47,23 @@
     <select id="countList" resultType="long">
         SELECT COUNT(*)
         FROM drama
-        WHERE status = 1
-        <if test="categoryId != null">
+        <if test="includeAllStatus == false">
+            WHERE status = 1
+        </if>
+        <if test="includeAllStatus == false and categoryId != null">
             AND category_id = #{categoryId}
         </if>
+        <if test="includeAllStatus == true and categoryId != null">
+            WHERE category_id = #{categoryId}
+        </if>
         <if test="keyword != null and keyword != ''">
-            AND (name LIKE CONCAT('%', #{keyword}, '%')
+            <if test="(includeAllStatus == false and categoryId == null) or (includeAllStatus == true and categoryId != null)">
+                AND
+            </if>
+            <if test="includeAllStatus == true and categoryId == null">
+                WHERE
+            </if>
+            (name LIKE CONCAT('%', #{keyword}, '%')
                  OR id IN (
                      SELECT DISTINCT drama_id
                      FROM drama_actor

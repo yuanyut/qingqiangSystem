@@ -156,21 +156,7 @@ const formatViewCount = (count: number) => {
                 <el-table-column property="description" label="描述" width="160" show-overflow-tooltip />
                 
                 <!-- 关联内容 -->
-                <el-table-column label="关联内容" width="150">
-                    <template #default="scope">
-                        <div v-if="scope.row.contents && scope.row.contents.length > 0">
-                            <el-tag v-for="(content, index) in scope.row.contents.slice(0, 2)" :key="index" size="small" style="margin-right: 4px; margin-bottom: 4px;">
-                                {{ content.title || '未命名' }}
-                            </el-tag>
-                            <el-tag v-if="scope.row.contents.length > 2" size="small" type="info">
-                                +{{ scope.row.contents.length - 2 }}
-                            </el-tag>
-                        </div>
-                        <div v-else>
-                            无
-                        </div>
-                    </template>
-                </el-table-column>
+                
                 
                 <!-- 上传者/作者 -->
                 <el-table-column property="actor" label="演员" width="120" />
@@ -192,9 +178,9 @@ const formatViewCount = (count: number) => {
                 </el-table-column>
                 
                 <!-- 发布时间 -->
-                <el-table-column label="发布时间" width="160">
+                <!-- <el-table-column label="发布时间" width="160">
                     <template #default="scope">{{ scope.row.publishTime }}</template>
-                </el-table-column>
+                </el-table-column> -->
                 
                 <!-- 视频状态 -->
                 <el-table-column property="statusText" label="状态" width="100" />
