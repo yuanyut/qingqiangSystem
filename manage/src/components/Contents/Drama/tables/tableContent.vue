@@ -180,7 +180,7 @@ const formatViewCount = (count: number) => {
                 
                 <!-- 视频时长 -->
                 
-                <el-table-column property="duration" label="时长" width="100" />
+                
                 <!-- 播放量 -->
                 <el-table-column property="clickCount" label="点击量" width="100" />
                 

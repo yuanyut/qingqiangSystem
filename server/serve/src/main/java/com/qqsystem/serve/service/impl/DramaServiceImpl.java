@@ -30,6 +30,9 @@ public class DramaServiceImpl implements DramaService {
 
     @Resource
     private ActorMapper actorMapper;
+    
+    @Resource
+    private DramaCategoryMapper dramaCategoryMapper;
 
     @Override
     public Drama getById(Long id) {
@@ -109,6 +112,12 @@ public class DramaServiceImpl implements DramaService {
         
         for (Drama drama : dramas) {
             if (drama != null) {
+                // 查询分类信息
+                if (drama.getCategoryId() != null) {
+                    DramaCategory category = dramaCategoryMapper.selectById(drama.getCategoryId());
+                    drama.setCategoryDetail(category);
+                }
+                
                 // 查询关联的演员
                 List<DramaActor> actors = dramaActorMapper.selectByDramaId(drama.getId());
                 List<DramaActor> validActors = new ArrayList<>();

@@ -36,4 +36,6 @@ public class Drama {
     private List<Actor> actorDetails;
 
     private List<Content> contents;
+    
+    private DramaCategory categoryDetail;
 }

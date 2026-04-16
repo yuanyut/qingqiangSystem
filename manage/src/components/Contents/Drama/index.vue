@@ -86,14 +86,18 @@ const fetchDramaList = async () => {
     if (response && response.data) {
       tableData.length = 0;
       response.data.list.forEach((item: any) => {
+        // 查找视频类型的content，用于视频预览
+        const videoContent = item.contents && item.contents.find((c: any) => c.type === 'video');
+        
         tableData.push({
           id: item.id,
-          videoUrl: item.cover ? item.cover.replace(/`/g, '') : '',
+          videoUrl: videoContent && videoContent.mediaUrl ? videoContent.mediaUrl.replace(/`/g, '') : (item.cover ? item.cover.replace(/`/g, '') : ''),
           title: item.name,
           description: item.intro || '',
           contents: item.contents || [], // 保存关联的content内容
           actor: item.actorDetails && item.actorDetails.length > 0 ? item.actorDetails.map(actor => actor.name).join('、') : '未知',
-          category: item.categoryId === 1 ? '传统剧目' : 
+          category: item.categoryDetail ? item.categoryDetail.name : 
+                    item.categoryId === 1 ? '传统剧目' : 
                     item.categoryId === 2 ? '历史剧' : 
                     item.categoryId === 3 ? '爱情剧' : 
                     item.categoryId === 4 ? '忠义剧' : 
@@ -103,8 +107,8 @@ const fetchDramaList = async () => {
                     item.categoryId === 8 ? '折子戏' : 
                     item.categoryId === 9 ? '现代戏' : '其他',
           duration: 0, // 暂时使用默认值
-          clickCount: item.viewCount || 0,
-          likeCount: item.likeCount || 0,
+          clickCount: videoContent ? (videoContent.viewCount || 0) : (item.viewCount || 0),
+          likeCount: videoContent ? (videoContent.likeCount || 0) : (item.likeCount || 0),
           publishTime: item.publishDate ? new Date(item.publishDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '',
           statusText: item.status === 1 ? '已发布' : '已下架'
         });
@@ -201,13 +205,17 @@ const handleEdit = async (row: Drama) => {
   try {
     const response = await getDramaById(row.id);
     if (response && response.data) {
+      // 查找视频类型的content，用于视频预览
+      const videoContent = response.data.contents && response.data.contents.find((c: any) => c.type === 'video');
+      
       editContent.value = {
         id: response.data.id,
-        videoUrl: response.data.cover || '',
+        videoUrl: videoContent && videoContent.mediaUrl ? videoContent.mediaUrl.replace(/`/g, '') : (response.data.cover ? response.data.cover.replace(/`/g, '') : ''),
         title: response.data.name,
         description: response.data.intro || '',
-        actor: '未知', // 暂时使用默认值
-        category: response.data.categoryId === 1 ? '传统剧目' : 
+        actor: response.data.actorDetails && response.data.actorDetails.length > 0 ? response.data.actorDetails.map(actor => actor.name).join('、') : '未知',
+        category: response.data.categoryDetail ? response.data.categoryDetail.name : 
+                  response.data.categoryId === 1 ? '传统剧目' : 
                   response.data.categoryId === 2 ? '历史剧' : 
                   response.data.categoryId === 3 ? '爱情剧' : 
                   response.data.categoryId === 4 ? '忠义剧' : 
@@ -217,8 +225,8 @@ const handleEdit = async (row: Drama) => {
                   response.data.categoryId === 8 ? '折子戏' : 
                   response.data.categoryId === 9 ? '现代戏' : '其他',
         duration: 0, // 暂时使用默认值
-        clickCount: response.data.viewCount || 0,
-        likeCount: response.data.likeCount || 0,
+        clickCount: videoContent ? (videoContent.viewCount || 0) : (response.data.viewCount || 0),
+        likeCount: videoContent ? (videoContent.likeCount || 0) : (response.data.likeCount || 0),
         publishTime: response.data.publishDate ? new Date(response.data.publishDate).toLocaleString() : '',
         statusText: response.data.status === 1 ? '已发布' : '已下架'
       };
