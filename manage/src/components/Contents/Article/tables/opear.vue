@@ -2,11 +2,11 @@
     <div class="action-bar">
         <div class="action-container">
             <div class="action-buttons">
-                <el-button type="primary" @click="addUser" class="action-btn add-btn" :icon="Plus">
+                <el-button type="primary" @click="addContent" class="action-btn add-btn" :icon="Plus">
                     新增
                 </el-button>
 
-                <el-button v-if="multipleSelection?.length > 1" type="danger" @click="deleteUser"
+                <el-button v-if="multipleSelection?.length > 1" type="danger" @click="deleteContent"
                     class="action-btn delete-btn" :icon="Delete">
                     批量删除 ({{ multipleSelection.length }})
                 </el-button>
@@ -27,55 +27,46 @@
             </div>
         </div>
 
-        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加"
-            opear="0" />
+        <add v-model:dialogFormVisible="addModul" v-model:content="addContentData" title="增加" @confirm="handleAddConfirm" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import { Plus, Delete, InfoFilled, Check } from '@element-plus/icons-vue'
-import edit from '@/components/Contents/Article/tables/edit.vue'
+import add from '@/components/Contents/Article/tables/add.vue'
 
-interface FormItemUser {
-    username: string
-    nickname: string
-    phone: string
-    role: string[]
-    status: string
-    createdAt?: string
-}
-
-const editContent = defineModel<any>('editContent')
 const selects = defineModel('selects')
 const multipleSelection: any = defineModel('multipleSelection')
+const editContent = defineModel('editContent')
 
-console.log('666666', editContent.value)
+const addModul = ref(false)
+const addContentData = ref<{ id?: number; title: string; content: string; category: string; cover: string }>({
+    title: '',
+    content: '',
+    category: '',
+    cover: ''
+})
 
-const editModul = ref(false)
-
-const addUser = () => {
-    console.log('addUser 被调用')
-    editContent.value = {
-        createdAt: '',
-        username: '',
-        nickname: '',
-        phone: '',
-        role: [],
-        status: ''
+const addContent = () => {
+    console.log('addContent 被调用')
+    addContentData.value = {
+        title: '',
+        content: '',
+        category: '',
+        cover: ''
     }
-    editModul.value = true
+    addModul.value = true
 }
 
-watch(editContent, (newVal) => {
-    console.log('content 变化:', newVal)
-}, { deep: true, immediate: true })
-
-const deleteUser = () => {
+const deleteContent = () => {
     selects.value = true
 }
 
-console.log('初始化时 content.value:', editContent.value)
+const handleAddConfirm = (data: any) => {
+    // 传递新增数据给父组件
+    editContent.value = data
+}
 </script>
 
 <style scoped>

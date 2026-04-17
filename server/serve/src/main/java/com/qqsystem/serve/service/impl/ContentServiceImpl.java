@@ -41,6 +41,7 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public boolean updateCulture(Content content) {
         content.setBizType("culture");
+        content.setType("article");
         return contentMapper.updateById(content) > 0;
     }
 

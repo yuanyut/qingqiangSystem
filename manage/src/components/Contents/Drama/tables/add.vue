@@ -11,7 +11,7 @@ interface FormItemVideo {
     id?: number
     videoUrl: string
     title: string
-    category: string
+    category: number
     clickCount: number
     likeCount: number
     publishTime: string
@@ -25,7 +25,7 @@ const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
 const content = defineModel('content', { default: () => ({}) })
 const selects = defineModel('selects')
 const formLabelWidth = '140px'
-const emit = defineEmits(['confirm'])
+const emit = defineEmits<{ (e: 'confirm', data: any): void}>()
 
 // 上传相关状态
 const uploadLoading = ref(false)
@@ -37,7 +37,7 @@ const form = reactive<FormItemVideo>({
     id: undefined,
     videoUrl: '',
     title: '',
-    category: '',
+    category: 1,
     clickCount: 0,
     likeCount: 0,
     publishTime: '',
@@ -215,35 +215,36 @@ const handleConfirm = async () => {
 
     try {
         // 根据分类名称查找分类ID
-        let categoryId = 1
-        if (form.category) {
-            const category = categoryList.value.find(c => c.name === form.category)
-            if (category) {
-                categoryId = category.id
-            }
-        }
+        //  form.category = 1
+        // if (form.category) {
+        //     const category = categoryList.value.find(c => c.id === form.category)
+        //     if (category) {
+        //         form.category = category.id
+        //     }
+        // }
 
-        // 提取相对路径（去掉域名部分）
-        let coverUrl = form.videoUrl
-        if (coverUrl.startsWith('http')) {
-            // 提取相对路径
-            const url = new URL(coverUrl)
-            coverUrl = url.pathname
-        }
+        // // 提取相对路径（去掉域名部分）
+        // let coverUrl = form.videoUrl
+        // if (coverUrl.startsWith('http')) {
+        //     // 提取相对路径
+        //     const url = new URL(coverUrl)
+        //     coverUrl = url.pathname
+        // }
 
         // 调用后端增加API接口
         await addDrama({
             name: form.title,
-            cover: coverUrl,
+            cover: form.videoUrl,
             intro: form.description,
-            categoryId: categoryId,
+            categoryId: form.category ,
             status: form.statusText === '已发布' ? 1 : 0
         })
 
         ElMessage.success('添加成功!')
         dialogFormVisible.value = false
-        resetForm()
         emit('confirm', { ...form })
+        resetForm()
+        
     } catch (error) {
         console.error('添加剧目失败:', error)
         ElMessage.error('添加失败，请重试!')
@@ -255,7 +256,7 @@ const resetForm = () => {
     form.id = undefined
     form.videoUrl = ''
     form.title = ''
-    form.category = ''
+    form.category = 1
     form.clickCount = 0
     form.likeCount = 0
     form.publishTime = ''
@@ -276,7 +277,7 @@ const handleCancel = () => {
         title: '',
         description: '',
         actor: '',
-        category: '',
+        category: 1,
         duration: 0,
         clickCount: 0,
         likeCount: 0,
@@ -410,8 +411,8 @@ const rules = {
             <!-- 状态 -->
             <el-form-item label="状态" :label-width="formLabelWidth" prop="statusText">
                 <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%">
-                    <el-option label="已发布" value="已发布" />
-                    <el-option label="已下架" value="已下架" />
+                    <el-option label="已发布" value="1" />
+                    <el-option label="已下架" value="0" />
                 </el-select>
             </el-form-item>
 

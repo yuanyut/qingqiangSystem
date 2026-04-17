@@ -11,7 +11,7 @@
     </select>
 
     <select id="selectCultureList" resultType="com.qqsystem.serve.entity.Content">
-        SELECT id, title, cover, create_time, category, view_count, like_count
+        SELECT id, title, content, cover, create_time, category, view_count, like_count
         FROM content
         WHERE biz_type = 'culture'
         <if test="category != null and category != ''">

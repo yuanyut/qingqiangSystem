@@ -8,9 +8,9 @@ import { ElMessage } from 'element-plus'
 const search = defineModel('search')
 const tableData: any = defineModel('tableData')
 const deleteModul = ref(false)
-const editModul = ref(false)
+const editModul = defineModel<boolean>('editModul')
 const opearIndex = ref(0)
-const editContent = ref()
+const editContent = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string }>('editContent')
 const selects = defineModel('selects')
 const safeForm: any = defineModel('formHeader')
 const multipleSelection: any = defineModel('multipleSelection')
@@ -63,7 +63,18 @@ const deleteClicks = async () => {
 const editClick = (value: any) => {
     editModul.value = true
     console.log(value)
-    editContent.value = value
+    // 确保字段映射正确
+    editContent.value = {
+        id: value.id,
+        title: value.title,
+        content: value.content,
+        category: value.category,
+        cover: value.cover || value.coverUrl,
+        viewCount: value.viewCount,
+        likeCount: value.likeCount,
+        publishTime: value.publishTime,
+
+    }
 }
 
 const handleSelectionChange = (val: any[]) => {
@@ -114,7 +125,6 @@ const handleCurrentChange = (val: number) => {
     <div>
         <div>
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading">
-                <!-- ✅ 多选框列 -->
                 <el-table-column type="selection" width="55" />
                 
                 <el-table-column label="封面" width="80">
@@ -131,8 +141,6 @@ const handleCurrentChange = (val: number) => {
                 <el-table-column property="id" label="ID" width="60" />
                 <el-table-column property="title" label="标题" min-width="200" show-overflow-tooltip />
                 <el-table-column property="category" label="分类" width="100" />
-                <el-table-column property="author" label="作者" width="100" />
-                <el-table-column property="summary" label="摘要" width="120" show-overflow-tooltip/>
                 <el-table-column property="content" label="内容" width="120" show-overflow-tooltip/>
                 <el-table-column property="publishTime" label="发布时间" width="120" sortable />
                 <el-table-column property="viewCount" label="阅读量" width="100" sortable />

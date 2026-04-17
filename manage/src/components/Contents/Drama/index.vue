@@ -6,7 +6,7 @@ import { reactive, watch, ref, onMounted } from 'vue';
 import { getDramaList, getAdminDramaList, addDrama, updateDrama, deleteDrama, getDramaById, getDramaCategoryList } from '@/api/api';
 import type { DramaCategory } from '@/api/api'
 interface Drama {
-  id: number
+  id?: number
   videoUrl: string
   title: string
   description: string
@@ -75,10 +75,10 @@ interface lableItem {
   lable7?: string,
 }
 
-const labels=reactive<lableItem>({
-  lable5:'名称',
-  lable6:'分类',
-  lable7:'状态'
+const labels = reactive<lableItem>({
+  lable5: '名称',
+  lable6: '分类',
+  lable7: '状态'
 })
 
 // 获取剧目列表
@@ -92,7 +92,7 @@ const fetchDramaList = async () => {
         categoryId = category.id
       }
     }
-    
+
     const response = await getAdminDramaList({
       page: page.value,
       size: size.value,
@@ -104,7 +104,7 @@ const fetchDramaList = async () => {
       response.data.list.forEach((item: any) => {
         // 查找视频类型的content，用于视频预览
         const videoContent = item.contents && item.contents.find((c: any) => c.type === 'video');
-        
+
         tableData.push({
           id: item.id,
           videoUrl: (() => {
@@ -118,12 +118,12 @@ const fetchDramaList = async () => {
           title: item.name,
           description: item.intro || '',
           actor: item.actorDetails && item.actorDetails.length > 0 ? item.actorDetails.map((actor: any) => actor.name).join('、') : '未知',
-          category: item.categoryDetail ? item.categoryDetail.name : 
-                    item.categoryId === 1 ? '传统剧目' : 
-                    item.categoryId === 2 ? '现代剧目' : 
-                    item.categoryId === 3 ? '经典折子戏' : 
-                    item.categoryId === 4 ? '新编历史剧': '其他',
-          
+          category: item.categoryDetail ? item.categoryDetail.name :
+            item.categoryId === 1 ? '传统剧目' :
+              item.categoryId === 2 ? '现代剧目' :
+                item.categoryId === 3 ? '经典折子戏' :
+                  item.categoryId === 4 ? '新编历史剧' : '其他',
+
           duration: 0, // 暂时使用默认值
           clickCount: videoContent ? (videoContent.viewCount || 0) : (item.viewCount || 0),
           likeCount: videoContent ? (videoContent.likeCount || 0) : (item.likeCount || 0),
@@ -156,7 +156,7 @@ const handleConfirm = async (data: Drama) => {
       categoryId = category.id
     }
   }
-  
+  console.log('data', data)
   if (data.id) {
     // 编辑剧目
     try {
@@ -172,7 +172,8 @@ const handleConfirm = async (data: Drama) => {
     } catch (error) {
       console.error('编辑剧目失败:', error);
     }
-  } else if (data.title) {
+  }
+   else if (data.title && data.id === undefined) {
     // 新增剧目
     try {
       await addDrama({
@@ -182,6 +183,20 @@ const handleConfirm = async (data: Drama) => {
         categoryId: categoryId,
         status: data.statusText === '已发布' ? 1 : 0
       });
+      console.log('新增剧目成功:', data)
+      // 新增成功后，清空编辑内容
+      editContent.value = {
+        videoUrl: '',
+        title: '',
+        description: '',
+        actor: '',
+        category: '',
+        duration: 0,
+        clickCount: 0,
+        likeCount: 0,
+        publishTime: '',
+        statusText: ''
+      }
       fetchDramaList();
     } catch (error) {
       console.error('新增剧目失败:', error);
@@ -203,7 +218,7 @@ const handleDelete = async (id: number) => {
 const handleBatchDelete = async () => {
   if (multipleSelection.value.length === 0) return;
   try {
-    const ids = multipleSelection.value.map((item: Drama) => item.id);
+    const ids = multipleSelection.value.map((item: Drama) => item.id as number);
     await deleteDrama(ids);
     fetchDramaList();
   } catch (error) {
@@ -214,27 +229,27 @@ const handleBatchDelete = async () => {
 // 编辑剧目
 const handleEdit = async (row: Drama) => {
   try {
-    const response = await getDramaById(row.id);
+    const response = await getDramaById(row.id as number);
     if (response && response.data) {
       // 查找视频类型的content，用于视频预览
       const videoContent = response.data.contents && response.data.contents.find((c: any) => c.type === 'video');
-      
+
       editContent.value = {
         id: response.data.id,
         videoUrl: videoContent && videoContent.mediaUrl ? videoContent.mediaUrl.replace(/`/g, '') : (response.data.cover ? response.data.cover.replace(/`/g, '') : ''),
         title: response.data.name,
         description: response.data.intro || '',
         actor: response.data.actorDetails && response.data.actorDetails.length > 0 ? response.data.actorDetails.map((actor: any) => actor.name).join('、') : '未知',
-        category: response.data.categoryDetail ? response.data.categoryDetail.name : 
-                  response.data.categoryId === 1 ? '传统剧目' : 
-                  response.data.categoryId === 2 ? '现代剧目' : 
-                  response.data.categoryId === 3 ? '经典折子戏' : 
-                  response.data.categoryId === 4 ? '新编历史剧': '其他',  
+        category: response.data.categoryDetail ? response.data.categoryDetail.name :
+          response.data.categoryId === 1 ? '传统剧目' :
+            response.data.categoryId === 2 ? '现代剧目' :
+              response.data.categoryId === 3 ? '经典折子戏' :
+                response.data.categoryId === 4 ? '新编历史剧' : '其他',
         duration: 0, // 暂时使用默认值
         clickCount: videoContent ? (videoContent.viewCount || 0) : (response.data.viewCount || 0),
         likeCount: videoContent ? (videoContent.likeCount || 0) : (response.data.likeCount || 0),
         publishTime: response.data.publishDate ? new Date(response.data.publishDate).toLocaleString() : '',
-        status: response.data.status,
+        // status: response.data.status,
         statusText: response.data.status === 1 ? '已发布' : '已下架'
       };
     }
@@ -266,15 +281,15 @@ onMounted(async () => {
 
 </script>
 <template>
-    <div>
-        <opearHeader v-model:form-header="formHeader" v-model:search="search" :lable="labels"></opearHeader>
-        <opear v-model:multipleSelection="multipleSelection"
-            v-model:selects="selects" @batch-delete="batchDeleteClick" @confirm="handleConfirm"></opear>
-        <tableContent v-model:tableData="tableData" v-model:selects="selects"
-            v-model:multipleSelection="multipleSelection" v-model:form-header="formHeader" v-model:search="search"
-            v-model:currentPage="page" v-model:pageSize="size" v-model:total="total"
-            @edit-click="editClick" @delete-click="deleteClick" @confirm="handleConfirm" @page-change="fetchDramaList" @size-change="fetchDramaList">
-        </tableContent>
-    </div>
+  <div>
+    <opearHeader v-model:form-header="formHeader" v-model:search="search" :lable="labels"></opearHeader>
+    <opear v-model:multipleSelection="multipleSelection" v-model:selects="selects" @batch-delete="batchDeleteClick"
+      @confirm="handleConfirm"></opear>
+    <tableContent v-model:tableData="tableData" v-model:selects="selects" v-model:multipleSelection="multipleSelection"
+      v-model:form-header="formHeader" v-model:search="search" v-model:currentPage="page" v-model:pageSize="size"
+      v-model:total="total" @edit-click="editClick" @delete-click="deleteClick" @confirm="handleConfirm"
+      @page-change="fetchDramaList" @size-change="fetchDramaList">
+    </tableContent>
+  </div>
 </template>
 <style scoped></style>

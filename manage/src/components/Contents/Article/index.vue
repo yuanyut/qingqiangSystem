@@ -9,16 +9,16 @@ import { ElMessage } from 'element-plus';
 
 // 文章接口定义
 interface Article {
-    id: number
+    id?: number
     coverUrl: string
     title: string
     category: string
     author: string
-    publishTime: string
-    statusText: string
-    viewCount: number
-    likeCount: number
-    commentCount: number
+    publishTime?: string
+    statusText?: string
+    viewCount?: number
+    likeCount?: number
+    commentCount?: number
     summary: string
     content: string
 }
@@ -28,6 +28,9 @@ const tableData = reactive<Article[]>([])
 
 // 编辑内容
 const editContent = ref<Article | null>(null)
+
+// 编辑弹窗
+const editModul = ref(false)
 
 // 新增/编辑弹窗
 const addEdit = ref<Article | null>(null)
@@ -56,21 +59,35 @@ const total = ref(0)
 // 加载状态
 const loading = ref(false)
 
-// 监听编辑内容变化，处理新增
+// 监听编辑内容变化，处理新增和编辑
 watch(editContent, (newVal) => {
     if (newVal) {
         addEdit.value = newVal
-        // 如果是新增（没有id）
+        // 如果是新增（没有id），重新获取列表数据
         if (!newVal.id) {
-            const newArticle = {
-                ...newVal,
-                id: Date.now(), // 临时ID
-                publishTime: new Date().toLocaleString(),
-                viewCount: 0,
-                likeCount: 0,
-                commentCount: 0
+            // 重新获取列表数据，确保与数据库一致
+            fetchCultureList()
+        } else {
+            // 如果是编辑（有id），更新表格中对应的数据
+            const index = tableData.findIndex((item: Article) => item.id === newVal.id)
+            if (index !== -1) {
+                // 更新表格数据，确保与编辑后的数据一致
+                tableData[index] = {
+                    //定位与保留：通过 tableData[index] 找到数组里的那行数据，并用
+                    //  ...tableData[index]（展开运算符）把原有的其他字段（比如 id 或 createTime）
+                    // 保留下来。
+                    ...tableData[index],
+                    //覆盖与更新：用 newVal（新值）里的内容去替换掉 title、summary 等指定字段。
+                    title: newVal.title || '',
+                    summary: newVal.summary || '',
+                    content: newVal.content || '',
+                    category: newVal.category || '',
+                    coverUrl: newVal.coverUrl || '',
+                    author: newVal.author || '管理员',
+                    viewCount: newVal.viewCount || 0,
+                    likeCount: newVal.likeCount || 0
+                }
             }
-            tableData.push(newArticle)
         }
     }
 }, { deep: true })
@@ -185,6 +202,7 @@ onMounted(() => {
                 v-model:multipleSelection="multipleSelection" 
                 v-model:form-header="formHeader" 
                 v-model:search="search"
+                v-model:editModul="editModul"
             />
         </div>
         

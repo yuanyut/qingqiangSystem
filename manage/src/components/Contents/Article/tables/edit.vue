@@ -2,8 +2,8 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { addCulture, updateCulture, CultureData } from '@/api/api'
-
+import { addCulture, updateCulture } from '@/api/api'
+import type { CultureData  } from '@/api/api'
 const formRef = ref<FormInstance>()
 
 // 文章表单数据类型
@@ -11,7 +11,6 @@ interface ArticleFormData {
     coverUrl: string
     title: string
     category: string
-    author: string
     publishTime: string
     statusText: string
     viewCount: number
@@ -22,7 +21,7 @@ interface ArticleFormData {
 }
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
-const content = defineModel('content', { default: () => ({}) })
+const content = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string }>('content', { default: () => ({ id: undefined, title: '', content: '', category: '', cover: '', viewCount: 0, likeCount: 0, publishTime: '' }) })
 const formLabelWidth = '100px'
 
 // 初始化 form
@@ -30,7 +29,6 @@ const form = reactive<ArticleFormData>({
     coverUrl: '',
     title: '',
     category: '',
-    author: '',
     publishTime: '',
     statusText: '',
     viewCount: 0,
@@ -93,7 +91,7 @@ watch(content, (newVal) => {
     }
 }, { deep: true, immediate: true })
 
-// 确定按钮：调用后端API进行新增或编辑
+// 确定按钮：调用后端API进行编辑
 const handleConfirm = async () => {
     // 验证必填字段
     if (!form.title) {
@@ -113,7 +111,7 @@ const handleConfirm = async () => {
     try {
         // 准备数据
         const cultureData: CultureData = {
-            id: content.value?.id,
+            id: (content.value as any)?.id,
             title: form.title,
             content: form.content,
             category: form.category,
@@ -122,22 +120,12 @@ const handleConfirm = async () => {
             likeCount: form.likeCount
         }
 
-        if (props.opear === '0') {
-            // 新增
-            await addCulture(cultureData)
-            ElMessage.success('添加成功')
-        } else {
-            // 编辑
-            await updateCulture(cultureData)
-            ElMessage.success('更新成功')
-        }
+        // 编辑操作
+        await updateCulture(cultureData)
+        ElMessage.success('更新成功')
 
         // 更新父组件数据
-        if (props.opear === '0') {
-            content.value = { ...form }
-        } else {
-            Object.assign(content.value, form)
-        }
+        Object.assign(content.value, form)
         
         dialogFormVisible.value = false
     } catch (error) {
@@ -150,15 +138,12 @@ const handleConfirm = async () => {
 
 // 取消按钮：重置表单
 const handleCancel = (formEl: FormInstance | undefined) => {
-    dialogFormVisible.value = false
-    if (!formEl) return
-    formEl.resetFields()
-    // 重置 form
+    // 先重置表单数据
     Object.assign(form, {
         coverUrl: '',
         title: '',
         category: '',
-        author: '',
+     
         publishTime: '',
         statusText: '',
         viewCount: 0,
@@ -167,6 +152,20 @@ const handleCancel = (formEl: FormInstance | undefined) => {
         summary: '',
         content: ''
     })
+    // 重置content数据
+    content.value = {
+        id: undefined,
+        title: '',
+        content: '',
+        category: '',
+        cover: ''
+    }
+    // 再关闭对话框
+    dialogFormVisible.value = false
+    // 重置表单校验状态
+    if (formEl) {
+        formEl.resetFields()
+    }
 }
 </script>
 
@@ -203,7 +202,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                     />
                 </div>
             </el-form-item>
-
+            
             <!-- 标题 -->
             <el-form-item label="标题" prop="title">
                 <el-input v-model="form.title" autocomplete="off" placeholder="请输入文章标题" :disabled="loading" />
@@ -222,28 +221,14 @@ const handleCancel = (formEl: FormInstance | undefined) => {
                 </el-select>
             </el-form-item>
 
-            <!-- 作者 -->
-            <el-form-item label="作者" prop="author">
-                <el-input v-model="form.author" autocomplete="off" placeholder="请输入作者" :disabled="loading" />
-            </el-form-item>
+            
+            
 
             <!-- 发布时间 -->
             <el-form-item v-if="form.publishTime" label="发布时间" prop="publishTime">
                 <el-input v-model="form.publishTime" autocomplete="off" disabled />
             </el-form-item>
 
-            <!-- 摘要 -->
-            <el-form-item label="摘要" prop="summary">
-                <el-input 
-                    v-model="form.summary" 
-                    type="textarea" 
-                    :rows="3" 
-                    placeholder="请输入文章摘要"
-                    maxlength="200"
-                    show-word-limit
-                    :disabled="loading"
-                />
-            </el-form-item>
 
             <!-- 内容 -->
             <el-form-item label="内容" prop="content">

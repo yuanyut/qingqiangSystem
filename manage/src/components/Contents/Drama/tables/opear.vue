@@ -65,6 +65,8 @@ const deleteUser = () => {
 }
 
 const handleAddConfirm = (data: any) => {
+    console.log('handleAddConfirm 被调用', data)
+    //data.category = Number(data.category)
     emit('confirm', data)
     addModul.value = false
 }
