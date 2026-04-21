@@ -13,6 +13,7 @@ interface ArticleFormData {
     category: string
     publishTime: string
     statusText: string
+    status: number
     viewCount: number
     likeCount: number
     commentCount: number
@@ -20,23 +21,29 @@ interface ArticleFormData {
     content: string
 }
 
-const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
-const content = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string }>('content', { default: () => ({ id: undefined, title: '', content: '', category: '', cover: '', viewCount: 0, likeCount: 0, publishTime: '' }) })
+const editModul = defineModel('editModul')
+const content = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string; status?: number }>('content', { default: () => ({ id: undefined, title: '', content: '', category: '', cover: '', viewCount: 0, likeCount: 0, publishTime: '', status: 0 }) })
 const formLabelWidth = '100px'
 
 // 初始化 form
 const form = reactive<ArticleFormData>({
-    coverUrl: '',
-    title: '',
-    category: '',
-    publishTime: '',
+    coverUrl: content.value.cover || '',
+    title: content.value.title || '',
+    category: content.value.category || '',
+    publishTime: content.value.publishTime || '',   
     statusText: '',
-    viewCount: 0,
-    likeCount: 0,
+    status: content.value.status || 0,
+    viewCount: content.value.viewCount || 0,
+    likeCount: content.value.likeCount || 0,
     commentCount: 0,
     summary: '',
     content: ''
 })
+const statusOptions = ref([
+    { label: '已上架', value: 0 },
+    { label: '已下架', value: 1 }
+])
+
 
 const props = defineProps<{ title: string, opear: string }>()
 
@@ -110,6 +117,7 @@ const handleConfirm = async () => {
     loading.value = true
     try {
         // 准备数据
+
         const cultureData: CultureData = {
             id: (content.value as any)?.id,
             title: form.title,
@@ -117,9 +125,10 @@ const handleConfirm = async () => {
             category: form.category,
             cover: form.coverUrl,
             viewCount: form.viewCount,
-            likeCount: form.likeCount
+            likeCount: form.likeCount,
+            status: form.status
         }
-
+        console.log(cultureData)
         // 编辑操作
         await updateCulture(cultureData)
         ElMessage.success('更新成功')
@@ -127,7 +136,7 @@ const handleConfirm = async () => {
         // 更新父组件数据
         Object.assign(content.value, form)
         
-        dialogFormVisible.value = false
+        editModul.value = false
     } catch (error) {
         console.error('操作失败:', error)
         ElMessage.error('操作失败，请重试')
@@ -143,9 +152,9 @@ const handleCancel = (formEl: FormInstance | undefined) => {
         coverUrl: '',
         title: '',
         category: '',
-     
         publishTime: '',
         statusText: '',
+        status: 0,
         viewCount: 0,
         likeCount: 0,
         commentCount: 0,
@@ -158,10 +167,11 @@ const handleCancel = (formEl: FormInstance | undefined) => {
         title: '',
         content: '',
         category: '',
-        cover: ''
+        cover: '',
+        status: 0
     }
     // 再关闭对话框
-    dialogFormVisible.value = false
+    editModul.value = false
     // 重置表单校验状态
     if (formEl) {
         formEl.resetFields()
@@ -170,7 +180,7 @@ const handleCancel = (formEl: FormInstance | undefined) => {
 </script>
 
 <template>
-    <el-dialog v-model="dialogFormVisible" :show-close="false" :title="props.title" width="600">
+    <el-dialog v-model="editModul" :show-close="false" :title="props.title" width="600">
         <el-form :model="form" ref="formRef" :label-width="formLabelWidth">
             <!-- 封面 - 点击可更换 -->
             <el-form-item label="封面" prop="coverUrl">
@@ -242,11 +252,9 @@ const handleCancel = (formEl: FormInstance | undefined) => {
             </el-form-item>
 
             <!-- 状态 -->
-            <el-form-item label="状态" prop="statusText">
-                <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%" :disabled="loading">
-                    <el-option label="草稿" value="草稿" />
-                    <el-option label="已发布" value="已发布" />
-                    <el-option label="已下架" value="已下架" />
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="form.status" placeholder="请选择状态" style="width: 100%" :disabled="loading">
+                    <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-form-item>
         </el-form>

@@ -15,12 +15,12 @@ interface Article {
     category: string
     author: string
     publishTime?: string
-    statusText?: string
     viewCount?: number
     likeCount?: number
     commentCount?: number
     summary: string
     content: string
+    status?: number
 }
 
 // 表格数据
@@ -85,7 +85,8 @@ watch(editContent, (newVal) => {
                     coverUrl: newVal.coverUrl || '',
                     author: newVal.author || '管理员',
                     viewCount: newVal.viewCount || 0,
-                    likeCount: newVal.likeCount || 0
+                    likeCount: newVal.likeCount || 0,
+                    status: newVal.status || 0
                 }
             }
         }
@@ -130,13 +131,14 @@ const fetchCultureList = async () => {
                     category: item.category || '',
                     author: '管理员', // 后端没有作者字段，暂时固定为管理员
                     publishTime: item.createTime || '',
-                    statusText: '已发布', // 后端没有状态字段，暂时固定为已发布
+                    status: item.status || 0, // 后端没有状态字段，暂时固定为0
                     viewCount: item.viewCount || 0,
                     likeCount: item.likeCount || 0,
                     commentCount: 0, // 后端没有评论数字段，暂时固定为0
                     summary: item.content ? item.content.substring(0, 100) + '...' : '',
                     content: item.content || ''
                 })
+                console.log(tableData)
             })
             total.value = response.data.total || 0
         }

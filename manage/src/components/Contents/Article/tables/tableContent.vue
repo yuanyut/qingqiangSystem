@@ -10,11 +10,13 @@ const tableData: any = defineModel('tableData')
 const deleteModul = ref(false)
 const editModul = defineModel<boolean>('editModul')
 const opearIndex = ref(0)
-const editContent = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string }>('editContent')
+const editContent = defineModel<{ id?: number; title: string; content: string; category: string; cover: string; viewCount?: number; likeCount?: number; publishTime?: string; status?: number }>('editContent')
 const selects = defineModel('selects')
+const status = defineModel('status')
+
 const safeForm: any = defineModel('formHeader')
 const multipleSelection: any = defineModel('multipleSelection')
-
+// console.log(tableData.value)
 // 加载状态
 const loading = ref(false)
 
@@ -73,7 +75,7 @@ const editClick = (value: any) => {
         viewCount: value.viewCount,
         likeCount: value.likeCount,
         publishTime: value.publishTime,
-
+        status: value.status
     }
 }
 
@@ -88,24 +90,17 @@ watch(selects, (newVal) => {
         deleteModul.value = true
     }
 })
-
-watch(search, (newVal) => {
-    if (newVal === false) return
-    if (newVal === true) {
-        //调用后端返回的数据
-    }
-})
-
-watch(editContent, (newVal) => {
-    console.log('666666', newVal)
-    if (editModul.value === false && newVal) {
-        const index = tableData.value.findIndex((item: any) => item.id === newVal.id)
+watch(() => editModul.value, (newVal, oldVal) => {
+    console.log('弹窗状态变化:', oldVal, '->', newVal)
+    // 只在弹窗关闭时更新表格
+    if (oldVal === true && newVal === false && editContent.value?.id) {
+        const index = tableData.value.findIndex((item: any) => item.id === editContent.value?.id)
         if (index !== -1) {
-            console.log('更新表格第', index, '行')
-            tableData.value[index] = { ...tableData.value[index], ...newVal }
+            Object.assign(tableData.value[index], editContent.value)
+            // ElMessage.success('更新成功')
         }
     }
-}, { deep: true })
+})
 
 const currentPage3 = ref(1)
 const pageSize3 = ref(100)
@@ -146,7 +141,11 @@ const handleCurrentChange = (val: number) => {
                 <el-table-column property="viewCount" label="阅读量" width="100" sortable />
                 <el-table-column property="likeCount" label="点赞" width="80" sortable />
                 <el-table-column property="commentCount" label="评论" width="80" sortable />
-                <el-table-column property="statusText" label="状态" />
+                <el-table-column label="状态" width="100">
+                    <template #default="scope">
+                        {{ scope.row.status == 0 ? '已上架' : '已下架' }}
+                    </template>
+                </el-table-column>
                 
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
@@ -170,7 +169,7 @@ const handleCurrentChange = (val: number) => {
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks" :loading="loading"></dialog-visible>
         </div>
         
-        <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" title="编辑" opear="0"></edit>
+        <edit v-model:editModul="editModul" v-model:content="editContent" title="编辑" opear="0"></edit>
     </div>
 </template>
 

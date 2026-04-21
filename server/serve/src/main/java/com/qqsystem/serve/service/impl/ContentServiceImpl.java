@@ -35,6 +35,7 @@ public class ContentServiceImpl implements ContentService {
         content.setBizType("culture");
         content.setViewCount(0);
         content.setLikeCount(0);
+        content.setStatus(0); // 默认已上架
         return contentMapper.insert(content) > 0;
     }
 

@@ -23,12 +23,21 @@ public class Content {
     private Integer viewCount;
 
     private Integer likeCount;
-
+    private Integer status;
     private String category;
 
     private Date createTime;
 
     private Date updateTime;
+
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     // getter & setter
 

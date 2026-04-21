@@ -15,6 +15,7 @@ interface FormItemCulture {
     viewCount: number
     likeCount: number
     createTime: string
+    status: number | string
 }
 
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
@@ -35,9 +36,13 @@ const form = reactive<FormItemCulture>({
     cover: '',
     viewCount: 0,
     likeCount: 0,
-    createTime: ''
+    createTime: '',
+    status: 0
 })
-
+const statusOptions = ref([
+    { value: 0, label: '上架' },
+])
+const currentStatus = ref('上架')
 const props = defineProps<{ title: string }>()
 
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
@@ -105,12 +110,15 @@ const handleConfirm = async () => {
     }
 
     try {
+        form.status = statusOptions.value.find((item: any) => item.label === currentStatus.value)?.value || 0
+        form.createTime = new Date().toISOString()
         // 调用后端增加API接口
         await addCulture({
             title: form.title,
             content: form.content,
             category: form.category,
-            cover: form.cover
+            cover: form.cover,
+            status: form.status
         })
 
         ElMessage.success('添加成功!')
@@ -133,6 +141,7 @@ const resetForm = () => {
     form.viewCount = 0
     form.likeCount = 0
     form.createTime = ''
+    form.status = 0
 }
 
 const handleCancel = () => {
@@ -210,6 +219,14 @@ const rules = {
                     <el-option label="剧团与传承机构" value="剧团与传承机构" />
                     <el-option label="秦腔文化活动" value="秦腔文化活动" />
                     <el-option label="秦腔数字化与多媒体资料" value="秦腔数字化与多媒体资料" />
+                </el-select>
+            </el-form-item>
+
+            <!-- 状态 -->
+            <el-form-item label="状态" :label-width="formLabelWidth">
+                <el-select v-model="currentStatus" placeholder="请选择状态" style="width: 100%">
+                    <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    <!-- <el-option label="已下架" value="1" /> -->
                 </el-select>
             </el-form-item>
 

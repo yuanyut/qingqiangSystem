@@ -244,6 +244,7 @@ export interface CultureData {
   likeCount?: number;
   createTime?: string;
   updateTime?: string;
+  status?: number;
 }
 
 export const getCultureList = (params: CultureListParams) => 

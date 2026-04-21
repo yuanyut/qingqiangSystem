@@ -11,7 +11,7 @@
     </select>
 
     <select id="selectCultureList" resultType="com.qqsystem.serve.entity.Content">
-        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        SELECT id, title, content, cover, create_time, category, view_count, like_count, status
         FROM content
         WHERE biz_type = 'culture'
         <if test="category != null and category != ''">
@@ -31,7 +31,7 @@
     </select>
 
     <select id="selectCultureDetail" resultType="com.qqsystem.serve.entity.Content">
-        SELECT id, title, content, cover, create_time, category, view_count, like_count
+        SELECT id, title, content, cover, create_time, category, view_count, like_count,status
         FROM content
         WHERE id = #{id} AND biz_type = 'culture'
     </select>
@@ -47,7 +47,8 @@
             cover,
             view_count,
             like_count,
-            category
+            category,
+            status
         ) VALUES (
                      #{title},
                      #{bizType},
@@ -58,7 +59,8 @@
                      #{cover},
                      #{viewCount},
                      #{likeCount},
-                     #{category}
+                     #{category},
+                     #{status}
                  )
     </insert>
 
@@ -74,7 +76,8 @@
             cover = #{cover},
             view_count = #{viewCount},
             like_count = #{likeCount},
-            category = #{category}
+            category = #{category},
+            status=#{status}
         WHERE id = #{id}
     </update>
 

@@ -191,6 +191,7 @@ const handleConfirm = async () => {
         Object.assign(content.value, form)
     }
     // 触发confirm事件，通知父组件执行相应的逻辑
+    console.log('formEdit:', form)
     emit('confirm', { ...form })
     dialogFormVisible.value = false
 }
