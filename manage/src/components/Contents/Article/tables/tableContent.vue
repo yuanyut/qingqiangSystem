@@ -159,11 +159,11 @@ const handleCurrentChange = (val: number) => {
             </el-table>
         </div>
         
-        <div style="margin-top: 25px;">
+        <!-- <div style="margin-top: 25px;">
             <el-pagination v-model:currentPage="currentPage3" v-model:page-size="pageSize3" :small="small"
                 :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="1000"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-        </div>
+        </div> -->
         
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks" :loading="loading"></dialog-visible>

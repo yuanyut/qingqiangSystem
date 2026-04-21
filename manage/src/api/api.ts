@@ -197,12 +197,12 @@ export const getDramaById = (id: number) =>
 export const addDrama = (data: DramaData) => 
   api.post<ResponseResult<any>>('/drama/add', data)
 
-// export const uploadVideo = (data: FormData) => 
-//   api.post<ResponseResult<{ url: string }>>('/drama/upload', data, {
-//     headers: {
-//       'Content-Type': 'multipart/form-data'
-//     }
-//   })
+export const uploadVideo = (data: FormData) => 
+  api.post<ResponseResult<{ url: string }>>('/drama/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 
 export const updateDrama = (data: DramaData) => 
   api.put<ResponseResult<any>>('/drama/update', data)
@@ -232,6 +232,7 @@ export interface CultureListParams {
   size: number;
   category?: string;
   keyword?: string;
+  status?: number;
 }
 
 export interface CultureData {

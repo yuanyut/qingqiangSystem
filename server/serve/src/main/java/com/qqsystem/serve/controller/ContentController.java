@@ -39,8 +39,8 @@ public class ContentController {
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> getList(@RequestParam int page, @RequestParam int size) {
         Map<String, Object> res = new HashMap<>();
-        List<Content> contentList = contentService.getCultureList(page, size, null);
-        Long total = contentService.countCultureList(null);
+        List<Content> contentList = contentService.getCultureList(page, size, null, null, 0);
+        Long total = contentService.countCultureList(null, null, 0);
         res.put("list", contentList);
         res.put("total", total);
         return ResponseResult.success(res);
@@ -51,10 +51,11 @@ public class ContentController {
     public ResponseResult<Map<String, Object>> getAdminList(@RequestParam int page, 
                                                            @RequestParam int size, 
                                                            @RequestParam(required = false) String category, 
-                                                           @RequestParam(required = false) String keyword) {
+                                                           @RequestParam(required = false) String keyword,
+                                                           @RequestParam(required = false) Integer status) {
         Map<String, Object> res = new HashMap<>();
-        List<Content> contentList = contentService.getCultureList(page, size, category);
-        Long total = contentService.countCultureList(category);
+        List<Content> contentList = contentService.getCultureList(page, size, category, keyword, status);
+        Long total = contentService.countCultureList(category, keyword, status);
         res.put("list", contentList);
         res.put("total", total);
         return ResponseResult.success(res);

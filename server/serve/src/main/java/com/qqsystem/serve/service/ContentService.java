@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface ContentService {
-    List<Content> getCultureList(int page, int size, String category);
+    List<Content> getCultureList(int page, int size, String category, String keyword, Integer status);
 
-    Long countCultureList(String category);
+    Long countCultureList(String category, String keyword, Integer status);
 
     Content getCultureDetail(Long id);
 

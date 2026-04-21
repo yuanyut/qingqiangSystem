@@ -6,7 +6,6 @@ import { reactive, watch, ref, onMounted } from 'vue';
 import { getCultureList,  } from '@/api/api';
 import type { CultureListParams } from '@/api/api';
 import { ElMessage } from 'element-plus';
-
 // 文章接口定义
 interface Article {
     id?: number
@@ -118,6 +117,16 @@ const fetchCultureList = async () => {
             category: formHeader.value.category || undefined,
             keyword: formHeader.value.title || undefined
         }
+        
+        // 处理status参数：将字符串转换为数字
+        if (formHeader.value.status && formHeader.value.status !== '') {
+            if (formHeader.value.status === '已发布') {
+                params.status = 0
+            } else if (formHeader.value.status === '已下架') {
+                params.status = 1
+            }
+        }
+        
         const response = await getCultureList(params)
         if (response && response.data) {
             // 转换后端数据为前端需要的格式

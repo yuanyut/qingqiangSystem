@@ -10,9 +10,9 @@ public interface ContentMapper {
 
     Content selectById(@Param("id") Long id);
 
-    List<Content> selectCultureList(@Param("offset") int offset, @Param("size") int size, @Param("category") String category);
+    List<Content> selectCultureList(@Param("offset") int offset, @Param("size") int size, @Param("category") String category, @Param("keyword") String keyword, @Param("status") Integer status);
 
-    Long countCultureList(@Param("category") String category);
+    Long countCultureList(@Param("category") String category, @Param("keyword") String keyword, @Param("status") Integer status);
 
     Content selectCultureDetail(@Param("id") Long id);
 

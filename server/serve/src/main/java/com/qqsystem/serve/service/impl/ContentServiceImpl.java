@@ -15,14 +15,14 @@ public class ContentServiceImpl implements ContentService {
     private ContentMapper contentMapper;
 
     @Override
-    public List<Content> getCultureList(int page, int size, String category) {
+    public List<Content> getCultureList(int page, int size, String category, String keyword, Integer status) {
         int offset = (page - 1) * size;
-        return contentMapper.selectCultureList(offset, size, category);
+        return contentMapper.selectCultureList(offset, size, category, keyword, status);
     }
 
     @Override
-    public Long countCultureList(String category) {
-        return contentMapper.countCultureList(category);
+    public Long countCultureList(String category, String keyword, Integer status) {
+        return contentMapper.countCultureList(category, keyword, status);
     }
 
     @Override

@@ -73,7 +73,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                 </el-form-item>
 
                 <!-- 分类筛选 -->
-                <el-form-item :label="props.lable.lable2 || '分类'" prop="category" v-if="props.lable.lable2">
+                <!-- <el-form-item :label="props.lable.lable2 || '分类'" prop="category" v-if="props.lable.lable2">
                     <el-select v-model="form.category" placeholder="请选择分类" clearable class="full-width">
                         <el-option label="全部分类" value="">
                             <div class="option-item">
@@ -117,7 +117,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
                             </div>
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
 
                 <!-- 状态筛选 -->
                 <el-form-item :label="props.lable.lable3 || '状态'" prop="status" v-if="props.lable.lable3">
@@ -126,12 +126,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
                             <div class="option-item">
                                 <el-icon><CircleCheck /></el-icon>
                                 <span>全部</span>
-                            </div>
-                        </el-option>
-                        <el-option label="草稿" value="草稿">
-                            <div class="option-item">
-                                <el-icon><Clock /></el-icon>
-                                <span class="status-disabled">草稿</span>
                             </div>
                         </el-option>
                         <el-option label="已发布" value="已发布">
