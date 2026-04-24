@@ -25,6 +25,18 @@ public class NewsController {
         return ResponseResult.success(res);
     }
 
+    @GetMapping("/admin/list")
+    public ResponseResult<Map<String, Object>> adminList(@RequestParam int page,
+                                                         @RequestParam int size,
+                                                         @RequestParam(required = false) String category,
+                                                         @RequestParam(required = false) String keyword,
+                                                         @RequestParam(required = false) Integer status) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("list", newsService.pageListWithCondition(page, size, category, keyword, status));
+        res.put("total", newsService.countListWithCondition(category, keyword, status));
+        return ResponseResult.success(res);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseResult<News> detail(@PathVariable Long id) {
         News news = newsService.getById(id);
@@ -62,6 +74,16 @@ public class NewsController {
             return ResponseResult.success("删除成功");
         } else {
             return ResponseResult.badRequest("删除失败");
+        }
+    }
+
+    @DeleteMapping("/batch")
+    public ResponseResult<?> batchDelete(@RequestBody List<Long> ids) {
+        boolean success = newsService.batchDelete(ids);
+        if (success) {
+            return ResponseResult.success("批量删除成功");
+        } else {
+            return ResponseResult.badRequest("批量删除失败");
         }
     }
 

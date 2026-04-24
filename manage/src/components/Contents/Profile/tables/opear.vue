@@ -27,28 +27,17 @@
             </div>
         </div>
 
-        <edit v-model:dialogFormVisible="editModul" v-model:selects="selects" v-model:content="editContent" title="增加资讯"
-            opear="0" />
+        <add v-model:dialogFormVisible="editModul" v-model:content="editContent" title="增加资讯" @confirm="handleAddConfirm" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue'
 import { Plus, Delete, InfoFilled, Check } from '@element-plus/icons-vue'
-import edit from '@/components/Contents/Profile/tables/edit.vue'
+import add from '@/components/Contents/Profile/tables/add.vue'
+import type { ProfileData } from '@/api/api'
 
-interface FormItemNews {
-    title: string
-    content: string
-    category: string
-    author: string
-    publishTime: string
-    clickCount: number
-    likeCount: number
-    statusText: string
-}
-
-const editContent = defineModel<any>('editContent')
+const editContent = defineModel<ProfileData | undefined>('editContent')
 const selects = defineModel('selects')
 const multipleSelection: any = defineModel('multipleSelection')
 
@@ -61,12 +50,14 @@ const addNews = () => {
     editContent.value = {
         title: '',
         content: '',
-        category: '',
-        author: '',
-        publishTime: '',
-        clickCount: 0,
+        source: '',
+        cover: '',
+        viewCount: 0,
         likeCount: 0,
-        statusText: ''
+        createTime: '',
+        updateTime: '',
+        status: 0,
+        category: ''
     }
     editModul.value = true
 }
@@ -77,6 +68,12 @@ watch(editContent, (newVal) => {
 
 const deleteNews = () => {
     selects.value = true
+}
+
+// 处理新增确认事件，通知父组件刷新列表
+const emit = defineEmits(['refresh'])
+const handleAddConfirm = () => {
+    emit('refresh')
 }
 
 console.log('初始化时 content.value:', editContent.value)

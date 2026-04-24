@@ -11,13 +11,19 @@ public interface NewsMapper {
 
     List<News> selectList(@Param("offset") int offset, @Param("size") int size, @Param("category") Integer category, @Param("keyword") String keyword);
 
+    List<News> selectListWithCondition(@Param("offset") int offset, @Param("size") int size, @Param("category") String category, @Param("keyword") String keyword, @Param("status") Integer status);
+
     Long countList(@Param("category") Integer category, @Param("keyword") String keyword);
+
+    Long countListWithCondition(@Param("category") String category, @Param("keyword") String keyword, @Param("status") Integer status);
 
     int insert(News news);
 
     int updateById(News news);
 
     int deleteById(@Param("id") Long id);
+
+    int batchDelete(@Param("ids") List<Long> ids);
 
     void increaseView(@Param("id") Long id);
 

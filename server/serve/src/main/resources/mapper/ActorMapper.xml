@@ -20,6 +20,24 @@
         LIMIT #{offset}, #{size}
     </select>
 
+    <select id="selectListWithCondition" resultType="com.qqsystem.serve.entity.Actor">
+        SELECT *
+        FROM actor
+        <where>
+            <if test="style != null and style != ''">
+                AND style = #{style}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR intro LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
     <select id="countList" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM actor
@@ -27,6 +45,30 @@
             WHERE style = #{style}
         </if>
     </select>
+
+    <select id="countListWithCondition" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM actor
+        <where>
+            <if test="style != null and style != ''">
+                AND style = #{style}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR intro LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <delete id="batchDelete">
+        DELETE FROM actor
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 
     <insert id="insert" parameterType="com.qqsystem.serve.entity.Actor">
         INSERT INTO actor (

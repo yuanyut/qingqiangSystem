@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,7 +24,18 @@ public class ActorController {
         res.put("total", actorService.countList(style));
         return ResponseResult.success(res);
     }
+    @GetMapping("/admin/list")
+    public ResponseResult<Map<String, Object>> adminList(@RequestParam int page,
+                                                         @RequestParam int size,
+                                                         @RequestParam(required = false) String style,
+                                                         @RequestParam(required = false) String keyword,
+                                                         @RequestParam(required = false) Integer status) {
 
+        Map<String, Object> res = new HashMap<>();
+        res.put("list", actorService.pageListWithRelation(page, size, style, keyword, status));
+        res.put("total", actorService.countList(style, keyword, status));
+        return ResponseResult.success(res);
+    }
     @GetMapping("/detail/{id}")
     public ResponseResult<Actor> detail(@PathVariable Long id) {
         Actor actor = actorService.getById(id);
@@ -73,4 +85,48 @@ public class ActorController {
             return ResponseResult.badRequest("删除失败");
         }
     }
+
+    @DeleteMapping("/batch")
+    public ResponseResult<?> batchDelete(@RequestBody List<Long> ids) {
+        boolean success = actorService.batchDelete(ids);
+        if (success) {
+            return ResponseResult.success("批量删除成功");
+        } else {
+            return ResponseResult.badRequest("批量删除失败");
+        }
+    }
+    
+    @PostMapping("/upload")
+    public ResponseResult<Map<String, String>> upload(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseResult.badRequest("文件为空");
+        }
+        
+        // 确保上传目录存在
+        String uploadDir = "D:\\qin-opera-promotion-system\\server\\serve\\src\\main\\resources\\static\\actor";
+        java.io.File dir = new java.io.File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        
+        // 生成唯一文件名
+        String originalFilename = file.getOriginalFilename();
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = java.util.UUID.randomUUID() + suffix;
+        String filePath = uploadDir + "\\" + fileName;
+        
+        try {
+            // 保存文件
+            file.transferTo(new java.io.File(filePath));
+            
+            // 返回相对路径，前端访问时会加上base url
+            Map<String, String> result = new HashMap<>();
+            result.put("url", "/actor/" + fileName);
+            return ResponseResult.success(result);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return ResponseResult.badRequest("上传失败");
+        }
+    }
+
 }

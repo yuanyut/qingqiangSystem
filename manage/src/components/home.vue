@@ -410,14 +410,14 @@ const activeDaram = ref(0)
           <div class="chart-title">剧目分类占比</div>
           <pie :datas="cateJumu" wd="100%" ht="320px"></pie>
         </div>
-        <div class="chart-card" style="width: 33%;">
+        <div class="chart-card" style="width: 66%;">
           <div class="chart-title">用户年龄段分布</div>
           <Bar :datas="ageData" wd="100%" ht="280px"></Bar>
         </div>
-        <div class="chart-card" style="width: 33%;">
+        <!-- <div class="chart-card" style="width: 33%;">
           <div class="chart-title">内容质量评分</div>
           <Radar :datas="qualityScoreData" wd="100%" ht="320px" name="内容质量评分"></Radar>
-        </div>
+        </div> -->
       </div>
 
 

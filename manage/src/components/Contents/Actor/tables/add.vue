@@ -1,20 +1,19 @@
 <script lang="ts" setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage, ElUpload } from 'element-plus'
-import { updateActor } from '@/api/api'
+import { addActor } from '@/api/api'
 import type { ActorData } from '@/api/api'
 const formRef = ref<FormInstance>()
 
-const dialogFormVisible = defineModel('editModul', { default: false })
-const content = defineModel<{ id?: number; name: string; avatar: string; intro: string; roleName: string; style: string; joinDate: string; worksCount: number; viewCount: number; likeCount: number; createTime: string; updateTime: string; status: number; dramas: any[] }>('content', { default: () => ({ id: undefined, name: '', avatar: '', intro: '', roleName: '', style: '', joinDate: '', worksCount: 0, viewCount: 0, likeCount: 0, createTime: '', updateTime: '', status: 1, dramas: [] }) })
+const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
 const formLabelWidth = '100px'
 const emit = defineEmits(['confirm'])
 
 // 上传相关状态
 const uploadLoading = ref(false)
 
-// 初始化 form - 适配演员字段
+// 初始化 form - 适配名家字段
 const form = reactive<ActorData>({
     id: undefined,
     name: '',
@@ -38,29 +37,7 @@ const statusOptions = ref([
 ])
 
 const currentStatus = ref(1)
-const props = defineProps<{ title: string; opear: string }>()
-
-// 监听 content 变化，更新 form（用 Object.assign 保持响应式）
-watch(content, (newVal) => {
-    console.log('子组件收到 content:', newVal)
-    if (newVal) {
-        // 用 Object.assign 更新属性，而不是直接赋值
-        Object.assign(form, newVal)
-        currentStatus.value = newVal.status || 1
-        console.log('form 更新后:', form)
-    }
-}, { deep: true, immediate: true })
-
-// 监听 editModul 变化，确保弹窗显示时表单数据正确
-watch(() => dialogFormVisible.value, (newVal) => {
-    console.log('弹窗状态变化:', newVal)
-    if (newVal && content.value) {
-        console.log('弹窗显示，content.value:', content.value)
-        Object.assign(form, content.value)
-        currentStatus.value = content.value.status || 1
-        console.log('表单数据更新:', form)
-    }
-})
+const props = defineProps<{ title: string }>()
 
 // 封面上传前验证
 const beforeCoverUpload = (file: File) => {
@@ -101,10 +78,10 @@ const handleConfirm = async () => {
         ElMessage.error('请输入姓名')
         return
     }
-    if (!form.avatar) {
-        ElMessage.error('请上传封面')
-        return
-    }
+    // if (!form.avatar) {
+    //     ElMessage.error('请上传封面')
+    //     return
+    // }
     if (!form.intro) {
         ElMessage.error('请输入介绍')
         return
@@ -112,9 +89,8 @@ const handleConfirm = async () => {
 
     try {
         form.status = currentStatus.value
-        // 调用后端更新API接口
-        await updateActor({
-            id: form.id,
+        // 调用后端增加API接口
+        await addActor({
             name: form.name,
             avatar: form.avatar,
             intro: form.intro,
@@ -130,12 +106,13 @@ const handleConfirm = async () => {
             dramas: form.dramas
         })
 
-        ElMessage.success('编辑成功!')
+        ElMessage.success('添加成功!')
         dialogFormVisible.value = false
+        resetForm()
         emit('confirm', { ...form })
     } catch (error) {
-        console.error('编辑名家失败:', error)
-        ElMessage.error('编辑失败，请重试!')
+        console.error('添加名家失败:', error)
+        ElMessage.error('添加失败，请重试!')
     }
 }
 

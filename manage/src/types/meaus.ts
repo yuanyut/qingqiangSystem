@@ -138,25 +138,25 @@ export const mockMenu = [
   //   ]
   // },
 
-  {
-    "name": "推荐系统",
-    "path": "/recommend",
-    "icon": "Star",
-    "children": [
-      {
-        "name": "推荐算法配置",
-        "path": "recommend/config",
-        "component": "/src/components/Recommend/Config/index.vue",
-        "permission": "recommend:config:list"
-      },
-      {
-        "name": "推荐命中率统计",
-        "path": "recommend/stat",
-        "component": "/src/components/Recommend/Stat/index.vue",
-        "permission": "recommend:stat:list"
-      }
-    ]
-  },
+  // {
+  //   "name": "推荐系统",
+  //   "path": "/recommend",
+  //   "icon": "Star",
+  //   "children": [
+  //     {
+  //       "name": "推荐算法配置",
+  //       "path": "recommend/config",
+  //       "component": "/src/components/Recommend/Config/index.vue",
+  //       "permission": "recommend:config:list"
+  //     },
+  //     {
+  //       "name": "推荐命中率统计",
+  //       "path": "recommend/stat",
+  //       "component": "/src/components/Recommend/Stat/index.vue",
+  //       "permission": "recommend:stat:list"
+  //     }
+  //   ]
+  // },
   // {
   //   "name": "评论审核",
   //   "path": "/comment",
@@ -176,19 +176,19 @@ export const mockMenu = [
   //     }
   //   ]
   // },
-   {
-    "name": "个人管理",
-    "path": "/mine",
-    "icon": "Mine",
-    "children": [
-      {
-        "name": "个人中心",
-        "path": "mine/center",
-        "component": "/src/components/Mine/Center/index.vue",
-        "permission": "mine:list"
-      },
-    ]
-  },
+  //  {
+  //   "name": "个人管理",
+  //   "path": "/mine",
+  //   "icon": "Mine",
+  //   "children": [
+  //     {
+  //       "name": "个人中心",
+  //       "path": "mine/center",
+  //       "component": "/src/components/Mine/Center/index.vue",
+  //       "permission": "mine:list"
+  //     },
+  //   ]
+  // },
   // {
   //   "name": "系统设置",
   //   "path": "setting",

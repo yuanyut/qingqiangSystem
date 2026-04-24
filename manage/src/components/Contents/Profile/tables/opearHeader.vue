@@ -62,65 +62,14 @@ const resetForm = (formEl: FormInstance | undefined) => {
         <el-form v-if="form" :model="form" label-width="80px" ref="formRef" class="search-form">
             <!-- 资讯搜索 -->
             <div class="form-row">
-                <el-form-item :label="props.lable.lable5" prop="title" v-if="props.lable.lable5">
+                <el-form-item :label="props.lable.lable1" prop="title" v-if="props.lable.lable1">
                     <el-input v-model="form.title" placeholder="请输入资讯标题" clearable prefix-icon="Document" />
                 </el-form-item>
 
-                <el-form-item :label="props.lable.lable6" v-if="props.lable.lable6" prop="category">
-                    <el-select v-model="form.category" placeholder="请选择分类" clearable class="full-width">
-                        <el-option label="全部分类" value="全部分类">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Star />
-                                </el-icon>
-                                <span>全部分类</span>
-                            </div>
-                        </el-option>
-                        <el-option label="名家动态" value="名家动态">
-                            <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>名家动态</span>
-                            </div>
-                        </el-option>
-                        <el-option label="活动通知" value="活动通知">
-                            <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>活动通知</span>
-                            </div>
-                        </el-option>
-                        <el-option label="非遗动态" value="非遗动态">
-                            <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>非遗动态</span>
-                            </div>
-                        </el-option>
-                        <el-option label="赛事新闻" value="赛事新闻">
-                            <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>赛事新闻</span>
-                            </div>
-                        </el-option>
-                        <el-option label="文化动态" value="文化动态">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span>文化动态</span>
-                            </div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
+                
+                <el-form-item :label="props.lable.lable3" prop="status" v-if="props.lable.lable3">
                     <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
-                        <el-option label="全部" value="全部">
+                        <el-option label="全部" value="">
                             <div class="option-item">
                                 <el-icon>
                                     <CircleCheck />
@@ -128,20 +77,12 @@ const resetForm = (formEl: FormInstance | undefined) => {
                                 <span class="status-active">全部</span>
                             </div>
                         </el-option>
-                        <el-option label="草稿" value="草稿">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Clock />
-                                </el-icon>
-                                <span class="status-pending">草稿</span>
-                            </div>
-                        </el-option>
-                        <el-option label="已发布" value="已发布">
+                        <el-option label="已上架" value="已上架">
                             <div class="option-item">
                                 <el-icon>
                                     <CircleCheck />
                                 </el-icon>
-                                <span class="status-active">已发布</span>
+                                <span class="status-active">已上架</span>
                             </div>
                         </el-option>
                         <el-option label="已下架" value="已下架">

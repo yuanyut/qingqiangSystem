@@ -3,46 +3,36 @@ import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {
     Search,
-    User,
-    Star,
-    Edit,
-    DataAnalysis,
-    ChatDotRound,
-    View,
-    CircleCheck,
-    CircleClose,
-    Clock,
-    Delete,
     Refresh,
-    Phone
+    User,
+    Delete,
+    CircleCheck,
+    CircleClose
 } from '@element-plus/icons-vue'
 
 interface FormHeaderItem {
-    name: string
-    juese: string
-    category: string
+    title: string
+    style: string
     status: string
 }
 
 const formRef = ref<FormInstance>()
 const search = defineModel('search')
 const safeForm = defineModel<FormHeaderItem>('formHeader')
+
 interface lableItem {
-    lable1?: string,
-    lable2?: string,
-    lable3?: string,
-    lable4?: string,
-    lable5?: string,
-    lable6?: string,
-    lable7?: string,
+    lable1?: string,  // 姓名
+    lable2?: string,  // 风格
+    lable3?: string,  // 状态
 }
+
 const props = defineProps<{
     lable: lableItem
 }>()
+
 const form = reactive<FormHeaderItem>({
-    name: '',
-    juese: '',
-    category: '',
+    title: '',
+    style: '',
     status: ''
 })
 
@@ -57,162 +47,99 @@ const onSubmit = () => {
 const resetForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.resetFields()
+    form.title = ''
+    form.style = ''
+    form.status = ''
+    safeForm.value = { title: '', style: '', status: '' }
+    search.value = true
 }
 </script>
+
 <template>
     <div class="search-card">
-        <el-form v-if="form" :model="form" label-width="80px" ref="formRef" class="search-form">
-            <!-- 名家搜索 -->
+        <el-form :model="form" label-width="80px" ref="formRef" class="search-form">
             <div class="form-row">
-                <el-form-item :label="props.lable.lable5" prop="name" v-if="props.lable.lable5">
-                    <el-input v-model="form.name" placeholder="请输入名家姓名" clearable prefix-icon="User" />
+                <!-- 姓名搜索 -->
+                <el-form-item :label="props.lable.lable1 || '姓名'" prop="title">
+                    <el-input 
+                        v-model="form.title" 
+                        :placeholder="`请输入${props.lable.lable1 || '姓名'}`" 
+                        clearable 
+                        :prefix-icon="User"
+                    />
                 </el-form-item>
 
-                <el-form-item :label="props.lable.lable6" v-if="props.lable.lable6" prop="juese">
-                    <el-select v-model="form.juese" placeholder="请选择角色" clearable class="full-width">
-                        <el-option label="全部角色" value="全部角色">
+                <!-- 风格筛选 -->
+                <el-form-item :label="props.lable.lable2 || '风格'" prop="style" v-if="props.lable.lable2">
+                    <el-select v-model="form.style" placeholder="请选择风格" clearable class="full-width">
+                        <el-option label="全部风格" value="">
                             <div class="option-item">
-                                <el-icon>
-                                    <Star />
-                                </el-icon>
-                                <span>全部角色</span>
+                                <span>全部风格</span>
                             </div>
                         </el-option>
-                        <el-option label="旦角" value="旦角">
+                        <el-option label="传统派" value="传统派">
                             <div class="option-item">
-                                <el-icon>
-                                    <Edit />
-                                </el-icon>
-                                <span>旦角</span>
+                                <span>传统派</span>
                             </div>
                         </el-option>
-                        <el-option label="须生" value="须生">
+                        <el-option label="创新派" value="创新派">
                             <div class="option-item">
-                                <el-icon>
-                                    <DataAnalysis />
-                                </el-icon>
-                                <span>须生</span>
-                            </div>
-                        </el-option>
-                        <el-option label="小生" value="小生">
-                            <div class="option-item">
-                                <el-icon>
-                                    <ChatDotRound />
-                                </el-icon>
-                                <span>小生</span>
-                            </div>
-                        </el-option>
-                        <el-option label="花脸" value="花脸">
-                            <div class="option-item">
-                                <el-icon>
-                                    <User />
-                                </el-icon>
-                                <span>花脸</span>
-                            </div>
-                        </el-option>
-                        <el-option label="丑角" value="丑角">
-                            <div class="option-item">
-                                <el-icon>
-                                    <View />
-                                </el-icon>
-                                <span>丑角</span>
+                                <span>创新派</span>
                             </div>
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="props.lable.lable7" prop="status" v-if="props.lable.lable7">
+
+                <!-- 状态筛选 -->
+                <el-form-item :label="props.lable.lable3 || '状态'" prop="status" v-if="props.lable.lable3">
                     <el-select v-model="form.status" placeholder="请选择状态" clearable class="full-width">
-                        <el-option label="全部" value="全部">
+                        <el-option label="全部" value="">
                             <div class="option-item">
-                                <el-icon>
-                                    <CircleCheck />
-                                </el-icon>
-                                <span class="status-active">全部</span>
+                                <el-icon><CircleCheck /></el-icon>
+                                <span>全部</span>
                             </div>
                         </el-option>
-                        <el-option label="活跃" value="活跃">
+                        <el-option label="已上架" value="已上架">
                             <div class="option-item">
-                                <el-icon>
-                                    <CircleCheck />
-                                </el-icon>
-                                <span class="status-active">活跃</span>
+                                <el-icon><CircleCheck /></el-icon>
+                                <span class="status-active">已上架</span>
                             </div>
                         </el-option>
-                        <el-option label="退休" value="退休">
+                        <el-option label="已下架" value="已下架">
                             <div class="option-item">
-                                <el-icon>
-                                    <Clock />
-                                </el-icon>
-                                <span class="status-pending">退休</span>
-                            </div>
-                        </el-option>
-                        <el-option label="离世" value="离世">
-                            <div class="option-item">
-                                <el-icon>
-                                    <Delete />
-                                </el-icon>
-                                <span class="status-deleted">离世</span>
+                                <el-icon><Delete /></el-icon>
+                                <span class="status-deleted">已下架</span>
                             </div>
                         </el-option>
                     </el-select>
                 </el-form-item>
             </div>
+
             <div class="form-actions">
                 <el-button @click="resetForm(formRef)" class="reset-btn">
-                    <el-icon>
-                        <Refresh />
-                    </el-icon>
+                    <el-icon><Refresh /></el-icon>
                     重置
                 </el-button>
                 <el-button type="primary" @click="onSubmit" class="search-btn">
-                    <el-icon>
-                        <Search />
-                    </el-icon>
+                    <el-icon><Search /></el-icon>
                     查询
                 </el-button>
             </div>
         </el-form>
     </div>
 </template>
+
 <style scoped>
 .search-card {
     border-radius: 20px;
-    padding: 24px;
+    margin-bottom: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    margin: 20px;
     transition: all 0.3s ease;
 }
 
 .search-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-}
-
-.card-header {
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.header-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-size: 28px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 8px;
-}
-
-.title-icon {
-    font-size: 28px;
-    animation: pulse 2s infinite;
-}
-
-.header-subtitle {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    letter-spacing: 0.5px;
 }
 
 .search-form {
@@ -232,6 +159,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 .form-row :deep(.el-form-item) {
     flex: 1;
     margin-bottom: 0;
+    min-width: 200px;
 }
 
 .form-row :deep(.el-form-item__label) {
@@ -326,18 +254,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
 /* 响应式设计 */
 @media (max-width: 768px) {
     .search-card {
@@ -350,14 +266,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
         gap: 16px;
     }
 
-    .header-title {
-        font-size: 24px;
-    }
-
-    .title-icon {
-        font-size: 24px;
-    }
-
     .form-actions {
         justify-content: center;
     }
@@ -365,21 +273,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
     .reset-btn,
     .search-btn {
         flex: 1;
-    }
-}
-
-/* 暗色模式支持 */
-@media (prefers-color-scheme: dark) {
-    .search-form {
-        background: rgba(30, 30, 40, 0.95);
-    }
-
-    .form-row :deep(.el-form-item__label) {
-        color: #e5e7eb;
-    }
-
-    .form-actions {
-        border-top-color: #374151;
     }
 }
 </style>

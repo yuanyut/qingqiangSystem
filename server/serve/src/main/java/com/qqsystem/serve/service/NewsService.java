@@ -10,13 +10,19 @@ public interface NewsService {
 
     List<News> pageList(int page, int size, Integer category, String keyword);
 
+    List<News> pageListWithCondition(int page, int size, String category, String keyword, Integer status);
+
     Long countList(Integer category, String keyword);
+
+    Long countListWithCondition(String category, String keyword, Integer status);
 
     boolean add(News news);
 
     boolean update(News news);
 
     boolean delete(Long id);
+
+    boolean batchDelete(List<Long> ids);
 
     void increaseView(Long id);
 

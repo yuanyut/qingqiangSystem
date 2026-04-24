@@ -26,4 +26,6 @@ public class News {
     private Date createTime;
 
     private Date updateTime;
+
+    private String category;
 }

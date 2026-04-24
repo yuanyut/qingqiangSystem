@@ -2,39 +2,32 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
+import type { ProfileData } from '@/api/api'
+import { addProfile, updateProfile } from '@/api/api'
 
 const formRef = ref<FormInstance>()
 
-// 修正类型定义 - 适配资讯数据格式
-interface FormItemNews {
-    id?: number
-    title: string
-    content: string
-    category: string
-    author: string
-    publishTime: string
-    clickCount: number
-    likeCount: number
-    statusText: string
-}
-
 const dialogFormVisible = defineModel('dialogFormVisible', { default: false })
-const content = defineModel('content', { default: () => ({}) })
+const content = defineModel<ProfileData | undefined>('content', { default: () => ({ id: undefined, title: '', content: '', source: '', cover: '', viewCount: 0, likeCount: 0, createTime: '', updateTime: '', status: 0, category: '' }) })
 const selects = defineModel('selects')
 const formLabelWidth = '140px'
 
 // 初始化 form - 适配资讯字段
-const form = reactive<FormItemNews>({
+const form = reactive<ProfileData>({
     id: undefined,
     title: '',
     content: '',
-    category: '',
-    author: '',
-    publishTime: '',
-    clickCount: 0,
+    source: '',
+    cover: '',
+    viewCount: 0,
     likeCount: 0,
-    statusText: ''
+    createTime: '',
+    updateTime: '',
+    status: 0,
+    category: ''
 })
+
+const currentStatus = ref<string>('0')
 
 const props = defineProps<{ title: string, opear: string }>()
 
@@ -44,6 +37,7 @@ watch(content, (newVal) => {
     if (newVal) {
         // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
+        currentStatus.value = (newVal.status || 0).toString()
         console.log('form 更新后:', form)
     }
 }, { deep: true, immediate: true })
@@ -59,34 +53,53 @@ const handleConfirm = async () => {
         ElMessage.error('请填写资讯内容')
         return
     }
-    if (!form.category) {
-        ElMessage.error('请选择资讯分类')
-        return
-    }
+    // if (!form.category) {
+    //     ElMessage.error('请选择资讯分类')
+    //     return
+    // }
 
-    if (props.opear === '0') {
-        // 新增模式：直接赋值
-        content.value = { ...form }
-        // 重置表单
-        resetForm()
-    } else {
-        // 编辑模式：修改属性
-        Object.assign(content.value, form)
+    form.status = parseInt(currentStatus.value, 10)
+
+    try {
+        if (props.opear === '0') {
+            // 新增模式
+            await addProfile(form)
+            ElMessage.success('添加成功!')
+            content.value = { ...form }
+            // 重置表单
+            resetForm()
+        } else {
+            // 编辑模式
+            await updateProfile(form)
+            ElMessage.success('编辑成功!')
+            if (content.value) {
+                Object.assign(content.value, form)
+            }
+        }
+        dialogFormVisible.value = false
+        emits('confirm', { ...form })
+    } catch (error) {
+        console.error('操作失败:', error)
+        ElMessage.error('操作失败，请重试')
     }
-    dialogFormVisible.value = false
 }
+
+const emits = defineEmits(['confirm'])
 
 // 重置表单
 const resetForm = () => {
     form.id = undefined
     form.title = ''
     form.content = ''
-    form.category = ''
-    form.author = ''
-    form.publishTime = ''
-    form.clickCount = 0
+    form.source = ''
+    form.cover = ''
+    form.viewCount = 0
     form.likeCount = 0
-    form.statusText = ''
+    form.createTime = ''
+    form.updateTime = ''
+    form.status = 0
+    form.category = ''
+    currentStatus.value = '0'
 }
 
 const handleCancel = (formEl: FormInstance | undefined) => {
@@ -106,12 +119,9 @@ const rules = {
         { required: true, message: '请输入资讯内容', trigger: 'blur' },
         { min: 1, max: 5000, message: '长度在 1 到 5000 个字符', trigger: 'blur' }
     ],
-    category: [
-        { required: true, message: '请选择资讯分类', trigger: 'change' }
-    ],
-    statusText: [
-        { required: true, message: '请选择状态', trigger: 'change' }
-    ]
+    // category: [
+    //     { required: true, message: '请选择资讯分类', trigger: 'change' }
+    // ]
 }
 </script>
 
@@ -120,8 +130,8 @@ const rules = {
         <el-form :model="form" ref="formRef" :rules="rules" label-position="right">
 
             <!-- 发布时间（仅编辑时显示） -->
-            <el-form-item v-if="form.publishTime && props.opear !== '0'" label="发布时间" :label-width="formLabelWidth">
-                <el-input v-model="form.publishTime" disabled />
+            <el-form-item v-if="form.createTime && props.opear !== '0'" label="发布时间" :label-width="formLabelWidth">
+                <el-input v-model="form.createTime" disabled />
             </el-form-item>
 
             <!-- 资讯标题 -->
@@ -135,7 +145,7 @@ const rules = {
             </el-form-item>
 
             <!-- 分类 -->
-            <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
+            <!-- <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
                 <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
                     <el-option label="名家动态" value="名家动态" />
                     <el-option label="活动通知" value="活动通知" />
@@ -143,26 +153,30 @@ const rules = {
                     <el-option label="赛事新闻" value="赛事新闻" />
                     <el-option label="文化动态" value="文化动态" />
                 </el-select>
+            </el-form-item> -->
+
+            <!-- 来源 -->
+            <el-form-item label="来源" :label-width="formLabelWidth">
+                <el-input v-model="form.source" placeholder="请输入来源" />
             </el-form-item>
 
-            <!-- 作者 -->
-            <el-form-item label="作者" :label-width="formLabelWidth" prop="author">
-                <el-input v-model="form.author" placeholder="请输入作者" />
+            <!-- 封面 -->
+            <el-form-item label="封面" :label-width="formLabelWidth">
+                <el-input v-model="form.cover" placeholder="请输入封面URL" />
             </el-form-item>
 
             <!-- 状态 -->
-            <el-form-item label="状态" :label-width="formLabelWidth" prop="statusText">
-                <el-select v-model="form.statusText" placeholder="请选择状态" style="width: 100%">
-                    <el-option label="草稿" value="草稿" />
-                    <el-option label="已发布" value="已发布" />
-                    <el-option label="已下架" value="已下架" />
+            <el-form-item label="状态" :label-width="formLabelWidth">
+                <el-select v-model="currentStatus" placeholder="请选择状态" style="width: 100%">
+                    <el-option label="已上架" value="0" />
+                    <el-option label="已下架" value="1" />
                 </el-select>
             </el-form-item>
 
             <!-- 统计信息（仅编辑时显示） -->
             <template v-if="props.opear !== '0'">
                 <el-form-item label="点击量" :label-width="formLabelWidth">
-                    <el-input v-model="form.clickCount" disabled />
+                    <el-input v-model="form.viewCount" disabled />
                 </el-form-item>
                 <el-form-item label="点赞数" :label-width="formLabelWidth">
                     <el-input v-model="form.likeCount" disabled />

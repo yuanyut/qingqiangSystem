@@ -268,3 +268,97 @@ export const deleteCulture = (id: number | number[] | string | string[]) =>
 // 登录相关API
 export const loginAdmin = (data: { username: string; password: string }) => 
   api.post<ResponseResult<any>>('/admin/login', data)
+
+
+//名家相关相关API
+export interface ActorListParams {
+  page: number;
+  size: number;
+  style?: string;
+  keyword?: string;
+  status?: number;
+}
+export interface ActorData {
+  id?: number;
+  name: string;
+  avatar: string;
+  intro: string;
+  roleName: string;
+  style: string;
+  joinDate: string;
+  worksCount: number;
+  viewCount: number;
+  likeCount: number;
+  createTime: string;
+  updateTime: string;
+  status: number;
+  dramas: DramaData[];
+}
+//列表
+export const getActorList = (params: ActorListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/actor/list', params)
+
+//管理员列表
+export const getAdminActorList = (params: ActorListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/actor/admin/list', params)
+
+//增加
+export const addActor = (data: ActorData) => 
+  api.post<ResponseResult<any>>('/actor/add', data)
+
+//更新
+export const updateActor = (data: ActorData) => 
+  api.put<ResponseResult<any>>('/actor/update', data)
+
+//删除
+export const deleteActor = (id: number | number[] | string | string[]) => 
+  Array.isArray(id) 
+    ? api.delete<ResponseResult<any>>('/actor/batch', { data: id })
+    : api.delete<ResponseResult<any>>(`/actor/${id}`)
+
+//资讯相关API
+export interface ProfileListParams {
+  page: number;
+  size: number;
+  category?: string;
+  keyword?: string;
+  status?: number;
+}
+export interface ProfileData {
+  id?: number;
+  title: string;
+  content: string;
+  source: string;
+  cover: string;
+  viewCount: number;
+  likeCount: number;
+  createTime: string;
+  updateTime: string;
+  status: number;
+  category: string;
+}
+//列表
+export const getProfileList = (params: ProfileListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/news/list', params)
+
+//管理员列表
+export const getAdminProfileList = (params: ProfileListParams) => 
+  api.get<ResponseResult<{ list: any[]; total: number }>>('/news/admin/list', params)
+
+//获取单个
+export const getProfileById = (id: number) => 
+  api.get<ResponseResult<any>>(`/news/detail/${id}`)
+
+//增加
+export const addProfile = (data: ProfileData) => 
+  api.post<ResponseResult<any>>('/news/add', data)
+
+//更新
+export const updateProfile = (data: ProfileData) => 
+  api.put<ResponseResult<any>>('/news/update', data)
+
+//删除
+export const deleteProfile = (id: number | number[] | string | string[]) => 
+  Array.isArray(id) 
+    ? api.delete<ResponseResult<any>>('/news/batch', { data: id })
+    : api.delete<ResponseResult<any>>(`/news/${id}`)

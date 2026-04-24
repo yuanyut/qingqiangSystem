@@ -66,6 +66,46 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
+    public List<Actor> pageListWithRelation(int page, int size, String style, String keyword, Integer status) {
+        int offset = (page - 1) * size;
+        List<Actor> actors = actorMapper.selectListWithCondition(offset, size, style, keyword, status);
+        
+        for (Actor actor : actors) {
+            if (actor != null) {
+                // 查询演员参与的戏剧
+                List<DramaActor> dramaActors = dramaActorMapper.selectByActorId(actor.getId());
+                List<Drama> dramas = new ArrayList<>();
+                if (dramaActors != null && !dramaActors.isEmpty()) {
+                    for (DramaActor dramaActor : dramaActors) {
+                        if (dramaActor != null) {
+                            Drama drama = dramaMapper.selectById(dramaActor.getDramaId());
+                            if (drama != null) {
+                                dramas.add(drama);
+                            }
+                        }
+                    }
+                }
+                actor.setDramas(dramas);
+            }
+        }
+        
+        return actors;
+    }
+
+    @Override
+    public Long countList(String style, String keyword, Integer status) {
+        return actorMapper.countListWithCondition(style, keyword, status);
+    }
+
+    @Override
+    public boolean batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        return actorMapper.batchDelete(ids) > 0;
+    }
+
+    @Override
     public Actor getDetailWithRelation(Long id) {
         Actor actor = actorMapper.selectById(id);
 

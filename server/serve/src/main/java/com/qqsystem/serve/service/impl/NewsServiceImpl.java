@@ -27,15 +27,28 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
+    public List<News> pageListWithCondition(int page, int size, String category, String keyword, Integer status) {
+        int offset = (page - 1) * size;
+        return newsMapper.selectListWithCondition(offset, size, category, keyword, status);
+    }
+
+    @Override
     public Long countList(Integer category, String keyword) {
         return newsMapper.countList(category, keyword);
+    }
+
+    @Override
+    public Long countListWithCondition(String category, String keyword, Integer status) {
+        return newsMapper.countListWithCondition(category, keyword, status);
     }
 
     @Override
     public boolean add(News news) {
         news.setViewCount(0);
         news.setLikeCount(0);
-        news.setStatus(1);
+        if (news.getStatus() == null) {
+            news.setStatus(0);
+        }
         return newsMapper.insert(news) > 0;
     }
 
@@ -47,6 +60,11 @@ public class NewsServiceImpl implements NewsService {
     @Override
     public boolean delete(Long id) {
         return newsMapper.deleteById(id) > 0;
+    }
+
+    @Override
+    public boolean batchDelete(List<Long> ids) {
+        return newsMapper.batchDelete(ids) > 0;
     }
 
     @Override
