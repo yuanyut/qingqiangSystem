@@ -52,6 +52,7 @@ interface lableItem {
 
 const labels = reactive<lableItem>({
     lable1: '用户名',
+    lable2: '昵称',
     lable3: '角色',
     lable4: '状态'
 })
@@ -73,7 +74,7 @@ const fetchUserList = async () => {
                     id: item.id,
                     username: item.username,
                     nickname: item.nickname || '',
-                    password: '********',
+                    password: item.password || '',
                     role: item.role || '',
                     status: item.status === 1 ? '启用' : '禁用',
                     createdAt: item.createTime || ''
