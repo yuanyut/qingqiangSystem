@@ -110,7 +110,7 @@ onMounted(() => {
         <div v-if="hotDramas.length === 0" class="empty-state">
           <span>暂无热门剧目</span>
         </div>
-        <span class="you" :class="{ active: youStatus, inactive: !youStatus }">右向箭头</span>
+        <!-- <span class="you" :class="{ active: youStatus, inactive: !youStatus }">右向箭头</span> -->
       </div>
     </div>
     <!-- 个性化推荐 -->
@@ -162,14 +162,14 @@ onMounted(() => {
                 <div class="info-content">
                   <div class="info-title">{{ news.title }}</div>
                   <div class="info-meta">
-                    <span class="info-time">
-                      <span class="time-icon">⏰</span>
-                      {{ news.publishTime }}
-                    </span>
-                    <span class="info-count">
-                      <span class="count-icon">👥</span>
-                      {{ news.viewCount }}人
-                    </span>
+                    <div class="info-time">
+                      
+                      {{ news.content }}
+                    </div>
+                    <div class="info-count">
+                      
+                      {{ news.source }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -188,9 +188,7 @@ onMounted(() => {
                   <el-image style="width: 120px; height: 120px"
                     :src="actor.avatar || 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'" fit="cover"
                     class="avatar-image" />
-                  <div class="avatar-overlay">
-                    <span class="follow-btn">关注</span>
-                  </div>
+                  
                 </div>
 
                 <div class="artist-info">
@@ -211,16 +209,16 @@ onMounted(() => {
                   <div class="artist-stats">
                     <div class="stat-item">
                       <span class="stat-label">粉丝</span>
-                      <span class="stat-value">{{ actor.fansCount }}</span>
+                      <span class="stat-value">{{ actor.likeCount }}</span>
                     </div>
                     <div class="stat-item">
                       <span class="stat-label">作品</span>
                       <span class="stat-value">{{ actor.worksCount }}部</span>
                     </div>
-                    <div class="stat-item">
+                    <!-- <div class="stat-item">
                       <span class="stat-label">获奖</span>
                       <span class="stat-value">{{ actor.awardsCount }}项</span>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
@@ -548,14 +546,14 @@ onMounted(() => {
   -webkit-text-fill-color: transparent;
 }
 
-.artist-title {
+/* .artist-title {
   font-size: 13px;
   color: #667eea;
   background: #f0eefe;
   padding: 4px 12px;
   border-radius: 20px;
   font-weight: 500;
-}
+} */
 
 .artist-works {
   display: flex;

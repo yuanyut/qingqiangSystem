@@ -190,11 +190,11 @@ watch(() => route.path, (newPath) => {
         <el-icon class="is-loading"><Loading /></el-icon>
         <span>加载中...</span>
       </div>
-      <div v-else class="nav-grid">
+      <!-- <div v-else class="nav-grid">
         <div v-for="(item, index) in categoryNav" :key="index" >
           <CategoryNav :title="item.name" :nums="item.count" :icon="item.icon" />
         </div>
-      </div>
+      </div> -->
     </section>
 
     <!-- 特色推荐 · 精选内容 -->

@@ -5,7 +5,7 @@ import { Search } from '@element-plus/icons-vue'
 import card_knowledge from '@/components/client/card_knowledge.vue'
 import { getCultureList } from '@/api/knowledge'
 import type { Content } from '@/api/knowledge'
-import { knowledgeCategories, knowledgeSortOptions } from '@/types/knowledge'
+import {  knowledgeSortOptions } from '@/types/knowledge'
 
 const router = useRouter()
 const route = useRoute()
@@ -41,19 +41,19 @@ const goToDetail = (id: number) => {
   router.push(`/knowledge/${id}`)
 }
 
-const handleCategoryChange = (index: number) => {
-  if (isSearching.value) {
-    return
-  }
-  categoryIndex.value = index
-  currentPage.value = 1
-  if (index === 0) {
-    selectedCategory.value = undefined
-  } else {
-    selectedCategory.value = knowledgeCategories[index]?.name
-  }
-  loadCultureList()
-}
+// const handleCategoryChange = (index: number) => {
+//   if (isSearching.value) {
+//     return
+//   }
+//   categoryIndex.value = index
+//   currentPage.value = 1
+//   if (index === 0) {
+//     selectedCategory.value = undefined
+//   } else {
+//     selectedCategory.value = knowledgeCategories[index]?.name
+//   }
+//   loadCultureList()
+// }
 
 const handleSortChange = (index: number) => {
   if (isSearching.value) {
@@ -148,9 +148,9 @@ watch(() => route.path, (newPath) => {
         </el-input>
       </div>
 
-      <div class="filter-wrapper">
+      <!-- <div class="filter-wrapper">
         <!-- 分类筛选 -->
-        <div class="filter-item" :class="{ disabled: isSearching }">
+        <!-- <div class="filter-item" :class="{ disabled: isSearching }">
           <div class="filter-label">
             <span class="label-text">分类</span>
           </div>
@@ -165,10 +165,10 @@ watch(() => route.path, (newPath) => {
               {{ item.name }}
             </span>
           </div>
-        </div>
+        </div>  -->
         
-        <!-- 排序 -->
-        <div class="filter-item" :class="{ disabled: isSearching }">
+        
+        <!-- <div class="filter-item" :class="{ disabled: isSearching }">
           <div class="filter-label">
             <span class="label-text">排序</span>
           </div>
@@ -183,8 +183,8 @@ watch(() => route.path, (newPath) => {
               {{ item.name }}
             </span>
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div>  -->
     </div>
 
     <div class="playlist-container">
