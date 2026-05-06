@@ -4,6 +4,7 @@ import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.entity.Drama;
 import com.qqsystem.serve.entity.DramaCategory;
 import com.qqsystem.serve.service.DramaService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -21,6 +22,9 @@ public class DramaController {
 
     @Resource
     private DramaService dramaService;
+
+@Value("${app.domain:http://localhost:8081}")
+    private String domain;
 
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> list(@RequestParam int page,
@@ -119,27 +123,23 @@ public class DramaController {
         if (file.isEmpty()) {
             return ResponseResult.badRequest("文件为空");
         }
-        
-        // 确保上传目录存在
-        String uploadDir = "D:\\qin-opera-promotion-system\\server\\serve\\src\\main\\resources\\static\\drama";
+
+        String uploadDir = System.getProperty("user.dir") + "/serve/src/main/resources/upload/drama";
         File dir = new File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        
-        // 生成唯一文件名
+
         String originalFilename = file.getOriginalFilename();
         String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = UUID.randomUUID() + suffix;
-        String filePath = uploadDir + "\\" + fileName;
-        
+        String filePath = uploadDir + File.separator + fileName;
+
         try {
-            // 保存文件
             file.transferTo(new File(filePath));
-            
-            // 返回相对路径，前端访问时会加上base url
+
             Map<String, String> result = new HashMap<>();
-            result.put("url", "/drama/" + fileName);
+            result.put("url", domain + "/upload/drama/" + fileName);
             return ResponseResult.success(result);
         } catch (IOException e) {
             e.printStackTrace();

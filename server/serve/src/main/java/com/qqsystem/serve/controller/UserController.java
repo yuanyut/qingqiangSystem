@@ -11,6 +11,7 @@ import com.qqsystem.serve.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Value("${app.domain:http://localhost:8081}")
+    private String domain;
     
     //登录
     @PostMapping("/login")
@@ -470,7 +474,7 @@ public class UserController {
             String filename = UUID.randomUUID().toString() + extension;
 
             // 8. 保存文件
-            String uploadPath = "D:/qin-opera-promotion-system/upload/avatar/";
+            String uploadPath = System.getProperty("user.dir") + "/serve/src/main/resources/upload/avatar/";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
@@ -478,8 +482,7 @@ public class UserController {
             File dest = new File(uploadPath + filename);
             file.transferTo(dest);
 
-            // 9. 生成头像URL
-            String avatarUrl = "http://localhost:8081/upload/avatar/" + filename;
+            String avatarUrl = domain + "/upload/avatar/" + filename;
 
             // 10. 更新用户头像
             int result = userService.updateUserAvatar(userId, avatarUrl);

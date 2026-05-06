@@ -1,9 +1,20 @@
 server:
   port: 8081
 
+# 自定义配置
+app:
+  domain: http://localhost:8081
+
 spring:
   application:
     name: serve
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      adjust-dates-to-context-time-zone: true
   datasource:
     url: jdbc:mysql://localhost:3306/qqsystem?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
@@ -17,7 +28,7 @@ spring:
     static-path-pattern: /static/**
   web:
     resources:
-      static-locations: classpath:/static/,file:D:/qin-opera-promotion-system/upload/
+      static-locations: classpath:/static/
 
 # MyBatis 配置
 mybatis:

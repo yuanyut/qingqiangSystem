@@ -124,7 +124,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
           ElMessage.success('登录成功')
           // 验证token并获取完整用户信息
           await userInfo.validateToken()
-          router.push('/home')
+          router.push('/drama')
         } else {
           ElMessage.error(res.message || '登录失败')
         }

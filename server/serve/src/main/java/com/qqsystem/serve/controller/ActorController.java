@@ -3,6 +3,7 @@ package com.qqsystem.serve.controller;
 import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.entity.Actor;
 import com.qqsystem.serve.service.ActorService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -16,6 +17,9 @@ public class ActorController {
 
     @Resource
     private ActorService actorService;
+
+@Value("${app.domain:http://localhost:8081}")
+    private String domain;
 
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) String style) {
@@ -101,27 +105,23 @@ public class ActorController {
         if (file.isEmpty()) {
             return ResponseResult.badRequest("文件为空");
         }
-        
-        // 确保上传目录存在
-        String uploadDir = "D:\\qin-opera-promotion-system\\server\\serve\\src\\main\\resources\\static\\actor";
+
+        String uploadDir = System.getProperty("user.dir") + "/serve/src/main/resources/upload/actor";
         java.io.File dir = new java.io.File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        
-        // 生成唯一文件名
+
         String originalFilename = file.getOriginalFilename();
         String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = java.util.UUID.randomUUID() + suffix;
-        String filePath = uploadDir + "\\" + fileName;
-        
+        String filePath = uploadDir + java.io.File.separator + fileName;
+
         try {
-            // 保存文件
             file.transferTo(new java.io.File(filePath));
-            
-            // 返回相对路径，前端访问时会加上base url
+
             Map<String, String> result = new HashMap<>();
-            result.put("url", "/actor/" + fileName);
+            result.put("url", domain + "/upload/actor/" + fileName);
             return ResponseResult.success(result);
         } catch (java.io.IOException e) {
             e.printStackTrace();

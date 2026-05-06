@@ -367,7 +367,7 @@ public class UserService {
         loginLog.setUserId(userId);
         loginLog.setIp(ip);
         loginLog.setDevice(device);
-        loginLog.setLoginTime(new java.util.Date());
+        loginLog.setLoginTime(java.time.LocalDateTime.now());
         loginLogMapper.insertLoginLog(loginLog);
     }
 

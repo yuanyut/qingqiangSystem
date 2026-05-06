@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { Search } from '@element-plus/icons-vue'
 import shaiXuanH from '@/components/client/shaiXuanH.vue';
 import actor_card from '@/components/client/actor_card.vue';
-import { rongYu, years, styleTypes, paiXu } from '@/types/actor';
+import { rongYu, years, roleNameTypes, paiXu } from '@/types/actor';
 import { getActorList } from '@/api/actor';
 
 const router = useRouter()
@@ -95,16 +95,23 @@ const handleStyleChange=(index: number)=>{
     return
   }
   styleIndex.value = index
+  console.log(styleIndex.value)
   currentPage.value = 1
   switch(index) {
     case 0:
       selectedStyle.value = undefined
       break
     case 1:
-      selectedStyle.value = '传统派'
+      selectedStyle.value = '丑'
       break
     case 2:
-      selectedStyle.value = '创新派'
+      selectedStyle.value = '生'
+      break
+    case 3:
+      selectedStyle.value ='旦'
+      break
+    case 4:
+      selectedStyle.value = '旦'
       break
   }
   loadActorList()
@@ -139,6 +146,7 @@ const filterActorList=()=>{
 const loadActorList=async ()=>{
   try {
     loading.value = true
+    console.log(selectedStyle)
     const res = await getActorList(
       currentPage.value,
       pageSize.value,
@@ -220,7 +228,7 @@ watch(() => route.path, (newPath) => {
         </div>
         <div class="filter-options">
           <span 
-            v-for="(item, index) in styleTypes.slice(1)" 
+            v-for="(item, index) in roleNameTypes.slice(1)" 
             :key="index" 
             @click="handleStyleChange(index)"
             :class="{ active: styleIndex === index, disabled: isSearching }" 

@@ -20,8 +20,8 @@
           </div>
           <div class="setting-value">
             <div class="avatar-wrapper">
-              <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+              <el-upload class="avatar-uploader" :action="''"
+                :show-file-list="false" :on-change="handleAvatarChange" :before-upload="beforeAvatarUpload" :auto-upload="false">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar-img" />
                 <el-icon v-else class="avatar-uploader-icon">
                   <Plus />
@@ -183,6 +183,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import type { UploadProps, FormInstance, FormRules } from 'element-plus'
 import { pcaTextArr } from "element-china-area-data"
+import { uploadAvatar } from '@/api/api'
 
 // 用户资料数据
 const userProfile = reactive({
@@ -219,6 +220,26 @@ const cascaderProps = {
 
 // 头像相关
 const imageUrl = ref('https://picsum.photos/200/200?random=1')
+
+const handleAvatarChange = async (uploadFile: any) => {
+  if (uploadFile.raw) {
+    const formData = new FormData()
+    formData.append('file', uploadFile.raw)
+    
+    try {
+      const response = await uploadAvatar(formData)
+      if (response && response.data && response.data.url) {
+        imageUrl.value = response.data.url
+        ElMessage.success('头像上传成功')
+      } else {
+        ElMessage.error('头像上传失败')
+      }
+    } catch (error) {
+      console.error('头像上传失败:', error)
+      ElMessage.error('头像上传失败，请重试')
+    }
+  }
+}
 
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
   response,

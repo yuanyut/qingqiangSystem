@@ -1,6 +1,8 @@
 package com.qqsystem.serve.vo;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
 
 public class HistoryVO {
     private Long id;
@@ -8,7 +10,8 @@ public class HistoryVO {
     private String targetType;
     private Long targetId;
     private String action;
-    private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private LocalDateTime createTime;
     private String time; // 格式化的时间字符串
     private String title; // 标题
     private String coverUrl; // 封面
@@ -46,10 +49,10 @@ public class HistoryVO {
     public void setAction(String action) {
         this.action = action;
     }
-    public Date getCreateTime() {
+    public LocalDateTime getCreateTime() {
         return createTime;
     }
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
     public String getTime() {

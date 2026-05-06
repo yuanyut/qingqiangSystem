@@ -1,8 +1,9 @@
 package com.qqsystem.serve.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 public class Comment {
@@ -21,7 +22,8 @@ public class Comment {
 
     private Integer status;
 
-    private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private LocalDateTime createTime;
 
     // 扩展字段，用于返回用户信息
     private String userName;

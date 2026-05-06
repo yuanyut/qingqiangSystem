@@ -2,7 +2,7 @@
 import { reactive, ref, watch, onMounted } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage, ElUpload } from 'element-plus'
-import { getDramaCategoryList } from '@/api/api'
+import { getDramaCategoryList, uploadVideo } from '@/api/api'
 import type { DramaCategory } from '@/api/api'
 const formRef = ref<FormInstance>()
 
@@ -85,29 +85,33 @@ const getVideoDuration = (file: File): Promise<number> => {
     })
 }
 
-// 上传视频到服务器（模拟）
+// 上传视频到服务器（真实接口）
 const uploadVideoToServer = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        // 模拟上传进度
-        const interval = setInterval(() => {
-            if (uploadProgress.value < 90) {
-                uploadProgress.value += 10
-            }
-        }, 200)
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    // 模拟上传进度
+    const interval = setInterval(() => {
+        if (uploadProgress.value < 90) {
+            uploadProgress.value += 10
+        }
+    }, 200)
 
-        // 模拟上传完成
-        setTimeout(() => {
-            clearInterval(interval)
-            uploadProgress.value = 100
-
-            // 模拟返回的视频URL
-            // 实际项目中这里应该调用真实的上传接口
-            const mockVideoUrl = URL.createObjectURL(file)
-            setTimeout(() => {
-                resolve(mockVideoUrl)
-            }, 500)
-        }, 2000)
-    })
+    try {
+        const response = await uploadVideo(formData)
+        clearInterval(interval)
+        uploadProgress.value = 100
+        
+        if (response && response.data && response.data.url) {
+            // 服务器返回的是完整URL，直接使用
+            return response.data.url
+        } else {
+            throw new Error('上传失败，未返回视频URL')
+        }
+    } catch (error) {
+        clearInterval(interval)
+        throw error
+    }
 }
 
 // 视频上传前验证
@@ -132,7 +136,7 @@ const beforeVideoUpload = (file: File) => {
 const handleVideoUpload = async (file: File) => {
     uploadLoading.value = true
     uploadProgress.value = 0
-
+    console.log(file)
     try {
         // 获取视频时长
         const duration = await getVideoDuration(file)

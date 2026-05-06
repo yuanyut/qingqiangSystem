@@ -147,7 +147,12 @@ const formatStatus = (status: number) => {
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
                 <!-- 多选列 -->
                 <el-table-column type="selection" width="55" />
-
+                <!-- 封面 -->
+                <el-table-column property="cover" label="封面" width="150">
+                    <template #default="scope">
+                        <img :src="scope.row.cover" alt="封面" style="width: 100%; height: 100%; object-fit: cover;" />
+                    </template>
+                </el-table-column>
                 <!-- 资讯标题 -->
                 <el-table-column property="title" label="资讯标题" width="200" show-overflow-tooltip />
 

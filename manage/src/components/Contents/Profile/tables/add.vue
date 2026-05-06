@@ -47,7 +47,10 @@ const statusOptions = ref([
 ])
 const currentStatus = ref(0)
 const props = defineProps<{ title: string }>()
-
+// 上传请求头（包含 Token）
+const uploadHeaders = ref({
+    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+})
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
 watch(content, (newVal) => {
     console.log('子组件收到 content:', newVal)
@@ -215,6 +218,7 @@ const rules = {
                     :on-success="handleCoverUploadSuccess"
                     :on-error="handleCoverUploadError"
                     :before-upload="beforeCoverUpload"
+                    :headers="uploadHeaders"
                 >
                     <img v-if="form.cover" :src="form.cover" class="avatar">
                     <el-button v-else type="primary">上传封面</el-button>

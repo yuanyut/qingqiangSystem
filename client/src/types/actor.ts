@@ -39,19 +39,27 @@ export const years = reactive([
         name: '青年新秀',
     }
 ])
-export const styleTypes = reactive([
+export const roleNameTypes = reactive([
     {
-        name: '风格'
+        name: '角色名'
     },
     {
         name: '全部',
     },
     {
-        name: '传统派',
+        name: '丑',
     },
     {
-        name: '创新派',
-    }
+        name: '生',
+    },{
+        name:'旦',
+    },
+    {
+        name:'净',
+    },
+    // {
+    //     name:''
+    // }
 ])
 
 export const paiXu = reactive([

@@ -27,6 +27,11 @@ const emit = defineEmits(['confirm'])
 const uploadLoading = ref(false)
 const uploadProgress = ref(0)
 
+// 上传请求头（包含 Token）
+const uploadHeaders = ref({
+    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+})
+
 // 初始化 form - 适配文化内容字段
 const form = reactive<FormItemCulture>({
     id: undefined,
@@ -195,6 +200,7 @@ const rules = {
                     :on-success="handleCoverUploadSuccess"
                     :on-error="handleCoverUploadError"
                     :before-upload="beforeCoverUpload"
+                    :headers="uploadHeaders"
                 >
                     <img v-if="form.cover" :src="form.cover" class="avatar">
                     <el-button v-else type="primary">上传封面</el-button>

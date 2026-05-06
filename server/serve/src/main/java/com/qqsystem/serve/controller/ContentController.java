@@ -1,8 +1,10 @@
 package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
+import com.qqsystem.serve.config.AppConfig;
 import com.qqsystem.serve.entity.Content;
 import com.qqsystem.serve.service.ContentService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -16,6 +18,9 @@ public class ContentController {
 
     @Resource
     private ContentService contentService;
+
+@Value("${app.domain:http://localhost:8081}")
+    private String domain;
 
     // 获取文化资讯分类统计
     @GetMapping("/categories")
@@ -144,5 +149,34 @@ public class ContentController {
     public ResponseResult<List<Content>> getMedia(@RequestParam int size) {
         List<Content> mediaList = contentService.getMediaCulture(size);
         return ResponseResult.success(mediaList);
+    }
+
+    @PostMapping("/upload")
+    public ResponseResult<Map<String, String>> upload(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseResult.badRequest("文件为空");
+        }
+
+        String uploadDir = System.getProperty("user.dir") + "/serve/src/main/resources/upload/culture";
+        java.io.File dir = new java.io.File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = java.util.UUID.randomUUID() + suffix;
+        String filePath = uploadDir + java.io.File.separator + fileName;
+
+        try {
+            file.transferTo(new java.io.File(filePath));
+
+            Map<String, String> result = new HashMap<>();
+            result.put("url", domain + "/upload/culture/" + fileName);
+            return ResponseResult.success(result);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return ResponseResult.badRequest("上传失败");
+        }
     }
 }

@@ -30,12 +30,12 @@ const changeFavorite = () => {
 
 <template>
   <div class="card">
-    <div class="card_header">
+    <!--<div class="card_header">
       <image :src="props.images" size="100%" class="card_image" />
-      <!-- <div class="card_overlay">
+       <div class="card_overlay">
         <div class="badge">热门</div>
-      </div> -->
-    </div>
+      </div> 
+    </div>-->
     
     <div class="card_content">
       <div class="card_name">
@@ -51,45 +51,20 @@ const changeFavorite = () => {
           <span class="info_label">类型</span>
           <span class="info_value">{{ props.cate }}</span>
         </div>
-        <div class="info_item">
+        <!-- <div class="info_item">
           <span class="info_label">演员</span>
           <span class="info_value">{{ props.act }}</span>
-        </div>
+        </div> -->
       </div>
       
       <div class="card_attr">
         <div class="attr_item">
-          <span class="attr_icon">👁️</span>
-          <span class="attr_value">{{ props.watchPeople }}</span>
+          <!-- <span class="attr_icon">观看人数：</span> -->
+          <span class="attr_value">观看：{{ props.watchPeople }}</span>
         </div>
-        <!-- <div class="attr_item">
-          <span class="attr_icon">❤️</span>
-          <span class="attr_value">{{ props.lovePeople }}</span>
-        </div> -->
       </div>
       
-      <div class="card_footer">
-        
-      <!-- <div 
-        class="action-btn like-btn"
-       
-      >
-        <span class="icon" @click.stop="changeLike">{{ props.isLiked ? '❤️' : '🤍' }}</span>
-
-      </div>
       
-      <div 
-        class="action-btn favorite-btn"
-       
-       
-      >
-        <span class="icon" @click.stop="changeFavorite">{{props.isFavorited ? '⭐' : '☆' }}</span>
-        <span class="count">{{props.favoriteCount }}</span>
-      </div> -->
-      
-      <svg t="1774168305873" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1653" width="20" height="20"><path d="M510.7 962.4c-60.7 0-119.5-11.9-175-35.3-53.5-22.6-101.6-55-142.9-96.3-41.3-41.3-73.7-89.3-96.3-142.9-23.4-55.4-35.3-114.3-35.3-175s11.9-119.5 35.3-175c22.6-53.5 55-101.6 96.3-142.9 41.3-41.3 89.3-73.7 142.9-96.3 55.4-23.4 114.3-35.3 175-35.3s119.5 11.9 175 35.3c53.5 22.6 101.6 55 142.9 96.3 41.3 41.3 73.7 89.3 96.3 142.9 23.4 55.4 35.3 114.3 35.3 175s-11.9 119.5-35.3 175c-22.6 53.5-55 101.6-96.3 142.9-41.3 41.3-89.3 73.7-142.9 96.3-55.5 23.4-114.3 35.3-175 35.3z m0-854.9c-223.5 0-405.4 181.9-405.4 405.4s181.9 405.4 405.4 405.4 405.4-181.9 405.4-405.4-181.9-405.4-405.4-405.4z" fill="#231815" p-id="1654"></path><path d="M404.9 336.3v352.6l305.4-176.3z" fill="#231815" p-id="1655"></path></svg>
-   
-    </div>
         <!-- <button size="small" class="watch_btn">立即观看</button> -->
             </div>
     </div>
@@ -98,7 +73,7 @@ const changeFavorite = () => {
 
 <style scoped>
 .card {
-  width: 280px;
+  /* width: 280px; */
   background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
   border-radius: 16px;
   overflow: hidden;
@@ -222,11 +197,11 @@ const changeFavorite = () => {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #f1f5f9;
+  /* background: #f1f5f9; */
   padding: 6px 12px;
   border-radius: 20px;
   flex: 1;
-  justify-content: center;
+  justify-content: end;
   transition: background 0.2s ease;
 }
 

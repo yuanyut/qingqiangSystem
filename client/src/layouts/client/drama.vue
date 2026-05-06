@@ -211,7 +211,7 @@ watch(() => route.path, (newPath) => {
       </div> -->
       
       <!-- 排序 -->
-      <div class="filter-item" :class="{ disabled: isSearching }">
+      <!-- <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
           <span class="label-text">排序</span>
         </div>
@@ -226,7 +226,7 @@ watch(() => route.path, (newPath) => {
             {{ item.name }}
           </span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
    <div class="playlist-container">
@@ -245,8 +245,8 @@ watch(() => route.path, (newPath) => {
           :desc="drama.description" 
           :cate="drama.categoryName" 
           act="演唱者" 
-          :watch-people="`${drama.watchCount}人`" 
-          :love-people="`${drama.likeCount}人`" 
+          :watch-people="`${drama.watchCount}`" 
+          :love-people="`${drama.likeCount}`" 
           favorite-count="16"
           :is-liked="isLiked" 
           :is-favorited="isFavorited"

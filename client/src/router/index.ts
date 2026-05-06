@@ -25,12 +25,12 @@ const router = createRouter({
       path:'/',
       name:'clientPage',
       component:clientPage,
-      redirect:'/home',
+      redirect:'/drama',
       children:[
-        {
-          path:'home',
-          component:home,
-        },
+        // {
+        //   path:'home',
+        //   component:home,
+        // },
         {
          path:'drama',
          component:drama, 
@@ -47,10 +47,10 @@ const router = createRouter({
           path:'actor/:id',
           component:actorDetail,
         },
-        {
-          path:'communicate',
-          component:communicate,
-        },
+        // {
+        //   path:'communicate',
+        //   component:communicate,
+        // },
         {
           path:'knowledge',
           component:knowledge,

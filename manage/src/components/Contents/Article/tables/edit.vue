@@ -2,7 +2,7 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { addCulture, updateCulture } from '@/api/api'
+import { addCulture, updateCulture, uploadCulture } from '@/api/api'
 import type { CultureData  } from '@/api/api'
 const formRef = ref<FormInstance>()
 
@@ -59,7 +59,7 @@ const triggerUpload = () => {
 }
 
 // 处理文件上传
-const handleFileChange = (event: Event) => {
+const handleFileChange = async (event: Event) => {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
     
@@ -77,13 +77,22 @@ const handleFileChange = (event: Event) => {
         return
     }
     
-    // 将图片转为base64预览
-    const reader = new FileReader()
-    reader.onload = (e) => {
-        form.coverUrl = e.target?.result as string
-        ElMessage.success('上传成功')
+    // 上传到服务器
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    try {
+        const response = await uploadCulture(formData)
+        if (response && response.data && response.data.url) {
+            form.coverUrl = response.data.url
+            ElMessage.success('上传成功')
+        } else {
+            ElMessage.error('上传失败')
+        }
+    } catch (error) {
+        console.error('上传失败:', error)
+        ElMessage.error('上传失败，请重试')
     }
-    reader.readAsDataURL(file)
     
     // 清空input，以便再次选择同一文件
     input.value = ''

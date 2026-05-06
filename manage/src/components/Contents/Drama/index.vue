@@ -101,16 +101,16 @@ const fetchDramaList = async () => {
     });
     if (response && response.data) {
       tableData.length = 0;
-      response.data.list.forEach((item: any) => {
+      response.data.list.forEach((item) => {
         // 查找视频类型的content，用于视频预览
-        const videoContent = item.contents && item.contents.find((c: any) => c.type === 'video');
+        const videoContent = item.contents && item.contents.find((c:any) => c.type === 'video');
 
         tableData.push({
           id: item.id,
           videoUrl: (() => {
             let url = videoContent && videoContent.mediaUrl ? videoContent.mediaUrl.replace(/`/g, '') : (item.cover ? item.cover.replace(/`/g, '') : '');
             // 如果是相对路径，添加完整的后端URL
-            if (url && !url.startsWith('http')) {
+            if (url && !url.startsWith('http') && !url.startsWith('blob')) {
               url = `http://localhost:8081${url}`;
             }
             return url;

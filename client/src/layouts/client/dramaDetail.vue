@@ -49,7 +49,7 @@ const loadDramaDetail = async () => {
         if (favoriteRes.code === 200) {
           isFavorited.value = favoriteRes.data.isFavorited || false
         }
-      }
+      }console.log(drama.value)
     }
   } catch (error) {
     console.error('加载剧目详情失败:', error)
@@ -131,16 +131,14 @@ onMounted(() => {
       </div>
 
       <div class="detail-header">
-        <div class="cover-image">
-          <el-image 
-            :src="drama.coverImage || '/home/banner1.png'" 
-            fit="cover"
-            class="cover-img"
-          />
-        </div>
+        <!-- <div class="cover-image">
+          <video :src="drama.cover || 'undefined'" fit="cover" class="cover-img" controls></video>
+        </div> -->
         <div class="drama-info">
-          <div class="drama-style">{{ drama.name }}</div>
-          <h1 class="drama-title">{{ drama.title }}</h1>
+          <div >
+            <h1>{{ drama.name }}</h1>
+          </div>
+          <!-- <h1 class="drama-title">{{ drama.title }}</h1> -->
           <div class="drama-meta">
             <span class="meta-item">
               <span class="meta-label">分类：</span>
@@ -173,12 +171,15 @@ onMounted(() => {
           </div>
           <div class="drama-description">
             <h3>剧目简介</h3>
-            <p>{{ drama.description }}</p>
+            <p>{{ drama.intro }}</p>
           </div>
+        </div>
+        <div class="cover-image">
+          <video :src="drama.cover || 'undefined'" fit="cover" class="cover-img" controls></video>
         </div>
       </div>
 
-      <div class="detail-section">
+      <!-- <div class="detail-section">
         <h2 class="section-title">演员阵容</h2>
         <div v-if="drama.actors && drama.actors.length > 0" class="actors-list">
           <div v-for="actor in drama.actors" :key="actor.id" class="actor-item">
@@ -193,7 +194,7 @@ onMounted(() => {
         <div v-else class="empty-actors">
           <span>暂无演员信息</span>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div v-else class="empty-state">
@@ -204,7 +205,7 @@ onMounted(() => {
 
 <style scoped>
 .drama-detail-container {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 40px 20px;
 }
@@ -245,7 +246,7 @@ onMounted(() => {
 }
 
 .detail-header {
-  display: flex;
+  /* display: flex; */
   gap: 40px;
   margin-bottom: 40px;
   padding-bottom: 40px;
@@ -254,8 +255,8 @@ onMounted(() => {
 
 .cover-image {
   flex-shrink: 0;
-  width: 400px;
-  height: 500px;
+  /* width: 400px; */
+  /* height: 500px; */
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -267,6 +268,7 @@ onMounted(() => {
 }
 
 .drama-info {
+  margin-bottom: 24px;
   flex: 1;
   display: flex;
   flex-direction: column;

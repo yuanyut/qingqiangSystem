@@ -14,7 +14,7 @@
         SELECT *
         FROM actor
         <if test="style != null and style != ''">
-            WHERE style = #{style}
+            WHERE role_name = #{style}
         </if>
         ORDER BY id DESC
         LIMIT #{offset}, #{size}
@@ -25,7 +25,7 @@
         FROM actor
         <where>
             <if test="style != null and style != ''">
-                AND style = #{style}
+                AND role_name = #{style}
             </if>
             <if test="keyword != null and keyword != ''">
                 AND (name LIKE CONCAT('%', #{keyword}, '%') OR intro LIKE CONCAT('%', #{keyword}, '%'))
@@ -42,7 +42,7 @@
         SELECT COUNT(*)
         FROM actor
         <if test="style != null and style != ''">
-            WHERE style = #{style}
+            WHERE role_name = #{style}
         </if>
     </select>
 
@@ -51,7 +51,7 @@
         FROM actor
         <where>
             <if test="style != null and style != ''">
-                AND style = #{style}
+                AND role_name = #{style}
             </if>
             <if test="keyword != null and keyword != ''">
                 AND (name LIKE CONCAT('%', #{keyword}, '%') OR intro LIKE CONCAT('%', #{keyword}, '%'))

@@ -13,6 +13,11 @@ const emit = defineEmits(['confirm'])
 // 上传相关状态
 const uploadLoading = ref(false)
 
+// 上传请求头（包含 Token）
+const uploadHeaders = ref({
+    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+})
+
 // 初始化 form - 适配名家字段
 const form = reactive<ActorData>({
     id: undefined,
@@ -155,8 +160,8 @@ const rules = {
     intro: [
         { required: true, message: '请输入介绍', trigger: 'blur' }
     ],
-    style: [
-        { required: true, message: '请选择风格', trigger: 'change' }
+    roleName: [
+        { required: true, message: '请选择角色名', trigger: 'change' }
     ]
 }
 </script>
@@ -173,7 +178,7 @@ const rules = {
             <el-form-item label="封面" :label-width="formLabelWidth">
                 <el-upload class="avatar-uploader" action="/actor/upload" :show-file-list="false"
                     :on-success="handleCoverUploadSuccess" :on-error="handleCoverUploadError"
-                    :before-upload="beforeCoverUpload">
+                    :before-upload="beforeCoverUpload" :headers="uploadHeaders">
                     <img v-if="form.avatar" :src="form.avatar" class="avatar">
                     <el-button v-else type="primary">上传封面</el-button>
                 </el-upload>
@@ -195,12 +200,12 @@ const rules = {
             </el-form-item>
 
             <!-- 风格 -->
-            <el-form-item label="风格" :label-width="formLabelWidth" prop="style">
+            <!-- <el-form-item label="风格" :label-width="formLabelWidth" prop="style">
                 <el-select v-model="form.style" placeholder="请选择风格" style="width: 100%">
                     <el-option label="传统派" value="传统派" />
                     <el-option label="创新派" value="创新派" />
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
 
             <!-- 加入日期 -->
             <el-form-item label="加入日期" :label-width="formLabelWidth">

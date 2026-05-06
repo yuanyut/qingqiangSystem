@@ -1,13 +1,16 @@
 package com.qqsystem.serve.entity;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
 
 public class LoginLog {
     private Long id;
     private Long userId;
     private String ip;
     private String device;
-    private Date loginTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private LocalDateTime loginTime;
 
     // Getters and Setters
     public Long getId() {
@@ -42,11 +45,11 @@ public class LoginLog {
         this.device = device;
     }
 
-    public Date getLoginTime() {
+    public LocalDateTime getLoginTime() {
         return loginTime;
     }
 
-    public void setLoginTime(Date loginTime) {
+    public void setLoginTime(LocalDateTime loginTime) {
         this.loginTime = loginTime;
     }
 }

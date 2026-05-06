@@ -13,8 +13,9 @@ const props = defineProps<{
 
 const currentTab = ref<number>(props.current);
 const menuLists = reactive([
-    '首页',
-    '秦腔剧目','名家介绍','推荐广场',
+    // '首页',
+    '秦腔剧目','名家介绍',
+    // '推荐广场',
     '秦腔文化',
     '秦腔资讯',
     '个人中心'
@@ -29,7 +30,7 @@ watch(() => props.current, (newVal) => {
 })
 
 const handleTabClick = (index: number): void => {
-    if(index == 6 && !userInfoStore.isLoggedIn){
+    if(index == 4 && !userInfoStore.isLoggedIn){
          ElMessage({
             message: '请先登录',
             type: 'warning',
@@ -81,11 +82,13 @@ const handleLogout = () => {
         <div class="nav-user">
             <el-dropdown trigger="click" placement="bottom-end">
                 <div class="user-dropdown-trigger">
+                    
                     <el-avatar 
-                        :src="userInfoStore.UserInfos.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'" 
+                        :src="userInfoStore.UserInfos.avatar" 
                         size="default"
                         class="user-avatar"
                     />
+                    <!-- <img :src="userInfoStore.UserInfos.avatar"/> -->
                     <span class="user-name" v-if="userInfoStore.isLoggedIn">
                         {{ userInfoStore.UserInfos.nickname || userInfoStore.UserInfos.username }}
                     </span>

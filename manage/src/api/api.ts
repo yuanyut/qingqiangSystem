@@ -204,6 +204,20 @@ export const uploadVideo = (data: FormData) =>
     }
   })
 
+export const uploadAvatar = (data: FormData) => 
+  api.post<ResponseResult<{ url: string }>>('/user/avatar/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+
+export const uploadCulture = (data: FormData) => 
+  api.post<ResponseResult<{ url: string }>>('/content/culture/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+
 export const updateDrama = (data: DramaData) => 
   api.put<ResponseResult<any>>('/drama/update', data)
 

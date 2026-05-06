@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElUpload } from 'element-plus'
 import type { ProfileData } from '@/api/api'
 import { addProfile, updateProfile } from '@/api/api'
 
@@ -28,6 +28,39 @@ const form = reactive<ProfileData>({
 })
 
 const currentStatus = ref<string>('0')
+
+// 上传请求头（包含 Token）
+const uploadHeaders = ref({
+    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+})
+
+// 封面上传成功
+const handleCoverUploadSuccess = (response: any) => {
+    if (response && response.data && response.data.url) {
+        form.cover = response.data.url
+        ElMessage.success('封面上传成功!')
+    }
+}
+
+// 封面上传失败
+const handleCoverUploadError = () => {
+    ElMessage.error('封面上传失败，请重试!')
+}
+
+// 封面上传前验证
+const beforeCoverUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+        ElMessage.error('只能上传图片文件!')
+        return false
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+        ElMessage.error('图片大小不能超过 2MB!')
+        return false
+    }
+    return true
+}
 
 const props = defineProps<{ title: string, opear: string }>()
 
@@ -162,7 +195,14 @@ const rules = {
 
             <!-- 封面 -->
             <el-form-item label="封面" :label-width="formLabelWidth">
-                <el-input v-model="form.cover" placeholder="请输入封面URL" />
+                <div class="upload-container">
+                    <el-upload class="avatar-uploader" action="/content/culture/upload" :show-file-list="false"
+                        :on-success="handleCoverUploadSuccess" :on-error="handleCoverUploadError"
+                        :before-upload="beforeCoverUpload" :headers="uploadHeaders">
+                        <img v-if="form.cover" :src="form.cover" class="avatar" />
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </div>
             </el-form-item>
 
             <!-- 状态 -->
@@ -218,5 +258,46 @@ const rules = {
 
 .status-deleted {
     color: #f56c6c;
+}
+
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.avatar-uploader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-uploader:hover {
+    border-color: #409eff;
+}
+
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+:deep(.el-upload__tip) {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #909399;
 }
 </style>
