@@ -12,7 +12,7 @@ const emit = defineEmits<{
 <template>
     <div class="knowledge-card" @click="emit('click')">
         <div class="card-title">{{ title }}</div>
-        <div class="card-desc" v-if="desc"> {{ desc }}</div>
+        <!-- <div class="card-desc" v-if="desc"> {{ desc }}</div> -->
         <div class="card-footer" v-if="$slots.footer">
             <slot name="footer"></slot>
         </div>
@@ -66,11 +66,12 @@ const emit = defineEmits<{
     margin-top: 16px;
     padding-top: 12px;
     border-top: 1px solid #f3ebe2;
-    font-size: 0.85rem;
+    font-size: 0.85rem;width: 100%;
     font-weight: 500;
     color: #b87c4e;
     transition: all 0.2s;
-    display: inline-block;
+    display: flex;
+    justify-content: space-between;
     cursor: pointer;
 }
 

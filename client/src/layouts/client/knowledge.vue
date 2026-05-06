@@ -149,8 +149,8 @@ watch(() => route.path, (newPath) => {
       </div>
 
       <!-- <div class="filter-wrapper">
-        <!-- 分类筛选 -->
-        <!-- <div class="filter-item" :class="{ disabled: isSearching }">
+       
+       <div class="filter-item" :class="{ disabled: isSearching }">
           <div class="filter-label">
             <span class="label-text">分类</span>
           </div>
@@ -204,9 +204,9 @@ watch(() => route.path, (newPath) => {
           >
             <template #footer>
               <div class="card-footer">
-                <span>{{ item.viewCount }} 阅读</span>
-                <span>{{ item.likeCount }} 点赞</span>
-                <span>{{ item.category }}</span>
+                <span>{{ item.viewCount }}阅读</span>
+                <span>{{ item.likeCount }}点赞</span>
+                <!-- <span>{{ item.category }}</span> -->
               </div>
             </template>
           </card_knowledge>
@@ -468,6 +468,7 @@ watch(() => route.path, (newPath) => {
   color: #94a3b8;
   margin-top: 12px;
   padding-top: 12px;
+  width: 100%;
   border-top: 1px solid #f0f0f0;
 }
 

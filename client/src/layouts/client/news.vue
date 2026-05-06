@@ -261,7 +261,7 @@ watch(() => route.path, (newPath) => {
       <!-- 第二行双栏 -->
       <div v-if="(!loading.hotList && hotList.length > 0) || (!loading.recommendList && recommendList.length > 0)" class="two-columns">
         <!-- 左栏：热门排行 -->
-        <div v-if="!loading.hotList && hotList.length > 0" class="column">
+        <!-- <div v-if="!loading.hotList && hotList.length > 0" class="column">
           <div class="column-header">
             <h3>热门排行</h3>
           </div>
@@ -285,10 +285,10 @@ watch(() => route.path, (newPath) => {
             </div>
           </div>
           
-        </div>
+        </div> -->
 
-        <!-- 右栏：推荐阅读 -->
-        <div v-if="!loading.recommendList && recommendList.length > 0" class="column">
+       
+        <!-- <div v-if="!loading.recommendList && recommendList.length > 0" class="column">
           <div class="column-header">
             <h3>推荐阅读</h3>
           </div>
@@ -311,12 +311,12 @@ watch(() => route.path, (newPath) => {
             </div>
           </div>
          
-        </div>
+        </div> -->
       </div>
     </section>
 
     <!-- 媒体聚焦 -->
-    <section v-if="!loading.mediaList && mediaList.length > 0" class="section">
+    <!-- <section v-if="!loading.mediaList && mediaList.length > 0" class="section">
       <div class="section-header">
         <h2 class="section-title">媒体聚焦</h2>
         <span class="more-text" @click="router.push('/news/list')">更多 →</span>
@@ -340,7 +340,7 @@ watch(() => route.path, (newPath) => {
           </card_knowledge1>
         </div>
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 

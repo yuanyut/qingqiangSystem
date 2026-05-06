@@ -163,7 +163,7 @@ onMounted(() => {
           >
             <template #footer>
               <div class="news-meta">
-                <span>{{ item.createTime || '' }}</span>
+                <span>{{ item.createTime || '' }}  </span>
                 <span>{{ item.viewCount || 0 }}阅读</span>
                 <span>{{ item.category ? categoryMap[item.category] || item.category : '' }}</span>
               </div>
