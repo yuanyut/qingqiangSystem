@@ -184,13 +184,13 @@ onMounted(() => {
             >
               {{ isLiked ? '已点赞' : '点赞' }}
             </el-button>
-            <!-- <el-button 
+            <el-button 
               :type="isFavorited ? 'warning' : 'default'" 
               @click="handleFavorite"
               class="action-button"
             >
               {{ isFavorited ? '已收藏' : '收藏' }}
-            </el-button> -->
+            </el-button>
           </div>
         </div>
       </div>
