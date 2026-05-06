@@ -21,10 +21,22 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        // 设置响应字符编码
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
         String uri = request.getRequestURI();
+        String method = request.getMethod();
         System.out.println("========== JwtFilter 开始 ==========");
         System.out.println("1. 请求路径: " + uri);
-        System.out.println("2. 请求方法: " + request.getMethod());
+        System.out.println("2. 请求方法: " + method);
+
+        // 处理 OPTIONS 预检请求
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            System.out.println("3. OPTIONS 预检请求，直接放行");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // 白名单：公共接口（无需登录）
         if (isPublicApi(uri)) {

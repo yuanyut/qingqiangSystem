@@ -78,9 +78,9 @@ const changeTab =(n:number)=>{
       </el-header>
       <el-main style="padding: 0;">
         <router-view v-slot="{ Component }">
-        <keep-alive>
+        
           <component :is="Component" />
-        </keep-alive>
+       
       </router-view>
       </el-main>
     </el-container>

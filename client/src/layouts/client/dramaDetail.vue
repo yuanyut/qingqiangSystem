@@ -24,8 +24,7 @@ const loadDramaDetail = async () => {
     loading.value = true
     drama.value = null
     
-    // 增加浏览次数
-    await addBehavior('drama', dramaId.value, 'view')
+    // 浏览次数由后端拦截器自动记录，无需手动调用
     
     const res = await getDramaDetail(dramaId.value)
     if (res.code === 200) {

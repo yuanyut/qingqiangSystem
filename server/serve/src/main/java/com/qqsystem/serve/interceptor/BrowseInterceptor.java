@@ -1,6 +1,8 @@
 package com.qqsystem.serve.interceptor;
 
+import com.qqsystem.serve.common.utils.JwtUtil;
 import com.qqsystem.serve.service.BehaviorService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -17,9 +19,9 @@ public class BrowseInterceptor implements HandlerInterceptor {
     @Resource
     private BehaviorService behaviorService;
 
-    private static final Pattern DRAMA_PATTERN = Pattern.compile("/drama/detail/(\\d+)");
+    private static final Pattern DRAMA_PATTERN = Pattern.compile("/drama/detail/full/(\\d+)");
     private static final Pattern NEWS_PATTERN = Pattern.compile("/news/detail/(\\d+)");
-    private static final Pattern ACTOR_PATTERN = Pattern.compile("/actor/detail/(\\d+)");
+    private static final Pattern ACTOR_PATTERN = Pattern.compile("/actor/detail/full/(\\d+)");
     private static final Pattern CULTURE_PATTERN = Pattern.compile("/culture/detail/(\\d+)");
 
     @Override
@@ -38,6 +40,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = DRAMA_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
+            System.out.println("[浏览记录] 用户ID: " + userId + ", 类型: drama, 目标ID: " + targetId + ", 路径: " + path + ", 时间: " + java.time.LocalDateTime.now());
             behaviorService.addBehavior(userId, "drama", targetId, "view");
             return true;
         }
@@ -46,6 +49,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = NEWS_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
+            System.out.println("[浏览记录] 用户ID: " + userId + ", 类型: news, 目标ID: " + targetId + ", 路径: " + path + ", 时间: " + java.time.LocalDateTime.now());
             behaviorService.addBehavior(userId, "news", targetId, "view");
             return true;
         }
@@ -54,6 +58,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = ACTOR_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
+            System.out.println("[浏览记录] 用户ID: " + userId + ", 类型: actor, 目标ID: " + targetId + ", 路径: " + path + ", 时间: " + java.time.LocalDateTime.now());
             behaviorService.addBehavior(userId, "actor", targetId, "view");
             return true;
         }
@@ -62,6 +67,7 @@ public class BrowseInterceptor implements HandlerInterceptor {
         matcher = CULTURE_PATTERN.matcher(path);
         if (matcher.matches()) {
             Long targetId = Long.parseLong(matcher.group(1));
+            System.out.println("[浏览记录] 用户ID: " + userId + ", 类型: culture, 目标ID: " + targetId + ", 路径: " + path + ", 时间: " + java.time.LocalDateTime.now());
             behaviorService.addBehavior(userId, "culture", targetId, "view");
             return true;
         }
@@ -79,13 +85,27 @@ public class BrowseInterceptor implements HandlerInterceptor {
         // 不需要处理
     }
 
-    // 从请求中获取用户ID（实际项目中需要根据具体的认证方式实现）
+    // 从请求中获取用户ID（优先从请求属性获取，其次从Token解析）
     private Long getUserId(HttpServletRequest request) {
-        // 这里简化处理，实际项目中可能从token、session或请求头中获取
-        // 例如：String token = request.getHeader("Authorization");
-        // 然后解析token获取用户ID
+        // 1. 优先从请求属性中获取（由JwtFilter设置）
+        Object userIdObj = request.getAttribute("userId");
+        if (userIdObj instanceof Long) {
+            return (Long) userIdObj;
+        }
         
-        // 暂时返回一个固定的用户ID，用于测试
-        return 1L;
+        // 2. 从请求头中的Token解析
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            try {
+                Claims claims = JwtUtil.parseToken(token);
+                return claims.get("userId", Long.class);
+            } catch (Exception e) {
+                // Token解析失败，可能是未登录用户
+                return null;
+            }
+        }
+        
+        return null;
     }
 }

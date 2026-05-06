@@ -25,9 +25,7 @@ const loadKnowledgeDetail = async () => {
     knowledgeItem.value = null // 清空旧数据
     const id = Number(route.params.id)
     
-    // 增加浏览次数
-    await addBehavior('culture', id, 'view')
-    
+    // 浏览次数由后端拦截器自动记录，无需手动调用
     const response = await getCultureDetail(id)
     if (response && response.code === 200 && response.data) {
       knowledgeItem.value = {

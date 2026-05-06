@@ -158,11 +158,12 @@ onMounted(() => {
             </el-button>
           </div>
         <div v-if="news.cover" class="news-cover">
-          <el-image 
+          <!-- <el-image 
             :src="news.cover" 
             fit="cover"
             class="cover-img"
-          />
+          /> -->
+          <img :src="news.cover" alt="新闻封面" class="cover-img" />
         </div>
       </div>
 
@@ -179,7 +180,7 @@ onMounted(() => {
 
 <style scoped>
 .news-detail-container {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 40px 20px;
 }

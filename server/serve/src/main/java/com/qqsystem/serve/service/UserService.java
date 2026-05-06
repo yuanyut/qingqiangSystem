@@ -129,7 +129,7 @@ public class UserService {
         Long total = behaviorMapper.countUserBehavior(userId, null, "favorite");
         
         List<FavoriteVO> favoriteList = new ArrayList<>();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
         for (Behavior behavior : behaviors) {
             FavoriteVO vo = new FavoriteVO();
@@ -139,7 +139,7 @@ public class UserService {
             vo.setTargetId(behavior.getTargetId());
             vo.setAction(behavior.getAction());
             vo.setCreateTime(behavior.getCreateTime());
-            vo.setTime(behavior.getCreateTime() != null ? formatter.format(behavior.getCreateTime()) : "");
+            vo.setTime(behavior.getCreateTime() != null ? behavior.getCreateTime().format(formatter) : "");
             
             // 设置默认值
             vo.setTitle("未知内容");
@@ -193,7 +193,7 @@ public class UserService {
         Long total = behaviorMapper.countUserBehavior(userId, null, "view");
         
         List<HistoryVO> historyList = new ArrayList<>();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
         for (Behavior behavior : behaviors) {
             HistoryVO vo = new HistoryVO();
@@ -203,7 +203,7 @@ public class UserService {
             vo.setTargetId(behavior.getTargetId());
             vo.setAction(behavior.getAction());
             vo.setCreateTime(behavior.getCreateTime());
-            vo.setTime(behavior.getCreateTime() != null ? formatter.format(behavior.getCreateTime()) : "");
+            vo.setTime(behavior.getCreateTime() != null ? behavior.getCreateTime().format(formatter) : "");
             
             // 设置默认值
             vo.setTitle("未知内容");
@@ -257,7 +257,7 @@ public class UserService {
         Long total = behaviorMapper.countUserBehavior(userId, null, "like");
         
         List<LikeVO> likeList = new ArrayList<>();
-        java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         
         for (Behavior behavior : behaviors) {
             LikeVO vo = new LikeVO();
@@ -267,7 +267,7 @@ public class UserService {
             vo.setTargetId(behavior.getTargetId());
             vo.setAction(behavior.getAction());
             vo.setCreateTime(behavior.getCreateTime());
-            vo.setTime(behavior.getCreateTime() != null ? formatter.format(behavior.getCreateTime()) : "");
+            vo.setTime(behavior.getCreateTime() != null ? behavior.getCreateTime().format(formatter) : "");
             
             // 设置默认值
             vo.setTitle("未知内容");

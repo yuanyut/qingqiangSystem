@@ -24,8 +24,7 @@ const loadActorDetail = async () => {
     loading.value = true
     actor.value = null // 清空旧数据
     
-    // 增加浏览次数
-    await addBehavior('actor', actorId.value, 'view')
+    // 浏览次数由后端拦截器自动记录，无需手动调用
     
     const res = await getActorDetail(actorId.value)
     if (res.code === 200) {
