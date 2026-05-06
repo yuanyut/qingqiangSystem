@@ -157,13 +157,13 @@ onMounted(() => {
               <div class="stat-value">{{ actor.likeCount }}</div>
               <div class="stat-label">粉丝</div>
             </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ actor.worksCount }}</div>
+            <!-- <div class="stat-item">
+              <div class="stat-value">{{ actor. }}</div>
               <div class="stat-label">作品</div>
-            </div>
+            </div> -->
             <div class="stat-item">
               <div class="stat-value">{{ actor.viewCount }}</div>
-              <div class="stat-label">播放</div>
+              <div class="stat-label">观看数</div>
             </div>
           </div>
           <div class="actor-bio">
@@ -184,18 +184,18 @@ onMounted(() => {
             >
               {{ isLiked ? '已点赞' : '点赞' }}
             </el-button>
-            <el-button 
+            <!-- <el-button 
               :type="isFavorited ? 'warning' : 'default'" 
               @click="handleFavorite"
               class="action-button"
             >
               {{ isFavorited ? '已收藏' : '收藏' }}
-            </el-button>
+            </el-button> -->
           </div>
         </div>
       </div>
 
-      <div class="detail-section">
+      <!-- <div class="detail-section">
         <h2 class="section-title">代表作品</h2>
         <div v-if="actor.works && actor.works.length > 0" class="works-list">
           <div v-for="work in actor.works" :key="work.id" class="work-item">
@@ -216,18 +216,18 @@ onMounted(() => {
         <div v-else class="empty-works">
           <span>暂无作品信息</span>
         </div>
-      </div>
+      </div> -->
     </div>
 
-    <div v-else class="empty-state">
+    <!-- <div v-else class="empty-state">
       <span>演员不存在</span>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <style scoped>
 .actor-detail-container {
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 40px 20px;
 }

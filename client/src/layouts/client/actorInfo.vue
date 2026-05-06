@@ -269,10 +269,10 @@ watch(() => route.path, (newPath) => {
     <div class="playlist-grid">
       <div v-for="actor in actorList" :key="actor.id" class="playlist-item" @click="goToDetail(actor.id)">
         <actor_card 
-          :image="actor.avatar || '/home/banner1.png'" 
+          :avatar="actor.avatar " 
           :name="actor.name" 
-          :desc="actor.title"  
-          :act="actor.works[0] || '暂无作品'" 
+          :intro="actor.intro"  
+          :worksCount="actor.worksCount || 0"
           :viewCount="actor.viewCount || 0"
           :likeCount="actor.likeCount || 0" 
           

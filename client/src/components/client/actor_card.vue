@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref ,watch} from 'vue';
 const props = defineProps<{
-  images?: string
+  avatar?: string
   name?: string
-  desc?: string
+  intro?: string
+  worksCount?: string | number
   cate?: string
   act?: string
   viewCount?: string | number
@@ -30,7 +31,7 @@ const changeFavorite = () => {
 <template>
   <div class="card">
     <div class="card_header">
-      <image :src="props.images" size="100%" class="card_image" />
+      <img :src="props.avatar" alt="Actor Avatar" class="card_image" />
     </div>
     
     <div class="card_content">
@@ -39,34 +40,33 @@ const changeFavorite = () => {
       </div>
       
       <div class="card_desc">
-        <span>{{ props.desc }}</span>
+        <span>{{ props.intro }}</span>
       </div>
       
       <div class="card_info">
         
         <div class="info_item">
-          <span class="info_label">代表作品：</span>
-          <span class="info_value">{{ props.act }}</span>
+          <span class="info_label">作品数：</span>
+          <span class="info_value">{{ props.worksCount }}</span>
+        </div>
+        <div class="info_item">
+          <span class="info_label">观看数：</span>
+          <span class="info_value">{{ props.viewCount }}</span>
+        </div>
+        <div class="info_item">
+          <span class="info_label">点赞数：</span>
+          <span class="info_value">{{ props.likeCount }}</span>
         </div>
       </div>
       
-      <div class="card_attr">
-        <div class="attr_item">
-          <span class="attr_icon">👁️</span>
-          <span class="attr_value">{{ props.viewCount }}</span>
-        </div>
-        <div class="attr_item">
-          <span class="attr_icon">❤️</span>
-          <span class="attr_value">{{ props.likeCount }}</span>
-        </div>
-      </div>
+    
     </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  width: 280px;
+  /* width: 280px; */
   background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
   border-radius: 16px;
   overflow: hidden;
@@ -162,7 +162,7 @@ const changeFavorite = () => {
 
 .info_item {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 4px;
 }
 
