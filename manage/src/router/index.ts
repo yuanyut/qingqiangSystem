@@ -5,8 +5,10 @@ import { mockMenu } from '@/types/meaus'
 
 // 1. 创建路由
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  //history: createWebHistory(import.meta.env.BASE_URL/manage),
+  history: createWebHistory('/manage/'),  // 添加 base 路径
   routes: [
+
     { path: '/', name: 'login', component: login },
 
     {
@@ -32,20 +34,20 @@ console.log(modules)
 interface MenuItem {
   name: string
   path: string
-  component?: string  
-  icon?: string       
-  permission?: string 
+  component?: string
+  icon?: string
+  permission?: string
   children?: MenuItem[]
 }
 
 // 4. 递归添加路由
 function addRoutes(menuList: MenuItem[]) {
   menuList.forEach(item => {
-    
+
     // 只有当 component 存在时才添加路由,这里只有一级菜单
     if (item.component) {
       const componentLoader = modules[item.component]
-      
+
       if (componentLoader) {
         router.addRoute('manage', {
           path: item.path,
@@ -60,7 +62,7 @@ function addRoutes(menuList: MenuItem[]) {
         console.warn(`组件不存在: ${item.component}`)
       }
     }
-    
+
     // 递归处理子路由
     if (item.children && item.children.length > 0) {
       addRoutes(item.children)

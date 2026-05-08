@@ -120,7 +120,7 @@ const changeTrend = async (trendValue: trendIntergace,index:number) => {
     trend.shareCount = trendValue.shareCount
     trend.visitCount = trendValue.visitCount
     activeDaram.value=index
-    
+
     // 根据index确定类型
     let type = 'day'
     if (index === 1) {
@@ -128,7 +128,7 @@ const changeTrend = async (trendValue: trendIntergace,index:number) => {
     } else if (index === 2) {
         type = 'month'
     }
-    
+
     // 调用API获取剧目热度趋势数据
     try {
         const heatTrendData = await getDramaHeatTrend(type)
@@ -138,7 +138,7 @@ const changeTrend = async (trendValue: trendIntergace,index:number) => {
             const visitCounts = heatTrendData.data.map((item) => item.visitCount || 0)
             const collectCounts = heatTrendData.data.map((item) => item.collectCount || 0)
             const shareCounts = heatTrendData.data.map((item) => item.shareCount || 0)
-            
+
             trend.time = times
             trend.visitCount = visitCounts
             trend.collectCount = collectCounts
@@ -190,7 +190,7 @@ const timer = ref<number>(0)
 onMounted(async () => {
     updataTime()
     timer.value = setInterval(updataTime, 1000)
-    
+
     // 获取剧目分类饼图数据
     try {
       const categoryData = await getDramaCategory()
@@ -206,7 +206,7 @@ onMounted(async () => {
     } catch (error) {
       console.error('获取剧目分类数据失败:', error)
     }
-    
+
     // 获取剧目TOP10数据
     try {
       const top10Data = await getDramaTop10()
@@ -224,7 +224,7 @@ onMounted(async () => {
     } catch (error) {
       console.error('获取剧目TOP10数据失败:', error)
     }
-    
+
     // 获取剧目热度趋势数据
     try {
       const heatTrendData = await getDramaHeatTrend('day')
@@ -234,7 +234,7 @@ onMounted(async () => {
         const visitCounts = heatTrendData.data.map((item) => item.visitCount || 0)
         const collectCounts = heatTrendData.data.map((item) => item.collectCount || 0)
         const shareCounts = heatTrendData.data.map((item) => item.shareCount || 0)
-        
+
         trend.time = times
         trend.visitCount = visitCounts
         trend.collectCount = collectCounts
@@ -257,16 +257,16 @@ const activeDaram=ref(0)
 
         <!-- 重新布局：左侧上方突出地图卡片 -->
         <div class="new-layout">
-            
+
 
             <!-- 右侧辅助信息区（性别+年龄） -->
             <div class="right-side">
-                
+
                 <div class="chart-card">
-                    <div class="chart-title">热门剧目TOP10</div>
+                    <div class="chart-title">热门剧目</div>
                     <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
                 </div>
-                
+
             </div>
         </div>
 
@@ -287,12 +287,12 @@ const activeDaram=ref(0)
                     </div>
                     <threeLine :datas="trend" wd="100%" ht="320px" name1="访问量" name2="收藏" name3="点赞"></threeLine>
                 </div>
-                
+
             </div>
             </div>
 
-            
-        
+
+
     </div>
 </template>
 
@@ -418,7 +418,7 @@ const activeDaram=ref(0)
 /* 原有图表容器样式 */
 .chart-container {
   display: grid;
-  
+
   gap: 20px;
 }
 

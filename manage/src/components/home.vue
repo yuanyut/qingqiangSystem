@@ -98,7 +98,7 @@ const change = async (daram: daramValue, index: number) => {
   let type = 'day'
   if (index === 1) type = 'week'
   if (index === 2) type = 'month'
-  
+
   try {
     const trendData = await getContentTrend(type)
     console.log('内容新增趋势数据:', trendData)
@@ -107,7 +107,7 @@ const change = async (daram: daramValue, index: number) => {
       const time = trendData.data.map(item => item.date)
       const dramaCount = trendData.data.map(item => item.dramaCount)
       const cultureCount = trendData.data.map(item => item.cultureCount)
-      
+
       Dram.time = time
       Dram.dramaCount = dramaCount
       Dram.articleCount = cultureCount // 文章数量改为文化数量
@@ -207,7 +207,7 @@ const timer = ref<number>(0)
 onMounted(async () => {
   updataTime()
   timer.value = setInterval(updataTime, 1000)
-  
+
   // 获取总览数据
   try {
     const overviewData = await getOverview()
@@ -222,7 +222,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取总览数据失败:', error)
   }
-  
+
   // 获取剧目分类饼图数据
   try {
     const categoryData = await getDramaCategory()
@@ -238,7 +238,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取剧目分类数据失败:', error)
   }
-  
+
   // 获取内容新增趋势数据
   try {
     const trendData = await getContentTrend('day')
@@ -248,7 +248,7 @@ onMounted(async () => {
       const time = trendData.data.map(item => item.date)
       const dramaCount = trendData.data.map(item => item.dramaCount)
       const cultureCount = trendData.data.map(item => item.cultureCount)
-      
+
       everyDram.time = time
       everyDram.dramaCount = dramaCount
       everyDram.articleCount = cultureCount // 文章数量改为文化数量
@@ -259,7 +259,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取内容新增趋势数据失败:', error)
   }
-  
+
   // 获取行为趋势数据
   try {
     const behaviorData = await getBehaviorTrend('day')
@@ -277,7 +277,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取行为趋势数据失败:', error)
   }
-  
+
   // 获取剧目TOP10数据
   try {
     const top10Data = await getDramaTop10()
@@ -295,7 +295,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取剧目TOP10数据失败:', error)
   }
-  
+
   // 获取内容质量维度数据
   try {
     const qualityData = await getQualityScore()
@@ -307,7 +307,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取内容质量维度数据失败:', error)
   }
-  
+
   // 获取登录地图数据
   try {
     const geoData = await getGeo()
@@ -323,7 +323,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('获取登录地图数据失败:', error)
   }
-  
+
   // 获取用户年龄段分布数据
   try {
     const ageDistributionData = await getUserAgeDistribution()
@@ -387,8 +387,8 @@ const activeDaram = ref(0)
       <div class="right-side">
 
         <div class="chart-card">
-          <div class="chart-title">热门剧目TOP10</div>
-          <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
+          <div class="chart-title">热门剧目</div>
+          <Bar :datas="topDrama" wd="90%" ht="320px"></Bar>
         </div>
         <div class="chart-card">
           <div class="chart-title">内容发布趋势</div>

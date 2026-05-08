@@ -71,7 +71,20 @@ export interface GeoData {
 export const getOverview = () => {
   return api.get<ResponseResult<OverviewData>>('/manage/dashboard/overview')
 }
-
+export const getUserInfo = (): Promise<ApiResponse<UserInfo>> => {
+  // return api.get({
+  //   url: '/user/me',
+  //   method: 'get'
+  // })
+}
+export interface ApiResponse<T = any> {
+  code: number
+  message: string
+  data: T
+}
+export const getAdminInfo=()=>{
+  return api.get<ResponseResult<ApiResponse>>('/user/me')
+}
 // 剧目分类饼图
 export const getDramaCategory = () => {
   return api.get<ResponseResult<CategoryData[]>>('/manage/dashboard/drama-category')
@@ -126,7 +139,7 @@ export const getUserGenderDistribution = () => {
 
 // 剧目热度趋势数据类型
 export interface DramaHeatTrendData { date: string; visitCount: number; collectCount: number; shareCount: number }
-export const getDramaHeatTrend = (type: string = 'day') => 
+export const getDramaHeatTrend = (type: string = 'day') =>
   api.get<ResponseResult<DramaHeatTrendData[]>>('/manage/dashboard/drama-heat-trend', { type })
 
 // 用户管理相关API
@@ -148,20 +161,20 @@ export interface UserData {
   status: number;
 }
 
-export const getUserList = (params: UserListParams) => 
+export const getUserList = (params: UserListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/user/admin/list', params)
 
-export const getUserById = (id: number | string) => 
+export const getUserById = (id: number | string) =>
   api.get<ResponseResult<any>>(`/user/admin/${id}`)
 
-export const addUser = (data: UserData) => 
+export const addUser = (data: UserData) =>
   api.post<ResponseResult<any>>('/user/admin', data)
 
-export const updateUser = (id: number | string, data: UserData) => 
+export const updateUser = (id: number | string, data: UserData) =>
   api.put<ResponseResult<any>>(`/user/admin/${id}`, data)
 
-export const deleteUser = (id: number | string | (number | string)[]) => 
-  Array.isArray(id) 
+export const deleteUser = (id: number | string | (number | string)[]) =>
+  Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/user/admin/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/user/admin/${id}`)
 
@@ -185,44 +198,46 @@ export interface DramaData {
   publishDate?: string;
 }
 
-export const getDramaList = (params: DramaListParams) => 
+export const getDramaList = (params: DramaListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/drama/list', params)
 
-export const getAdminDramaList = (params: DramaListParams) => 
+export const getAdminDramaList = (params: DramaListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/drama/admin/list', params)
 
-export const getDramaById = (id: number) => 
+export const getDramaById = (id: number) =>
   api.get<ResponseResult<any>>(`/drama/detail/${id}`)
 
-export const addDrama = (data: DramaData) => 
+export const addDrama = (data: DramaData) =>
   api.post<ResponseResult<any>>('/drama/add', data)
 
-export const uploadVideo = (data: FormData) => 
-  api.post<ResponseResult<{ url: string }>>('/drama/upload', data, {
+export const uploadVideo = (data: FormData) =>
+  api.post<ResponseResult<{ url: string }>>('/drama/upload', {
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+export const uploadAvatar = (data: FormData) =>
+  api.post<ResponseResult<{ url: string }>>('/user/avatar/upload',  {
+    data,
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
 
-export const uploadAvatar = (data: FormData) => 
-  api.post<ResponseResult<{ url: string }>>('/user/avatar/upload', data, {
-    headers: {
+export const uploadCulture = (data: FormData) =>
+  api.post<ResponseResult<{ url: string }>>('/content/culture/upload',  {
+   data,
+   headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
 
-export const uploadCulture = (data: FormData) => 
-  api.post<ResponseResult<{ url: string }>>('/content/culture/upload', data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-
-export const updateDrama = (data: DramaData) => 
+export const updateDrama = (data: DramaData) =>
   api.put<ResponseResult<any>>('/drama/update', data)
 
-export const deleteDrama = (id: number | number[] | string | string[]) => 
-  Array.isArray(id) 
+export const deleteDrama = (id: number | number[] | string | string[]) =>
+  Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/drama/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/drama/${id}`)
 
@@ -237,7 +252,7 @@ export interface DramaCategory {
   icon: string;
 }
 
-export const getDramaCategoryList = () => 
+export const getDramaCategoryList = () =>
   api.get<ResponseResult<DramaCategory[]>>('/drama/category/list')
 
 // 文化内容相关API
@@ -262,25 +277,25 @@ export interface CultureData {
   status?: number;
 }
 
-export const getCultureList = (params: CultureListParams) => 
+export const getCultureList = (params: CultureListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/content/culture/admin/list', params)
 
-export const getCultureById = (id: number) => 
+export const getCultureById = (id: number) =>
   api.get<ResponseResult<any>>(`/content/culture/detail/${id}`)
 
-export const addCulture = (data: CultureData) => 
+export const addCulture = (data: CultureData) =>
   api.post<ResponseResult<any>>('/content/culture/add', data)
 
-export const updateCulture = (data: CultureData) => 
+export const updateCulture = (data: CultureData) =>
   api.put<ResponseResult<any>>('/content/culture/update', data)
 
-export const deleteCulture = (id: number | number[] | string | string[]) => 
-  Array.isArray(id) 
+export const deleteCulture = (id: number | number[] | string | string[]) =>
+  Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/content/culture/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/content/culture/${id}`)
 
 // 登录相关API
-export const loginAdmin = (data: { username: string; password: string }) => 
+export const loginAdmin = (data: { username: string; password: string }) =>
   api.post<ResponseResult<any>>('/admin/login', data)
 
 
@@ -309,24 +324,24 @@ export interface ActorData {
   dramas: DramaData[];
 }
 //列表
-export const getActorList = (params: ActorListParams) => 
+export const getActorList = (params: ActorListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/actor/list', params)
 
 //管理员列表
-export const getAdminActorList = (params: ActorListParams) => 
+export const getAdminActorList = (params: ActorListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/actor/admin/list', params)
 
 //增加
-export const addActor = (data: ActorData) => 
+export const addActor = (data: ActorData) =>
   api.post<ResponseResult<any>>('/actor/add', data)
 
 //更新
-export const updateActor = (data: ActorData) => 
+export const updateActor = (data: ActorData) =>
   api.put<ResponseResult<any>>('/actor/update', data)
 
 //删除
-export const deleteActor = (id: number | number[] | string | string[]) => 
-  Array.isArray(id) 
+export const deleteActor = (id: number | number[] | string | string[]) =>
+  Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/actor/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/actor/${id}`)
 
@@ -352,27 +367,27 @@ export interface ProfileData {
   category: string;
 }
 //列表
-export const getProfileList = (params: ProfileListParams) => 
+export const getProfileList = (params: ProfileListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/news/list', params)
 
 //管理员列表
-export const getAdminProfileList = (params: ProfileListParams) => 
+export const getAdminProfileList = (params: ProfileListParams) =>
   api.get<ResponseResult<{ list: any[]; total: number }>>('/news/admin/list', params)
 
 //获取单个
-export const getProfileById = (id: number) => 
+export const getProfileById = (id: number) =>
   api.get<ResponseResult<any>>(`/news/detail/${id}`)
 
 //增加
-export const addProfile = (data: ProfileData) => 
+export const addProfile = (data: ProfileData) =>
   api.post<ResponseResult<any>>('/news/add', data)
 
 //更新
-export const updateProfile = (data: ProfileData) => 
+export const updateProfile = (data: ProfileData) =>
   api.put<ResponseResult<any>>('/news/update', data)
 
 //删除
-export const deleteProfile = (id: number | number[] | string | string[]) => 
-  Array.isArray(id) 
+export const deleteProfile = (id: number | number[] | string | string[]) =>
+  Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/news/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/news/${id}`)

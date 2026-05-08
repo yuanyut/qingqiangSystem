@@ -12,7 +12,8 @@ interface User {
     password: string,
     role: string,
     status: string,
-    createdAt: string
+    createdAt: string,
+    phone:string
 }
 
 const tableData: User[] = reactive([])

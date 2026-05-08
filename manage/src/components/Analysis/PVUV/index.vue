@@ -222,9 +222,9 @@ const activeDaram=ref(0)
 
             <!-- 右侧辅助信息区（性别+年龄） -->
             <div class="right-side">
-                
+
                 <div class="chart-card">
-                    <div class="chart-title">热门剧目TOP10</div>
+                    <div class="chart-title">热门剧目</div>
                     <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
                 </div>
                 <div class="chart-card">
@@ -256,11 +256,11 @@ const activeDaram=ref(0)
                     <Radar :datas="qualityScoreData" wd="100%" ht="320px" name="内容质量评分"></Radar>
                 </div>
             </div>
-               
-            
+
+
 
             <!-- 中间列 -->
-            
+
                 <!-- <div class="chart-card">
                     <div class="chart-title">剧目热度趋势</div>
                     <div class="chart-tabs">
@@ -280,8 +280,8 @@ const activeDaram=ref(0)
                 </div> -->
             </div>
 
-            
-        
+
+
     </div>
 </template>
 
@@ -407,7 +407,7 @@ const activeDaram=ref(0)
 /* 原有图表容器样式 */
 .chart-container {
   display: grid;
-  
+
   gap: 20px;
 }
 
