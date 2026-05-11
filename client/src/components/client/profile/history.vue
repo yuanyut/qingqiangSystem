@@ -51,12 +51,12 @@ const currentTab=ref('all')
 // const filterList=reactive([])
 const filterLists=(value)=>{
   // filterList.length = 0;
-  
+
   currentTab.value=value
   console.log(currentTab.value)
 }
 const filterList=computed(()=>{
-  
+
     if(currentTab.value==='all'){
       return browseHistory.value
     }
@@ -101,17 +101,23 @@ const deleteBtn=async(id)=>{
 
 // 跳转到详情页
 const goToDetail = (targetType, targetId) => {
-  router.push(`/${targetType}/${targetId}`)
+  if(targetType==='culture'){
+    router.push(`/knowledge/${targetId}`)
+  }
+  else{
+     router.push(`/${targetType}/${targetId}`)
+  }
+
 }
 </script>
 <template>
   <div class="browse-history">
     <!-- 头部 -->
     <div class="history-header">
-      
+
       <button class="clear-btn" @click="clearBtn">清空历史</button>
     </div>
-    
+
     <!-- 筛选栏 -->
     <div class="filter-bar">
       <button
@@ -124,7 +130,7 @@ const goToDetail = (targetType, targetId) => {
         {{ filter.label }}
       </button>
     </div>
-    
+
     <!-- 历史列表 -->
     <div class="history-list">
       <div v-for="item in filterList" :key="item.id" class="date-group">
@@ -136,7 +142,7 @@ const goToDetail = (targetType, targetId) => {
                 {{ lableChange(item.targetType)}}
               </div>
             </div>
-            
+
             <div class="item-info">
               <div class="item-title">{{ item.title }}</div>
               <!-- <div class="item-subtitle">{{ item.subtitle }}</div> -->
@@ -145,7 +151,7 @@ const goToDetail = (targetType, targetId) => {
                 <span class="item-time">{{ item.time }}</span>
               </div>
             </div>
-            
+
             <div class="item-actions">
               <button class="action-btn" @click.stop="deleteBtn(item.id)">删除</button>
             </div>
@@ -165,7 +171,8 @@ const goToDetail = (targetType, targetId) => {
   margin: 0 auto;
   padding: 32px 24px;
   background: linear-gradient(135deg, #fefaf5 0%, #fff9f2 100%);
-  min-height: 100vh;
+  max-height: 63vh;
+    overflow: auto;
 }
 
 /* 头部样式 */
@@ -415,37 +422,37 @@ const goToDetail = (targetType, targetId) => {
   .browse-history {
     padding: 20px 16px;
   }
-  
+
   .history-header h3 {
     font-size: 24px;
   }
-  
+
   .history-item {
     padding: 12px;
   }
-  
+
   .item-cover {
     width: 70px;
     height: 70px;
   }
-  
+
   .item-title {
     font-size: 15px;
   }
-  
+
   .item-subtitle {
     font-size: 12px;
   }
-  
+
   .item-actions {
     opacity: 1;
   }
-  
+
   .action-btn {
     padding: 6px 12px;
     font-size: 12px;
   }
-  
+
   .filter-btn {
     padding: 6px 16px;
     font-size: 14px;
@@ -456,12 +463,12 @@ const goToDetail = (targetType, targetId) => {
   .filter-bar {
     gap: 8px;
   }
-  
+
   .filter-btn {
     padding: 4px 12px;
     font-size: 13px;
   }
-  
+
   .item-meta {
     flex-direction: column;
     gap: 4px;

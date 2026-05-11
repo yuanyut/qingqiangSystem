@@ -16,9 +16,9 @@
 
         <!-- 筛选栏 -->
         <div class="filter-bar">
-            <div 
-                v-for="(item, index) in cate" 
-                :key="index" 
+            <div
+                v-for="(item, index) in cate"
+                :key="index"
                 class="filter-item"
                 :class="{ active: currentCate === item.type }"
                 @click="chuliCate(item.type)"
@@ -61,12 +61,12 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="empty-state" v-else>
-            <div class="empty-icon">📭</div>
+
             <p class="empty-text">暂无收藏内容</p>
             <p class="empty-hint">收藏你喜欢的剧目、名家或资讯，它们会出现在这里</p>
-            <button class="browse-btn" @click="goToRecommend">去逛逛</button>
+      <!--   <button class="browse-btn" @click="goToRecommend">去逛逛</button>-->
         </div>
     </div>
 </template>
@@ -189,7 +189,12 @@ const goToRecommend = () => {
 
 // 跳转到详情页
 const goToDetail = (targetType, targetId) => {
-  router.push(`/${targetType}/${targetId}`)
+  if(targetType==='culture'){
+    router.push(`/knowledge/${targetId}`)
+  }
+  else{
+     router.push(`/${targetType}/${targetId}`)
+  }
 }
 </script>
 
@@ -199,7 +204,8 @@ const goToDetail = (targetType, targetId) => {
     margin: 0 auto;
     padding: 32px 24px;
     background: linear-gradient(135deg, #fefaf5 0%, #fff9f2 100%);
-    min-height: 100vh;
+    max-height: 63vh;
+    overflow: auto;
 }
 
 /* 头部样式 */
@@ -511,31 +517,31 @@ const goToDetail = (targetType, targetId) => {
     .my-favorites {
         padding: 20px 16px;
     }
-    
+
     .section-header h3 {
         font-size: 24px;
     }
-    
+
     .favorite-card {
         flex-wrap: wrap;
         padding: 16px;
     }
-    
+
     .card-cover {
         width: 80px;
         height: 80px;
     }
-    
+
     .card-title {
         font-size: 16px;
     }
-    
+
     .cancel-btn {
         width: 100%;
         justify-content: center;
         margin-top: 8px;
     }
-    
+
     .filter-item {
         padding: 6px 16px;
         font-size: 14px;
@@ -546,12 +552,12 @@ const goToDetail = (targetType, targetId) => {
     .filter-bar {
         gap: 8px;
     }
-    
+
     .filter-item {
         padding: 4px 12px;
         font-size: 13px;
     }
-    
+
     .card-info {
         flex: 1;
     }

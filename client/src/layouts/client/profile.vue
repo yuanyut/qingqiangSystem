@@ -74,10 +74,10 @@ const loadUserData = async () => {
         isLogin: true
       })
     }
-    
+
     // 请求统计数据
     const statsRes = await getUserStats()
-    
+
     if (statsRes.code === 200) {
       userStats.value = statsRes.data
     } else {
@@ -107,21 +107,21 @@ onActivated(() => {
     <!-- 头部个人信息卡片 - 渐变背景增强视觉 -->
     <div class="profile-header">
       <div class="avatar-wrapper">
-          <el-avatar 
-            shape="square" 
-            :size="88" 
+          <el-avatar
+            shape="square"
+            :size="88"
             :src="userInfoStore.UserInfos.avatar || 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'"
             class="avatar"
           />
         </div>
-        
+
         <div class="user-info">
           <div class="username">{{ userInfoStore.UserInfos.username }}</div>
           <div class="nickname">昵称：{{ userInfoStore.UserInfos.nickname || '未设置昵称' }}</div>
           <div class="address">地址：{{ userInfoStore.UserInfos.address || '未设置地址' }}</div>
           <div class="join-date">加入于 {{ userInfoStore.UserInfos.createTime ? new Date(userInfoStore.UserInfos.createTime).getFullYear() + '年' : '未知' }}</div>
         </div>
-      
+
       <div class="stats-wrapper">
         <div class="stats">
           <div class="stat-item">
@@ -146,9 +146,9 @@ onActivated(() => {
     <div class="main-layout">
       <!-- 左侧导航 - 现代化卡片式菜单 -->
       <div class="sidebar">
-        <div 
-          v-for="(item, index) in sideList" 
-          :key="index" 
+        <div
+          v-for="(item, index) in sideList"
+          :key="index"
           class="sidebar-item"
           :class="{ active: currentTab === index }"
           @click="change(item, index)"
@@ -197,7 +197,7 @@ onActivated(() => {
   margin: 0 auto;
   /* padding: 28px 32px; */
   background: linear-gradient(180deg, #f9fafc 0%, #ffffff 100%);
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 /* 头部个人信息卡片 - 玻璃拟态风格 */
@@ -455,19 +455,19 @@ onActivated(() => {
   .profile-container {
     padding: 20px;
   }
-  
+
   .profile-header {
     flex-wrap: wrap;
     gap: 20px;
     padding: 24px;
   }
-  
+
   .stats-wrapper {
     margin-top: 8px;
     width: 100%;
     justify-content: center;
   }
-  
+
   .stats {
     justify-content: center;
   }
@@ -477,40 +477,40 @@ onActivated(() => {
   .profile-container {
     padding: 16px;
   }
-  
+
   .profile-header {
     flex-direction: column;
     text-align: center;
     padding: 28px 20px;
   }
-  
+
   .avatar-wrapper {
     margin-right: 0;
   }
-  
+
   .user-info {
     text-align: center;
     align-items: center;
   }
-  
+
   .title {
     margin: 0 auto;
   }
-  
+
   .stats-wrapper {
     width: 100%;
     padding: 12px 16px;
   }
-  
+
   .stats {
     justify-content: center;
   }
-  
+
   .main-layout {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .sidebar {
     width: 100%;
     position: static;
@@ -522,7 +522,7 @@ onActivated(() => {
     box-shadow: none;
     border: none;
   }
-  
+
   .sidebar-item {
     flex: 1;
     min-width: calc(33.333% - 10px);
@@ -533,27 +533,27 @@ onActivated(() => {
     padding: 12px 8px;
     box-shadow: var(--shadow-sm);
   }
-  
+
   .sidebar-item.active {
     background: var(--primary-gradient);
   }
-  
+
   .sidebar-item.active::before {
     display: none;
   }
-  
+
   .sidebar-item:hover {
     transform: translateY(-2px);
   }
-  
+
   .content-area {
     padding: 20px;
   }
-  
+
   .username {
     font-size: 24px;
   }
-  
+
   .stat-number {
     font-size: 24px;
   }
@@ -564,15 +564,15 @@ onActivated(() => {
     min-width: calc(50% - 8px);
     font-size: 13px;
   }
-  
+
   .sidebar-name {
     font-size: 13px;
   }
-  
+
   .sidebar-icon {
     font-size: 16px;
   }
-  
+
   .content-area {
     padding: 16px;
   }
