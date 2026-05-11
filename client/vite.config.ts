@@ -17,25 +17,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/actor': {
+      '/api': {
         target: 'http://localhost:8081',
         changeOrigin: true,
-      },
-      '/drama': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-      },
-      '/user': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-      },
-      '/content': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
-      },
-      '/upload': {
-        target: 'http://localhost:8081',
-        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

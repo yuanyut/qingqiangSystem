@@ -81,7 +81,7 @@ const filterCultureList = () => {
   })
   totalcount.value = cultureList.value.length
 }
-
+const total=ref(0)
 const loadCultureList = async () => {
   try {
     loading.value = true
@@ -90,11 +90,13 @@ const loadCultureList = async () => {
       pageSize.value
     )
     if (res && res.code === 200 && res.data) {
+      console.log(res.data.total)
+      total.value=res.data.total
       originalCultureList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         title: item.title,
         content: item.content || '',
-        cover: (item.cover || '/home/banner1.png').replace(/[`]/g, ''),
+        cover: (item.cover ).replace(/[`]/g, ''),
         status: item.status || 1,
         viewCount: item.viewCount || 0,
         likeCount: item.likeCount || 0,
@@ -190,8 +192,8 @@ watch(() => route.path, (newPath) => {
     <div class="playlist-container">
       <div class="playlist-header">
         <div class="header-title">
-          <span class="title-text">秦腔文化知识</span>
-          <span class="title-count">共 {{ totalcount }} 条内容</span>
+          <!-- <span class="title-text">秦腔文化知识</span> -->
+          <span class="title-count">共 {{ total }} 条内容</span>
         </div>
       </div>
 
@@ -220,7 +222,7 @@ watch(() => route.path, (newPath) => {
         <el-pagination 
           background 
           layout="prev, pager, next" 
-          :total="totalcount" 
+          :total="total" 
           :current-page="currentPage"
           :page-size="pageSize"
           @current-change="handlePageChange"

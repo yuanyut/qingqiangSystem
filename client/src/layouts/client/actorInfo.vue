@@ -142,7 +142,7 @@ const filterActorList=()=>{
   })
   totalcount.value = actorList.value.length
 }
-
+const total=ref(0)
 const loadActorList=async ()=>{
   try {
     loading.value = true
@@ -153,6 +153,9 @@ const loadActorList=async ()=>{
       selectedStyle.value
     )
     if (res.code === 200) {
+      console.log(res.data.total)
+      total.value=res.data.total
+     
       originalActorList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         name: item.name,
@@ -261,8 +264,8 @@ watch(() => route.path, (newPath) => {
   <div class="playlist-container">
     <div class="playlist-header">
       <div class="header-title">
-        <span class="title-text">名家风采</span>
-        <span class="title-count">共 {{ totalcount }} 位名家</span>
+        
+        <span class="title-count">共 {{ total }} 位名家</span>
       </div>
     </div>
 
@@ -290,7 +293,7 @@ watch(() => route.path, (newPath) => {
       <el-pagination 
         background 
         layout="prev, pager, next" 
-        :total="totalcount" 
+        :total="total" 
         :current-page="currentPage"
         :page-size="pageSize"
         @current-change="handlePageChange"

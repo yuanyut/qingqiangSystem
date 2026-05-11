@@ -114,7 +114,7 @@ const filterDramaList=()=>{
   })
   totalcount.value = dramaList.value.length
 }
-
+const total=ref(0)
 const loadDramaList=async ()=>{
   try {
     loading.value = true
@@ -125,7 +125,9 @@ const loadDramaList=async ()=>{
       input3.value || undefined
     )
     if (res.code === 200) {
-      originalDramaList.value = (res.data.list || []).map((item: any) => ({
+      console.log(res.data.total)
+      total.value=res.data.total
+           originalDramaList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         title: item.name,
         description: item.intro,
@@ -232,8 +234,8 @@ watch(() => route.path, (newPath) => {
    <div class="playlist-container">
     <div class="playlist-header">
       <div class="header-title">
-        <span class="title-text">剧目列表</span>
-        <span class="title-count">共 {{ totalcount }} 部剧目</span>
+        <!-- <span class="title-text">剧目列表</span> -->
+        <span class="title-count">共 {{ total }} 部剧目</span>
       </div>
     </div>
     
@@ -262,7 +264,7 @@ watch(() => route.path, (newPath) => {
        <el-pagination 
          background 
          layout="prev, pager, next" 
-         :total="totalcount" 
+         :total="total" 
          :current-page="currentPage"
          :page-size="pageSize"
          @current-change="handlePageChange"
