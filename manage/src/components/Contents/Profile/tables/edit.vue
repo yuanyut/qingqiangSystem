@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
-import { ElMessage, ElUpload } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import type { ProfileData } from '@/api/api'
 import { addProfile, updateProfile } from '@/api/api'
 
@@ -29,39 +29,6 @@ const form = reactive<ProfileData>({
 
 const currentStatus = ref<string>('0')
 
-// 上传请求头（包含 Token）
-const uploadHeaders = ref({
-    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-})
-
-// 封面上传成功
-const handleCoverUploadSuccess = (response: any) => {
-    if (response && response.data && response.data.url) {
-        form.cover = response.data.url
-        ElMessage.success('封面上传成功!')
-    }
-}
-
-// 封面上传失败
-const handleCoverUploadError = () => {
-    ElMessage.error('封面上传失败，请重试!')
-}
-
-// 封面上传前验证
-const beforeCoverUpload = (file: File) => {
-    const isImage = file.type.startsWith('image/')
-    if (!isImage) {
-        ElMessage.error('只能上传图片文件!')
-        return false
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2
-    if (!isLt2M) {
-        ElMessage.error('图片大小不能超过 2MB!')
-        return false
-    }
-    return true
-}
-
 const props = defineProps<{ title: string, opear: string }>()
 
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
@@ -70,7 +37,8 @@ watch(content, (newVal) => {
     if (newVal) {
         // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
-        currentStatus.value = (newVal.status || 0).toString()
+        // 使用 ?? 操作符处理 status 为 0 的情况
+        currentStatus.value = (newVal.status ?? 0).toString()
         console.log('form 更新后:', form)
     }
 }, { deep: true, immediate: true })
@@ -86,12 +54,9 @@ const handleConfirm = async () => {
         ElMessage.error('请填写资讯内容')
         return
     }
-    // if (!form.category) {
-    //     ElMessage.error('请选择资讯分类')
-    //     return
-    // }
 
-    form.status = parseInt(currentStatus.value, 10)
+    // 使用 ?? 操作符处理 status
+    form.status = parseInt(currentStatus.value, 10) ?? 0
 
     try {
         if (props.opear === '0') {
@@ -152,9 +117,6 @@ const rules = {
         { required: true, message: '请输入资讯内容', trigger: 'blur' },
         { min: 1, max: 5000, message: '长度在 1 到 5000 个字符', trigger: 'blur' }
     ],
-    // category: [
-    //     { required: true, message: '请选择资讯分类', trigger: 'change' }
-    // ]
 }
 </script>
 
@@ -177,32 +139,9 @@ const rules = {
                 <el-input v-model="form.content" type="textarea" :rows="6" placeholder="请输入资讯内容" />
             </el-form-item>
 
-            <!-- 分类 -->
-            <!-- <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
-                <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
-                    <el-option label="名家动态" value="名家动态" />
-                    <el-option label="活动通知" value="活动通知" />
-                    <el-option label="非遗动态" value="非遗动态" />
-                    <el-option label="赛事新闻" value="赛事新闻" />
-                    <el-option label="文化动态" value="文化动态" />
-                </el-select>
-            </el-form-item> -->
-
             <!-- 来源 -->
             <el-form-item label="来源" :label-width="formLabelWidth">
                 <el-input v-model="form.source" placeholder="请输入来源" />
-            </el-form-item>
-
-            <!-- 封面 -->
-            <el-form-item label="封面" :label-width="formLabelWidth">
-                <div class="upload-container">
-                    <el-upload class="avatar-uploader" action="/content/culture/upload" :show-file-list="false"
-                        :on-success="handleCoverUploadSuccess" :on-error="handleCoverUploadError"
-                        :before-upload="beforeCoverUpload" :headers="uploadHeaders">
-                        <img v-if="form.cover" :src="form.cover" class="avatar" />
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                </div>
             </el-form-item>
 
             <!-- 状态 -->
@@ -258,46 +197,5 @@ const rules = {
 
 .status-deleted {
     color: #f56c6c;
-}
-
-.upload-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.avatar-uploader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    height: 150px;
-    border: 1px dashed #d9d9d9;
-    border-radius: 8px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.avatar-uploader:hover {
-    border-color: #409eff;
-}
-
-.avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-}
-
-.avatar {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-}
-
-:deep(.el-upload__tip) {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #909399;
 }
 </style>

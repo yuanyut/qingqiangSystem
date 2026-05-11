@@ -2,6 +2,8 @@ package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.common.utils.JwtUtil;
+import com.qqsystem.serve.config.AppConfig;
+import com.qqsystem.serve.config.UploadConfig;
 import com.qqsystem.serve.dto.RegisterDTO;
 import com.qqsystem.serve.dto.UserDTO;
 import com.qqsystem.serve.dto.UserStatsDTO;
@@ -11,7 +13,6 @@ import com.qqsystem.serve.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.HashMap;
@@ -27,8 +28,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Value("${app.domain:http://localhost:8081}")
-    private String domain;
+    @Autowired
+    private UploadConfig uploadConfig;
+
+    @Autowired
+    private AppConfig appConfig;
     
     //登录
     @PostMapping("/login")
@@ -474,15 +478,20 @@ public class UserController {
             String filename = UUID.randomUUID().toString() + extension;
 
             // 8. 保存文件
-            String uploadPath = System.getProperty("user.dir") + "/serve/src/main/resources/upload/avatar/";
+            String uploadPath = uploadConfig.getFullPath("avatar");
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-            File dest = new File(uploadPath + filename);
+            File dest = new File(uploadPath + File.separator + filename);
             file.transferTo(dest);
 
-            String avatarUrl = domain + "/upload/avatar/" + filename;
+            String avatarUrl;
+            if (uploadConfig.isUseFullUrl()) {
+                avatarUrl = appConfig.getDomain() + uploadConfig.getUrlPrefix() + "/avatar/" + filename;
+            } else {
+                avatarUrl = uploadConfig.getUrlPrefix() + "/avatar/" + filename;
+            }
 
             // 10. 更新用户头像
             int result = userService.updateUserAvatar(userId, avatarUrl);

@@ -139,7 +139,7 @@ const goToDetail = (targetType, targetId) => {
             
             <div class="item-info">
               <div class="item-title">{{ item.title }}</div>
-              <div class="item-subtitle">{{ item.subtitle }}</div>
+              <!-- <div class="item-subtitle">{{ item.subtitle }}</div> -->
               <div class="item-meta">
                 <span class="item-duration">{{ item.duration }}</span>
                 <span class="item-time">{{ item.time }}</span>

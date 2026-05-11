@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8081}
+  port: 8081
 
 # 自定义配置
 app:
@@ -9,7 +9,7 @@ app:
     path: /usr/share/nginx/html/upload
     # 静态资源访问路径前缀
     url-prefix: /upload
-    # 是否返回完整URL（开发环境通常设为false，使用相对路径）
+    # 生产环境返回完整URL
     use-full-url: ${UPLOAD_USE_FULL_URL:false}
 
 spring:
@@ -23,14 +23,10 @@ spring:
     deserialization:
       adjust-dates-to-context-time-zone: true
   datasource:
-    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/qinqiang?useSSL=false&serverTimezone=Asia/Shanghai}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/qinqiang?useSSL=false&serverTimezone=Asia/Shanghai}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:YuanYutong2003!}
+    password: ${DB_PASSWORD:your_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-#      url: jdbc:mysql://localhost:3306/qqsystem?useSSL=false&serverTimezone=Asia/Shanghai
-#      username: root
-#      password: 123456
-#      driver-class-name: com.mysql.cj.jdbc.Driver
   servlet:
     multipart:
       max-file-size: 100MB
@@ -43,8 +39,8 @@ spring:
 
 # MyBatis 配置
 mybatis:
-  mapper-locations: classpath*:mapper/**/*.xml  # XML 文件位置
-  type-aliases-package: com.qqsystem.serve.entity  # 实体类包路径
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.qqsystem.serve.entity
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL
-    map-underscore-to-camel-case: true  # 开启驼峰命名转换
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true

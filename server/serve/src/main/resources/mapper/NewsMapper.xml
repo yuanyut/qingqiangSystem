@@ -13,7 +13,7 @@
     <select id="selectList" resultType="com.qqsystem.serve.entity.News">
         SELECT *
         FROM news
-        WHERE status = 1
+        WHERE status = 0
         <if test="category != null">
             AND category = (SELECT category FROM news WHERE id = #{category, jdbcType=BIGINT})
         </if>
@@ -27,7 +27,7 @@
     <select id="countList" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM news
-        WHERE status = 1
+        WHERE status = 0
         <if test="category != null">
             AND category = (SELECT category FROM news WHERE id = #{category, jdbcType=BIGINT})
         </if>
@@ -154,6 +154,7 @@
     <select id="selectTopNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
+        WHERE status = 0
         ORDER BY view_count DESC, create_time DESC
         LIMIT 1
     </select>
@@ -162,7 +163,7 @@
     <select id="selectHotNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
-        WHERE status = 1
+        WHERE status = 0
         ORDER BY (
             view_count * 0.6 + 
             like_count * 0.3 + 
@@ -176,7 +177,7 @@
     <select id="selectRecommendNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
-        WHERE status = 1
+        WHERE status = 0
         <if test="category != null and category != ''">
             AND category = #{category}
         </if>
@@ -188,7 +189,7 @@
     <select id="selectMediaNews" resultType="com.qqsystem.serve.entity.News">
         SELECT id, title, content, cover, create_time, view_count, source, category
         FROM news
-        WHERE content LIKE '%视频%' OR title LIKE '%视频%'
+        WHERE status = 0 AND (content LIKE '%视频%' OR title LIKE '%视频%')
         ORDER BY create_time DESC
         LIMIT #{size}
     </select>

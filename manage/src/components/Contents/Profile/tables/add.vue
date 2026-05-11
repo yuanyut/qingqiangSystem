@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref, watch, onMounted } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
-import { ElMessage, ElUpload } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { addProfile } from '@/api/api'
 import type { ProfileData } from '@/api/api'
 const formRef = ref<FormInstance>()
@@ -25,10 +25,6 @@ const content = defineModel<ProfileData | undefined>('content', { default: () =>
 const formLabelWidth = '100px'
 const emit = defineEmits(['confirm'])
 
-// 上传相关状态
-const uploadLoading = ref(false)
-const uploadProgress = ref(0)
-
 // 初始化 form - 适配资讯字段
 const form = reactive<FormItemProfile>({
     id: undefined,
@@ -47,59 +43,18 @@ const statusOptions = ref([
 ])
 const currentStatus = ref(0)
 const props = defineProps<{ title: string }>()
-// 上传请求头（包含 Token）
-const uploadHeaders = ref({
-    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-})
+
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
 watch(content, (newVal) => {
     console.log('子组件收到 content:', newVal)
     if (newVal) {
         // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
-        currentStatus.value = newVal.status || 0
+        currentStatus.value = newVal.status ?? 0
         console.log('form 更新后:', form)
         console.log('currentStatus 更新后:', currentStatus.value)
     }
 }, { deep: true, immediate: true })
-
-// 封面上传前验证
-const beforeCoverUpload = (file: File) => {
-    const isImage = file.type.startsWith('image/')
-    if (!isImage) {
-        ElMessage.error('只能上传图片文件!')
-        return false
-    }
-
-    const isLt5M = file.size / 1024 / 1024 < 5
-    if (!isLt5M) {
-        ElMessage.error('图片大小不能超过 5MB!')
-        return false
-    }
-
-    return true
-}
-
-// 封面上传成功处理
-const handleCoverUploadSuccess = (response: any, file: any) => {
-    if (response && response.data) {
-        form.cover = response.data.url
-        ElMessage.success('封面上传成功!')
-    } else {
-        ElMessage.error('封面上传失败!')
-    }
-}
-
-// 封面上传失败处理
-const handleCoverUploadError = () => {
-    ElMessage.error('封面上传失败，请重试!')
-}
-
-// 移除封面
-const handleRemoveCover = () => {
-    form.cover = ''
-    ElMessage.info('已移除封面')
-}
 
 // 确定按钮：将修改后的数据传回父组件
 const handleConfirm = async () => {
@@ -209,27 +164,6 @@ const rules = {
                 <el-input v-model="form.source" placeholder="请输入来源（爬虫/人工录入/公众号等）" />
             </el-form-item>
 
-            <!-- 封面 -->
-            <el-form-item label="封面" :label-width="formLabelWidth">
-                <el-upload
-                    class="avatar-uploader"
-                    action="/content/culture/upload"
-                    :show-file-list="false"
-                    :on-success="handleCoverUploadSuccess"
-                    :on-error="handleCoverUploadError"
-                    :before-upload="beforeCoverUpload"
-                    :headers="uploadHeaders"
-                >
-                    <img v-if="form.cover" :src="form.cover" class="avatar">
-                    <el-button v-else type="primary">上传封面</el-button>
-                </el-upload>
-                <template #tip>
-                    <div class="el-upload__tip">
-                        支持 jpg, jpeg, png 等格式，大小不超过 5MB
-                    </div>
-                </template>
-            </el-form-item>
-
             <!-- 分类 -->
             <!-- <el-form-item label="分类" :label-width="formLabelWidth" prop="category">
                 <el-select v-model="form.category" placeholder="请选择分类" style="width: 100%">
@@ -281,38 +215,5 @@ const rules = {
 
 :deep(.el-textarea__inner) {
     font-family: inherit;
-}
-
-.avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.avatar-uploader .el-upload:hover {
-    border-color: #409eff;
-}
-
-.avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-}
-
-.avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-}
-
-:deep(.el-upload__tip) {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #909399;
 }
 </style>

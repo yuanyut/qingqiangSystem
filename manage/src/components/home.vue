@@ -228,7 +228,7 @@ onMounted(async () => {
     const categoryData = await getDramaCategory()
     console.log('剧目分类数据:', categoryData)
     if (categoryData && categoryData.data) {
-      const newCateJumu = categoryData.data.map((item:any) => ({
+      const newCateJumu = categoryData.data.map((item: any) => ({
         value: item.count,
         name: item.category
       }))
@@ -388,7 +388,10 @@ const activeDaram = ref(0)
 
         <div class="chart-card">
           <div class="chart-title">热门剧目</div>
-          <Bar :datas="topDrama" wd="90%" ht="320px"></Bar>
+
+          <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
+
+
         </div>
         <div class="chart-card">
           <div class="chart-title">内容发布趋势</div>
@@ -459,7 +462,7 @@ const activeDaram = ref(0)
 .dashboard-page {
   background: #f0f2f5;
   overflow: auto;
-  max-height:calc(100vh - 60px) ;
+  max-height: calc(100vh - 60px);
   padding: 0 20px 20px 20px;
 }
 

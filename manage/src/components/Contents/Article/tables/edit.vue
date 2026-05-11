@@ -2,7 +2,7 @@
 import { reactive, ref, watch } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { ElMessage } from 'element-plus'
-import { addCulture, updateCulture, uploadCulture } from '@/api/api'
+import { addCulture, updateCulture, uploadProfile } from '@/api/api'
 import type { CultureData  } from '@/api/api'
 const formRef = ref<FormInstance>()
 
@@ -82,7 +82,7 @@ const handleFileChange = async (event: Event) => {
     formData.append('file', file)
     
     try {
-        const response = await uploadCulture(formData)
+        const response = await uploadProfile(formData)
         if (response && response.data && response.data.url) {
             form.coverUrl = response.data.url
             ElMessage.success('上传成功')

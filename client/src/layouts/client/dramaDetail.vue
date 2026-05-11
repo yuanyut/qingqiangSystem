@@ -6,6 +6,7 @@ import { toggleLike, toggleFavorite, addBehavior, checkBehavior } from '@/api/be
 import { useUserInfoStore } from '@/stores/userInfo'
 import { ArrowLeft, Loading } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import VideoPlayer from '@/components/VideoPlayer.vue'
 
 const route = useRoute()
 const dramaId = ref<number>(parseInt(route.params.id as string))
@@ -23,9 +24,9 @@ const loadDramaDetail = async () => {
   try {
     loading.value = true
     drama.value = null
-    
+
     // 浏览次数由后端拦截器自动记录，无需手动调用
-    
+
     const res = await getDramaDetail(dramaId.value)
     if (res.code === 200) {
       drama.value = {
@@ -37,13 +38,13 @@ const loadDramaDetail = async () => {
         likeCount: res.data.likeCount || 0,
         categoryName: res.data.categoryId === 1 ? '传统剧目' : '现代剧目'
       }
-      
+
       if (userStore.isLoggedIn) {
         const likeRes = await checkBehavior('drama', dramaId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
         }
-        
+
         const favoriteRes = await checkBehavior('drama', dramaId.value, 'favorite')
         if (favoriteRes.code === 200) {
           isFavorited.value = favoriteRes.data.isFavorited || false
@@ -62,7 +63,7 @@ const handleLike = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleLike('drama', dramaId.value)
     if (res.code === 200) {
@@ -83,7 +84,7 @@ const handleFavorite = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleFavorite('drama', dramaId.value)
     if (res.code === 200) {
@@ -153,15 +154,15 @@ onMounted(() => {
             </span>
           </div>
           <div class="action-buttons">
-            <el-button 
-              :type="isLiked ? 'primary' : 'default'" 
+            <el-button
+              :type="isLiked ? 'primary' : 'default'"
               @click="handleLike"
               class="action-button"
             >
               {{ isLiked ? '已点赞' : '点赞' }}
             </el-button>
-            <el-button 
-              :type="isFavorited ? 'warning' : 'default'" 
+            <el-button
+              :type="isFavorited ? 'warning' : 'default'"
               @click="handleFavorite"
               class="action-button"
             >
@@ -174,16 +175,16 @@ onMounted(() => {
           </div>
         </div>
         <div class="cover-image">
-          <video :src="drama.cover || 'undefined'" fit="cover" class="cover-img" controls></video>
+          <VideoPlayer :src="drama.cover || ''" class="cover-img" />
         </div>
       </div>
 
-      <!-- <div class="detail-section">
+      <!-- <div class="detail-section"> -->
         <h2 class="section-title">演员阵容</h2>
         <div v-if="drama.actors && drama.actors.length > 0" class="actors-list">
           <div v-for="actor in drama.actors" :key="actor.id" class="actor-item">
-            <el-image 
-              :src="actor.avatar || '/home/banner1.png'" 
+            <el-image
+              :src="actor.avatar || '/home/banner1.png'"
               fit="cover"
               class="actor-avatar"
             />
@@ -193,7 +194,6 @@ onMounted(() => {
         <div v-else class="empty-actors">
           <span>暂无演员信息</span>
         </div>
-      </div> -->
     </div>
 
     <div v-else class="empty-state">
@@ -255,7 +255,7 @@ onMounted(() => {
 .cover-image {
   flex-shrink: 0;
   /* width: 400px; */
-  /* height: 500px; */
+  height: 500px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

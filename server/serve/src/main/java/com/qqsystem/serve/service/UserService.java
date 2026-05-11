@@ -77,6 +77,7 @@ public class UserService {
         dto.setAvatar(user.getAvatar());
         dto.setAddress(user.getAddress());
         dto.setCreateTime(user.getCreateTime() != null ? user.getCreateTime().toString() : null);
+        dto.setRole(user.getRole());
         return dto;
     }
     //注册

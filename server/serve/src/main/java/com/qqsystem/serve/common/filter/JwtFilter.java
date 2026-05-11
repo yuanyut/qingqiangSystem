@@ -44,6 +44,13 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        
+        // 静态资源直接放行（除了已在白名单中的upload）
+        if (uri.startsWith("/static/") || uri.contains(".jpg") || uri.contains(".png") || uri.contains(".mp4") || uri.contains(".gif")) {
+            System.out.println("3. 静态资源文件，直接放行: " + uri);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         System.out.println("3. 未命中白名单，需要验证token");
 
@@ -122,6 +129,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 内容列表接口
         if (uri.equals("/content/culture/list")
+                || uri.equals("/culture/list")
                 || uri.equals("/news/list")
                 || uri.equals("/drama/list")
                 || uri.equals("/actor/list")) {

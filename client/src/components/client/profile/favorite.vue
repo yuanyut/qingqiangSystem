@@ -41,7 +41,7 @@
                 <!-- 信息区 -->
                 <div class="card-info">
                     <h4 class="card-title">{{ item.title }}</h4>
-                    <p class="card-subtitle">{{ item.subtitle }}</p>
+                    <!-- <p class="card-subtitle">{{ item.subtitle }}</p> -->
                     <div class="card-meta">
                         <span class="collect-time">
                             <svg class="time-icon" viewBox="0 0 24 24" fill="none">

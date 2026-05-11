@@ -2,12 +2,14 @@ package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
 import com.qqsystem.serve.config.AppConfig;
+import com.qqsystem.serve.config.UploadConfig;
 import com.qqsystem.serve.entity.Content;
 import com.qqsystem.serve.service.ContentService;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +21,11 @@ public class ContentController {
     @Resource
     private ContentService contentService;
 
-@Value("${app.domain:http://localhost:8081}")
-    private String domain;
+    @Autowired
+    private UploadConfig uploadConfig;
+
+    @Autowired
+    private AppConfig appConfig;
 
     // 获取文化资讯分类统计
     @GetMapping("/categories")
@@ -157,8 +162,8 @@ public class ContentController {
             return ResponseResult.badRequest("文件为空");
         }
 
-        String uploadDir = System.getProperty("user.dir") + "/serve/src/main/resources/upload/culture";
-        java.io.File dir = new java.io.File(uploadDir);
+        String uploadDir = uploadConfig.getFullPath("culture");
+        File dir = new File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -166,13 +171,20 @@ public class ContentController {
         String originalFilename = file.getOriginalFilename();
         String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         String fileName = java.util.UUID.randomUUID() + suffix;
-        String filePath = uploadDir + java.io.File.separator + fileName;
+        String filePath = uploadDir + File.separator + fileName;
 
         try {
-            file.transferTo(new java.io.File(filePath));
+            file.transferTo(new File(filePath));
+
+            String url;
+            if (uploadConfig.isUseFullUrl()) {
+                url = appConfig.getDomain() + uploadConfig.getUrlPrefix() + "/culture/" + fileName;
+            } else {
+                url = uploadConfig.getUrlPrefix() + "/culture/" + fileName;
+            }
 
             Map<String, String> result = new HashMap<>();
-            result.put("url", domain + "/upload/culture/" + fileName);
+            result.put("url", url);
             return ResponseResult.success(result);
         } catch (java.io.IOException e) {
             e.printStackTrace();

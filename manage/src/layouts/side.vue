@@ -1,11 +1,19 @@
 <script lang="ts" setup>
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch,onMounted,reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { mockMenu } from '@/types/meaus'
-
+import { getAdminInfo } from '@/api/api'
 const route = useRoute()
 const router = useRouter()
-
+const info = reactive({
+  role:"",
+  address: null,
+  avatar:"",
+  createTime:"",
+  id: 2,
+  nickname:"",
+  username: ""
+});
 // 手动控制激活的菜单项
 const activeMenu = ref('')
 const changPage=(path:string) =>{
@@ -14,27 +22,37 @@ const changPage=(path:string) =>{
   }
   activeMenu.value=path
   router.push('/manage/'+path)
-  console.log('点击跳转activeMenu改变了',activeMenu.value)
+  // console.log('点击跳转activeMenu改变了',activeMenu.value)
 }
-
+onMounted(async () => {
+  const res = await getAdminInfo();
+  Object.assign(info, res.data);
+});
 watch(()=>route.path,(newRoutePath)=>{
-  console.log('watch监听到路变化',newRoutePath)
+  // console.log('watch监听到路变化',newRoutePath)
   activeMenu.value=newRoutePath.replace('/manage/','')
-  console.log('这是url退出的新活动侧边',activeMenu.value)
+  // console.log('这是url退出的新活动侧边',activeMenu.value)
 }, { immediate: true, deep: true })
+const visiableMenu=computed(()=>{
+  const currentRole=info.role
+  if(!currentRole) return []
+  return mockMenu.filter(menu =>
+    menu.roles?.includes(currentRole)
+  )
+})
 </script>
 
 <template>
   <div>
-    <el-menu 
-      :default-active="activeMenu" 
-      class="el-menu-vertical-demo" 
+    <el-menu
+      :default-active="activeMenu"
+      class="el-menu-vertical-demo"
       style="height: 100vh;overflow: auto;"
-  
+
       @select="(index:any) => console.log('菜单选中:', index)"
     >
       <!-- 遍历菜单 -->
-      <template v-for="item in mockMenu" :key="item.path">
+      <template v-for="item in visiableMenu" :key="item.path">
         <!-- 如果有子菜单 -->
         <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
           <template #title>
@@ -42,9 +60,9 @@ watch(()=>route.path,(newRoutePath)=>{
             <span>{{ item.name }}</span>
           </template>
 
-          <el-menu-item 
-            v-for="child in item.children" 
-            :key="child.path" 
+          <el-menu-item
+            v-for="child in item.children"
+            :key="child.path"
             :index="child.path"
             @click="changPage(child.path)"
           >

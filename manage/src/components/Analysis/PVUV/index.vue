@@ -225,7 +225,7 @@ const activeDaram=ref(0)
 
                 <div class="chart-card">
                     <div class="chart-title">热门剧目</div>
-                    <Bar :datas="topDrama" wd="100%" ht="320px"></Bar>
+                    <Bar :datas="topDrama" wd="80%" ht="320px"></Bar>
                 </div>
                 <div class="chart-card">
                     <div class="chart-title">内容发布趋势</div>

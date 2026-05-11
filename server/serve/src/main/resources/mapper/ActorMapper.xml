@@ -13,8 +13,9 @@
     <select id="selectList" resultType="com.qqsystem.serve.entity.Actor">
         SELECT *
         FROM actor
+        WHERE status = 0
         <if test="style != null and style != ''">
-            WHERE role_name = #{style}
+            AND role_name = #{style}
         </if>
         ORDER BY id DESC
         LIMIT #{offset}, #{size}
@@ -41,8 +42,9 @@
     <select id="countList" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM actor
+        WHERE status = 0
         <if test="style != null and style != ''">
-            WHERE role_name = #{style}
+            AND role_name = #{style}
         </if>
     </select>
 

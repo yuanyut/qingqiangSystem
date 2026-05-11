@@ -2,6 +2,7 @@ import api from './common'
 
 // 响应结果类型
 export interface ResponseResult<T> {
+  msg: string
   code: number
   message: string
   data: T
@@ -78,6 +79,10 @@ export const getUserInfo = (): Promise<ApiResponse<UserInfo>> => {
   // })
 }
 export interface ApiResponse<T = any> {
+  role: string | undefined
+  avatar: string
+  nickname: string
+  username: string
   code: number
   message: string
   data: T
@@ -211,23 +216,23 @@ export const addDrama = (data: DramaData) =>
   api.post<ResponseResult<any>>('/drama/add', data)
 
 export const uploadVideo = (data: FormData) =>
-  api.post<ResponseResult<{ url: string }>>('/drama/upload', {
-    data,
+  api.post<ResponseResult<{ url: string }>>('/drama/upload', data, {
+
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
 export const uploadAvatar = (data: FormData) =>
-  api.post<ResponseResult<{ url: string }>>('/user/avatar/upload',  {
-    data,
+  api.post<ResponseResult<{ url: string }>>('/user/avatar/upload',  data, {
+
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
 
 export const uploadCulture = (data: FormData) =>
-  api.post<ResponseResult<{ url: string }>>('/content/culture/upload',  {
-   data,
+  api.post<ResponseResult<{ url: string }>>('/content/culture/upload',  data, {
+
    headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -391,3 +396,11 @@ export const deleteProfile = (id: number | number[] | string | string[]) =>
   Array.isArray(id)
     ? api.delete<ResponseResult<any>>('/news/batch', { data: id })
     : api.delete<ResponseResult<any>>(`/news/${id}`)
+
+// 新闻封面上传
+export const uploadProfile = (data: FormData) =>
+  api.post<ResponseResult<{ url: string }>>('/news/upload', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })

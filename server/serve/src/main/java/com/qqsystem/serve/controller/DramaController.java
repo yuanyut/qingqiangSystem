@@ -1,10 +1,12 @@
 package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
+import com.qqsystem.serve.config.AppConfig;
+import com.qqsystem.serve.config.UploadConfig;
 import com.qqsystem.serve.entity.Drama;
 import com.qqsystem.serve.entity.DramaCategory;
 import com.qqsystem.serve.service.DramaService;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -23,8 +25,11 @@ public class DramaController {
     @Resource
     private DramaService dramaService;
 
-@Value("${app.domain:http://localhost:8081}")
-    private String domain;
+    @Autowired
+    private UploadConfig uploadConfig;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> list(@RequestParam int page,
@@ -124,7 +129,7 @@ public class DramaController {
             return ResponseResult.badRequest("文件为空");
         }
 
-        String uploadDir = System.getProperty("user.dir") + "/serve/src/main/resources/upload/drama";
+        String uploadDir = uploadConfig.getFullPath("drama");
         File dir = new File(uploadDir);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -138,8 +143,15 @@ public class DramaController {
         try {
             file.transferTo(new File(filePath));
 
+            String url;
+            if (uploadConfig.isUseFullUrl()) {
+                url = appConfig.getDomain() + uploadConfig.getUrlPrefix() + "/drama/" + fileName;
+            } else {
+                url = uploadConfig.getUrlPrefix() + "/drama/" + fileName;
+            }
+
             Map<String, String> result = new HashMap<>();
-            result.put("url", domain + "/upload/drama/" + fileName);
+            result.put("url", url);
             return ResponseResult.success(result);
         } catch (IOException e) {
             e.printStackTrace();

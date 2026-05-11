@@ -20,7 +20,7 @@ const userInfoStore = useUserInfoStore()
 
 
 const info = reactive({
-
+  role:"",
   address: null,
   avatar:"",
   createTime:"",
@@ -39,7 +39,11 @@ onMounted(async () => {
 
 // 添加登出函数
 const handleLogout = () => {
-  // 实现登出逻辑
+  // 先清除 localStorage（包括 token）
+  localStorage.clear()
+  // 使用 Pinia store 登出
+  userInfoStore.logout()
+  // 跳转到登录页（相对路径）
   router.push('/')
 }
 

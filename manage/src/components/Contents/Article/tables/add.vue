@@ -195,7 +195,7 @@ const rules = {
             <el-form-item label="封面" :label-width="formLabelWidth">
                 <el-upload
                     class="avatar-uploader"
-                    action="/content/culture/upload"
+                    action="/news/upload"
                     :show-file-list="false"
                     :on-success="handleCoverUploadSuccess"
                     :on-error="handleCoverUploadError"

@@ -104,12 +104,9 @@ watch(() => editModul.value, (newVal, oldVal) => {
         const index = tableData.value.findIndex((item: any) => item.id === editContent.value?.id)
         if (index !== -1) {
             console.log('找到对应数据，索引:', index)
-            const actor = tableData.value[index];
-            console.log('actor:', actor)
-            if (actor && editContent.value) {
-                Object.assign(tableData.value[index], actor);
+            if (editContent.value) {
+                Object.assign(tableData.value[index], editContent.value);
                 console.log('表格数据更新后:', tableData.value[index])
-                // ElMessage.success('更新成功')
             }
         } else {
             console.log('未找到对应id的演员数据:', editContent.value?.id)
@@ -151,7 +148,7 @@ const handleEditConfirm = (data: any) => {
                     likeCount: data.likeCount || 0,
                     createTime: data.createTime || '',
                     updateTime: data.updateTime || '',
-                    status: data.status || 1,
+                    status: data.status,
                     dramas: data.dramas || []
                 });
                 console.log('表格数据更新成功:', tableData.value[index])
@@ -191,7 +188,7 @@ const handleEditConfirm = (data: any) => {
                 <el-table-column property="createTime" label="创建时间" width="120" sortable />
                 <el-table-column label="状态" width="100">
                     <template #default="scope">
-                        {{ scope.row.status == 0 ? '已上架' : '已下架' }}
+                        {{ scope.row.status !== 1 ? '已上架': '已下架'  }}
                     </template>
                 </el-table-column>
                 

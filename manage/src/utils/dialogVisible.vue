@@ -20,7 +20,7 @@ const cancel = () => {
 <template>
     <div>
         <el-dialog v-model="dialogVisible" title="Tips" width="500" :before-close="handleClose">
-            <span>This is a message</span>
+            <span>确认操作吗？</span>
             <template #footer>
                 <div class="dialog-footer">
 

@@ -4,13 +4,15 @@ export const mockMenu = [
     "name": "数据大屏",
     "path": "home",
     "component": "/src/components/home.vue",
-    "permission": "home:home:list"
+    "permission": "home:home:list",
+    roles: ['admin', 'editor', 'viewer']  // 所有人可见
   },
 
   {
     "name": "统计分析",
     "path": "analysis",
     "icon": "DataAnalysis",
+     roles: ['admin', 'viewer'] , // admin和viewer可见
     "children": [
       {
         "name": "剧目热度",
@@ -36,6 +38,7 @@ export const mockMenu = [
     "name": "系统管理",
     "path": "/system",
     "icon": "Setting",
+    "roles":['admin'],
     "children": [
       {
         "name": "用户管理",
@@ -73,6 +76,7 @@ export const mockMenu = [
     "name": "内容管理",
     "path": "/contents",
     "icon": "Document",
+    "roles": ['admin', 'editor'],  // admin和editor可见
     "children": [
       {
         "name": "剧目管理",

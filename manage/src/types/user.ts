@@ -1,7 +1,9 @@
-//定义登录接口
+// types/user.ts
 export interface UserInfo {
-    username: string    // 用户名必须是字符串
-    nickname?: string
-    avatar?: string
-    isLogin?: boolean
+  username: string
+  nickname: string
+  avatar: string
+  isLogin: boolean
+  role?: string
+  token?: string
 }

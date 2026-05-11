@@ -24,7 +24,7 @@ public class AdminController {
             return ResponseResult.badRequest("登录失败");
         }
 
-        if (!"admin".equals(result.getRole())) {
+        if ("user".equals(result.getRole())) {
             return ResponseResult.badRequest("无权限访问管理系统");
         }
 

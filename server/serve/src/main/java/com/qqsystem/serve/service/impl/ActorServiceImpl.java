@@ -46,7 +46,7 @@ public class ActorServiceImpl implements ActorService {
         actor.setWorksCount(0);
         actor.setViewCount(0);
         actor.setLikeCount(0);
-        actor.setStatus(1);
+        actor.setStatus(0);  // 默认上架
         return actorMapper.insert(actor) > 0;
     }
 

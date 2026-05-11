@@ -2,7 +2,7 @@
   <div class="account-settings">
     <!-- 头部 -->
     <div class="settings-header">
-      
+
       <button class="save-all-btn" @click="handleSaveAll">保存全部设置</button>
     </div>
 
@@ -122,11 +122,11 @@
             style="width: 100%"
           />
         </el-form-item>
-        
+
         <!-- 简介使用文本域 -->
         <el-form-item v-else-if="editField === 'bio'" :label="editFieldLabel" prop="value">
-          <el-input 
-            v-model="editFormData.value" 
+          <el-input
+            v-model="editFormData.value"
             type="textarea"
             :placeholder="`请输入${editFieldLabel}`"
             :maxlength="editFieldMaxLength"
@@ -134,20 +134,20 @@
             show-word-limit
           />
         </el-form-item>
-        
+
         <!-- 密码使用密码框 -->
         <template v-else-if="editField === 'password'">
           <el-form-item label="旧密码" prop="oldPassword">
-            <el-input 
-              v-model="editFormData.oldPassword" 
+            <el-input
+              v-model="editFormData.oldPassword"
               type="password"
               placeholder="请输入旧密码"
               show-password
             />
           </el-form-item>
           <el-form-item label="新密码" prop="value">
-            <el-input 
-              v-model="editFormData.value" 
+            <el-input
+              v-model="editFormData.value"
               type="password"
               placeholder="请输入新密码"
               :maxlength="editFieldMaxLength"
@@ -156,8 +156,8 @@
             />
           </el-form-item>
           <el-form-item label="确认新密码" prop="confirmPassword">
-            <el-input 
-              v-model="editFormData.confirmPassword" 
+            <el-input
+              v-model="editFormData.confirmPassword"
               type="password"
               placeholder="请确认新密码"
               :maxlength="editFieldMaxLength"
@@ -165,17 +165,17 @@
             />
           </el-form-item>
         </template>
-        
+
         <!-- 其他字段使用普通输入框 -->
         <el-form-item v-else :label="editFieldLabel" prop="value">
-          <el-input 
-            v-model="editFormData.value" 
+          <el-input
+            v-model="editFormData.value"
             :placeholder="`请输入${editFieldLabel}`"
             :maxlength="editFieldMaxLength"
             show-word-limit
           />
         </el-form-item>
-        
+
         <!-- 验证码区域（手机号/邮箱专用） -->
         <el-form-item v-if="editField === 'phone' || editField === 'email'" label="验证码" prop="code">
           <div style="display: flex; gap: 12px;">
@@ -356,42 +356,42 @@ const editFieldMaxLength = computed(() => {
 // 表单验证规则
 const editRules = computed<FormRules>(() => {
   const rules: FormRules = {}
-  
+
   if (editField.value === 'region') {
     rules.regionValue = [
       { required: true, message: '请选择地区', trigger: 'change' },
-      { 
+      {
         validator: (rule, value, callback) => {
           if (!value || value.length === 0) {
             callback(new Error('请选择完整的地区信息'))
           } else {
             callback()
           }
-        }, 
-        trigger: 'change' 
+        },
+        trigger: 'change'
       }
     ]
   } else {
     rules.value = [
       { required: true, message: `请输入${editFieldLabel.value}`, trigger: 'blur' }
     ]
-    
+
     if (editField.value === 'phone') {
-      rules.value.push({ 
-        pattern: /^1[3-9]\d{9}$/, 
-        message: '请输入正确的手机号', 
-        trigger: 'blur' 
+      rules.value.push({
+        pattern: /^1[3-9]\d{9}$/,
+        message: '请输入正确的手机号',
+        trigger: 'blur'
       } as any)
     }
-    
+
     if (editField.value === 'email') {
-      rules.value.push({ 
-        pattern: /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/, 
-        message: '请输入正确的邮箱地址', 
-        trigger: 'blur' 
+      rules.value.push({
+        pattern: /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/,
+        message: '请输入正确的邮箱地址',
+        trigger: 'blur'
       } as any)
     }
-    
+
     if (editField.value === 'password') {
       rules.oldPassword = [
         { required: true, message: '请输入旧密码', trigger: 'blur' }
@@ -414,16 +414,16 @@ const editRules = computed<FormRules>(() => {
         }
       ]
     }
-    
+
     if (editField.value === 'bio') {
-      rules.value.push({ 
-        max: 100, 
-        message: '简介不能超过100个字符', 
-        trigger: 'blur' 
+      rules.value.push({
+        max: 100,
+        message: '简介不能超过100个字符',
+        trigger: 'blur'
       } as any)
     }
   }
-  
+
   return rules
 })
 
@@ -431,13 +431,13 @@ const editRules = computed<FormRules>(() => {
 const openEditDialog = (field: string, currentValue: string) => {
   editField.value = field
   editDialogVisible.value = true
-  
+
   // 重置表单数据
   editFormData.value = ''
   editFormData.code = ''
   editFormData.oldPassword = ''
   editFormData.confirmPassword = ''
-  
+
   if (field === 'region') {
     // 解析当前地区值，例如 "浙江省-杭州市-西湖区" 转换为 ["浙江省", "杭州市", "西湖区"]
     if (currentValue && currentValue !== '未设置') {
@@ -457,7 +457,7 @@ const openEditDialog = (field: string, currentValue: string) => {
 // 发送验证码
 const sendCode = async () => {
   if (codeSending.value) return
-  
+
   // 验证手机号/邮箱格式
   if (editField.value === 'phone' && !/^1[3-9]\d{9}$/.test(editFormData.value)) {
     ElMessage.warning('请先输入正确的手机号')
@@ -496,7 +496,7 @@ const modifiedData = reactive({
 // 确认编辑
 const handleEditConfirm = async () => {
   if (!editFormRef.value) return
-  
+
   await editFormRef.value.validate(async (valid) => {
     if (!valid) return
 
@@ -508,7 +508,7 @@ const handleEditConfirm = async () => {
 
     // 记录修改的数据
     let newValue = ''
-    
+
     switch (editField.value) {
       case 'nickname':
         newValue = editFormData.value
@@ -569,15 +569,15 @@ const handleSaveAll = async () => {
         ElMessage.info('正在上传头像...')
         const formData = new FormData()
         formData.append('file', selectedAvatarFile.value)
-        
+
         const uploadRes = await service({
           url: '/user/avatar/upload',
           method: 'post',
           data: formData
         })
-        
+
         console.log('Upload response:', uploadRes)
-        
+
         if (uploadRes.code === 200 && uploadRes.data) {
           // 更新头像URL
           imageUrl.value = uploadRes.data.url
@@ -594,7 +594,7 @@ const handleSaveAll = async () => {
           return
         }
       }
-      
+
       // 构建要更新的数据
       const updateData: {
         nickname?: string
@@ -612,7 +612,7 @@ const handleSaveAll = async () => {
       if (modifiedData.region) {
         updateData.address = userProfile.region
       }
-      
+
       // 批量更新用户资料
       if (Object.keys(updateData).length > 0) {
         const res = await updateUserProfile(updateData)
@@ -630,12 +630,12 @@ const handleSaveAll = async () => {
           return
         }
       }
-      
+
       // 处理密码修改
       if (modifiedData.password) {
-        const res = await changePassword({ 
-          oldPassword: editFormData.oldPassword, 
-          newPassword: editFormData.value 
+        const res = await changePassword({
+          oldPassword: editFormData.oldPassword,
+          newPassword: editFormData.value
         })
         if (res.code === 200) {
           // 清除token并退出登录
@@ -651,12 +651,12 @@ const handleSaveAll = async () => {
           return
         }
       }
-      
+
       // 重置修改标记
       Object.keys(modifiedData).forEach(key => {
         modifiedData[key as keyof typeof modifiedData] = false
       })
-      
+
       ElMessage.success('所有设置已保存')
     } catch (error) {
       console.error('保存失败:', error)

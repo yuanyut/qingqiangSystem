@@ -92,7 +92,7 @@ watch(editContent, (newVal) => {
                         likeCount: newVal.likeCount || 0,
                         createTime: newVal.createTime || '',
                         updateTime: newVal.updateTime || '',
-                        status: newVal.status || 1,
+                        status: newVal.status ?? 1,
                         dramas: newVal.dramas || []
                     });
                 }
@@ -156,7 +156,7 @@ const fetchActorList = async () => {
                     viewCount: item.viewCount || 0,
                     likeCount: item.likeCount || 0,
                     joinDate: item.joinDate || '',
-                    status: item.status || 1,
+                    status: item.status ?? 1,
                     createTime: item.createTime || '',
                     updateTime: item.updateTime || '',
                     dramas: item.dramas || []

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jakarta.annotation.Resource;
+import java.io.File;
 import java.util.List;
 
 @Configuration
@@ -20,6 +21,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Resource
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+
+    @Resource
+    private UploadConfig uploadConfig;
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -35,7 +39,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173","http://localhost:5174")
+                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
@@ -44,23 +48,38 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 注册浏览行为拦截器
         registry.addInterceptor(browseInterceptor)
                 .addPathPatterns("/drama/detail/**", "/news/detail/**", "/actor/detail/**", "/culture/detail/**");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String basePath = System.getProperty("user.dir") + "/serve/src/main/resources/upload/";
+        // 使用绝对路径，避免工作目录变化导致静态资源无法访问
+        String basePath = uploadConfig.getAbsolutePath();
+        
+        String urlPrefix = uploadConfig.getUrlPrefix();
+        if (!urlPrefix.endsWith("/")) {
+            urlPrefix += "/";
+        }
 
-        registry.addResourceHandler("/upload/avatar/**")
-                .addResourceLocations("file:///" + basePath + "avatar/");
-        registry.addResourceHandler("/upload/actor/**")
-                .addResourceLocations("file:///" + basePath + "actor/");
-        registry.addResourceHandler("/upload/drama/**")
-                .addResourceLocations("file:///" + basePath + "drama/");
-        registry.addResourceHandler("/upload/culture/**")
-                .addResourceLocations("file:///" + basePath + "culture/");
+        String[] subDirs = {"avatar", "actor", "drama", "culture"};
+        
+        for (String dir : subDirs) {
+            String resourceLocation = basePath + File.separator + dir + File.separator;
+            File resourceDir = new File(resourceLocation);
+            if (!resourceDir.exists()) {
+                resourceDir.mkdirs();
+            }
+            
+            String handlerPath = urlPrefix + dir + "/**";
+            String location = "file:" + resourceLocation;
+            System.out.println("========== 静态资源映射配置 ==========");
+            System.out.println("请求路径: " + handlerPath);
+            System.out.println("文件位置: " + location);
+            
+            registry.addResourceHandler(handlerPath)
+                    .addResourceLocations(location);
+        }
     }
 
 }

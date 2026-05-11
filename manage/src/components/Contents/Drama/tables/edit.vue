@@ -89,7 +89,7 @@ const getVideoDuration = (file: File): Promise<number> => {
 const uploadVideoToServer = async (file: File): Promise<string> => {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     // 模拟上传进度
     const interval = setInterval(() => {
         if (uploadProgress.value < 90) {
@@ -101,7 +101,7 @@ const uploadVideoToServer = async (file: File): Promise<string> => {
         const response = await uploadVideo(formData)
         clearInterval(interval)
         uploadProgress.value = 100
-        
+
         if (response && response.data && response.data.url) {
             // 服务器返回的是完整URL，直接使用
             return response.data.url
@@ -171,6 +171,25 @@ const handleRemoveVideo = () => {
     videoFile.value = null
     form.duration = 0
     ElMessage.info('已移除视频')
+}
+
+// 解析bilibili视频链接，生成嵌入地址
+const getBilibiliEmbedUrl = (url: string): string => {
+    // 匹配bilibili视频链接格式
+    // https://www.bilibili.com/video/BV1xx411c7mZ
+    // https://b23.tv/BV1xx411c7mZ
+    const match = url.match(/BV[\w]+/)
+    if (match) {
+        return `//player.bilibili.com/player.html?bvid=${match[0]}&page=1`
+    }
+    
+    // 尝试从embed链接提取
+    const embedMatch = url.match(/player\.bilibili\.com\/player\.html\?.*bvid=([^&]+)/)
+    if (embedMatch) {
+        return `//player.bilibili.com/player.html?bvid=${embedMatch[1]}&page=1`
+    }
+    
+    return url
 }
 
 // 确定按钮：将修改后的数据传回父组件
@@ -320,7 +339,20 @@ const rules = {
             <!-- 视频预览（如果有链接） -->
             <el-form-item v-if="form.videoUrl && !uploadLoading" label="视频预览" :label-width="formLabelWidth">
                 <div class="video-preview-container">
-                    <video :src="form.videoUrl" controls preload="metadata"
+                    <!-- Bilibili视频 -->
+                    <template v-if="form.videoUrl.includes('bilibili.com') || form.videoUrl.includes('bilibili')">
+                        <iframe
+                            :src="getBilibiliEmbedUrl(form.videoUrl)"
+                            scrolling="no"
+                            border="0"
+                            frameborder="no"
+                            framespacing="0"
+                            allowfullscreen="true"
+                            style="width: 100%; max-height: 250px; border-radius: 8px;"
+                        ></iframe>
+                    </template>
+                    <!-- 本地/其他视频 -->
+                    <video v-else :src="form.videoUrl" controls preload="metadata"
                         style="width: 100%; max-height: 250px; border-radius: 8px; background: #000;">
                         您的浏览器不支持 video 标签。
                     </video>

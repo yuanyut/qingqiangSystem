@@ -176,7 +176,7 @@ const rules = {
 
             <!-- 封面 -->
             <el-form-item label="封面" :label-width="formLabelWidth">
-                <el-upload class="avatar-uploader" action="/actor/upload" :show-file-list="false"
+                <el-upload class="avatar-uploader" action="/api/actor/upload" :show-file-list="false"
                     :on-success="handleCoverUploadSuccess" :on-error="handleCoverUploadError"
                     :before-upload="beforeCoverUpload" :headers="uploadHeaders">
                     <img v-if="form.avatar" :src="form.avatar" class="avatar">

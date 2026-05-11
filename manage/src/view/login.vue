@@ -9,9 +9,9 @@ const userInfoStore = useUserInfoStore()
 
 import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
-interface ruleForm{
-    username:string,
-    password:string
+interface ruleForm {
+  username: string,
+  password: string
 }
 //创建一个空的引用，稍后会指向表单组件, 告诉 TypeScript：这个引用将来会指向一个 Element Plus 的表单实例
 const loginFormRef = ref<FormInstance>()
@@ -29,9 +29,9 @@ const rules1 = reactive<FormRules>({
   username: [
     { required: true, message: '请输入账号', trigger: 'blur' },
   ],
-  password:[
-     { required: true, message: '请输入密码', trigger: 'blur' },
-      { min: 8, max: 12, message: '长度是8-12', trigger: 'blur' }
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 8, max: 12, message: '长度是8-12', trigger: 'blur' }
   ]
 })
 //登录提交
@@ -43,11 +43,11 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
         // 调用后端登录 API
         const response = await loginAdmin(ruleFormLogin)
         if (response && response.data) {
-          // 存储 token 和用户信息
-          console.log(response.data)
-          localStorage.setItem('token', response.data)
-          // userInfoStore.setUserInfo(response.data.user)
-          router.push(`/manage/${mockMenu[0]?.path}`)
+          // 使用 Pinia store 设置 token
+          userInfoStore.setToken(response.data)
+          const firstMenuPath = mockMenu[0]?.path
+          console.log(firstMenuPath)
+          router.push(`/manage/${firstMenuPath}`)
         }
       } catch (error) {
         console.error('登录失败:', error)
@@ -68,7 +68,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
     <div class="auth-decoration">
       <div class="decoration-content">
         <div class="logo-wrapper">
-          <div class="logo-icon">🎭</div>
+          <!-- <div class="logo-icon">🎭</div> -->
           <h1 class="logo-text">秦腔宣传管理系统</h1>
         </div>
       </div>
@@ -78,60 +78,45 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
     <div class="auth-form-container">
       <div class="form-card">
         <!-- 头部标题区域 -->
-        
 
-        
+
+
         <!-- 登录表单 -->
-<el-form
-  ref="loginFormRef"
-  class="auth-form"
-  :model="ruleFormLogin"
-  :rules="rules1"
-  label-width="0px"
->
-  <!-- 账号：必须套 el-form-item + prop -->
-  <el-form-item prop="username">
-    <div class="form-field">
-      <div class="field-icon">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </div>
-      <el-input 
-        v-model="ruleFormLogin.username" 
-        placeholder="请输入账号"
-        class="custom-input"
-      />
-    </div>
-  </el-form-item>
+        <el-form ref="loginFormRef" class="auth-form" :model="ruleFormLogin" :rules="rules1" label-width="0px">
+          <!-- 账号：必须套 el-form-item + prop -->
+          <el-form-item prop="username">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <el-input v-model="ruleFormLogin.username" placeholder="请输入账号" class="custom-input" />
+            </div>
+          </el-form-item>
 
-  <!-- 密码：必须套 el-form-item + prop -->
-  <el-form-item prop="password">
-    <div class="form-field">
-      <div class="field-icon">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 10 0v4"></path>
-        </svg>
-      </div>
-      <el-input 
-        v-model="ruleFormLogin.password" 
-        type="password"
-        show-password
-        placeholder="请输入密码"
-        class="custom-input"
-      />
-    </div>
-  </el-form-item>
+          <!-- 密码：必须套 el-form-item + prop -->
+          <el-form-item prop="password">
+            <div class="form-field">
+              <div class="field-icon">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 10 0v4"></path>
+                </svg>
+              </div>
+              <el-input v-model="ruleFormLogin.password" type="password" show-password placeholder="请输入密码"
+                class="custom-input" />
+            </div>
+          </el-form-item>
 
-  <el-form-item class="submit-item">
-    <el-button type="primary" class="submit-btn" @click="submitLoginForm(loginFormRef)">
-      登录
-    </el-button>
-  </el-form-item>
-</el-form>
-        
+          <el-form-item class="submit-item">
+            <el-button type="primary" class="submit-btn" @click="submitLoginForm(loginFormRef)">
+              登录
+            </el-button>
+          </el-form-item>
+        </el-form>
+
       </div>
     </div>
   </div>
@@ -166,8 +151,13 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 }
 
 @keyframes float {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(-10%, -10%) rotate(360deg); }
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-10%, -10%) rotate(360deg);
+  }
 }
 
 .decoration-content {
@@ -187,7 +177,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 
 .logo-icon {
   font-size: 48px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .logo-text {
@@ -204,7 +194,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 }
 
 .decoration-quote {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   padding: 24px;
   margin: 32px 0;
@@ -261,7 +251,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
 }
 
 .form-card {
@@ -300,7 +290,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 .tab-btn.active {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .header-subtitle {
@@ -347,7 +337,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 
 .custom-input :deep(.el-input__wrapper.is-focus) {
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-field-row {
@@ -414,7 +404,7 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
 .form-footer {
@@ -440,24 +430,24 @@ const submitLoginForm = async (formEl: FormInstance | undefined) => {
   .auth-container {
     flex-direction: column;
   }
-  
+
   .auth-decoration {
     padding: 40px 20px;
     min-height: 280px;
   }
-  
+
   .auth-form-container {
     width: 100%;
   }
-  
+
   .form-card {
     padding: 32px 24px;
   }
-  
+
   .decoration-quote p {
     font-size: 16px;
   }
-  
+
   .decoration-features {
     gap: 20px;
   }

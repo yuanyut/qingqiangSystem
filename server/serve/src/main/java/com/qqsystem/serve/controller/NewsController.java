@@ -1,14 +1,21 @@
 package com.qqsystem.serve.controller;
 
 import com.qqsystem.serve.common.ResponseResult;
+import com.qqsystem.serve.config.AppConfig;
+import com.qqsystem.serve.config.UploadConfig;
 import com.qqsystem.serve.entity.News;
 import com.qqsystem.serve.service.NewsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/news")
@@ -16,6 +23,12 @@ public class NewsController {
 
     @Resource
     private NewsService newsService;
+
+    @Autowired
+    private UploadConfig uploadConfig;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @GetMapping("/list")
     public ResponseResult<Map<String, Object>> list(@RequestParam int page, @RequestParam int size, @RequestParam(required = false) Integer category, @RequestParam(required = false) String keyword) {
@@ -124,5 +137,42 @@ public class NewsController {
     public ResponseResult<List<News>> getMedia(@RequestParam int size) {
         List<News> mediaList = newsService.getMediaNews(size);
         return ResponseResult.success(mediaList);
+    }
+
+    // 封面上传接口
+    @PostMapping("/upload")
+    public ResponseResult<Map<String, String>> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseResult.badRequest("文件为空");
+        }
+
+        String uploadDir = uploadConfig.getFullPath("news");
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = UUID.randomUUID() + suffix;
+        String filePath = uploadDir + File.separator + fileName;
+
+        try {
+            file.transferTo(new File(filePath));
+
+            String url;
+            if (uploadConfig.isUseFullUrl()) {
+                url = appConfig.getDomain() + uploadConfig.getUrlPrefix() + "/news/" + fileName;
+            } else {
+                url = uploadConfig.getUrlPrefix() + "/news/" + fileName;
+            }
+
+            Map<String, String> result = new HashMap<>();
+            result.put("url", url);
+            return ResponseResult.success(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseResult.badRequest("上传失败");
+        }
     }
 }

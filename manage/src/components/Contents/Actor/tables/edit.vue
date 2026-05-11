@@ -37,12 +37,13 @@ const form = reactive<ActorData>({
     dramas: []
 })
 
+// Actor模块规则：0=上架，1=下架
 const statusOptions = ref([
-    { value: 1, label: '上架' },
-    { value: 0, label: '下架' }
+    { value: 0, label: '上架' },
+    { value: 1, label: '下架' }
 ])
 
-const currentStatus = ref(1)
+const currentStatus = ref(0)
 const props = defineProps<{ title: string; opear: string }>()
 
 // 监听 content 变化，更新 form（用 Object.assign 保持响应式）
@@ -51,7 +52,8 @@ watch(content, (newVal) => {
     if (newVal) {
         // 用 Object.assign 更新属性，而不是直接赋值
         Object.assign(form, newVal)
-        currentStatus.value = newVal.status || 1
+        // 使用 ?? 操作符而不是 ||，确保 0 值能正确处理
+        currentStatus.value = newVal.status ?? 1
         console.log('form 更新后:', form)
     }
 }, { deep: true, immediate: true })
@@ -62,7 +64,7 @@ watch(() => dialogFormVisible.value, (newVal) => {
     if (newVal && content.value) {
         console.log('弹窗显示，content.value:', content.value)
         Object.assign(form, content.value)
-        currentStatus.value = content.value.status || 1
+        currentStatus.value = content.value.status ?? 1
         console.log('表单数据更新:', form)
     }
 })
@@ -119,25 +121,29 @@ const handleConfirm = async () => {
         form.status = currentStatus.value
         // 调用后端更新API接口
         await updateActor({
-            id: form.id,
-            name: form.name,
-            avatar: form.avatar,
-            intro: form.intro,
-            roleName: form.roleName,
-            style: form.style,
-            joinDate: form.joinDate,
-            worksCount: form.worksCount,
-            viewCount: form.viewCount,
-            likeCount: form.likeCount,
-            createTime: form.createTime,
-            updateTime: form.updateTime,
-            status: form.status,
-            dramas: form.dramas
-        })
+                id: form.id,
+                name: form.name,
+                avatar: form.avatar,
+                intro: form.intro,
+                roleName: form.roleName,
+                style: form.style,
+                joinDate: form.joinDate,
+                worksCount: form.worksCount,
+                viewCount: form.viewCount,
+                likeCount: form.likeCount,
+                createTime: form.createTime,
+                updateTime: form.updateTime,
+                status: form.status,
+                dramas: form.dramas
+            })
 
-        ElMessage.success('编辑成功!')
-        dialogFormVisible.value = false
-        emit('confirm', { ...form })
+            ElMessage.success('编辑成功!')
+
+            // 更新content.value，让父组件能够获取到更新后的数据
+            Object.assign(content.value, form)
+
+            dialogFormVisible.value = false
+            emit('confirm', { ...form })
     } catch (error) {
         console.error('编辑名家失败:', error)
         ElMessage.error('编辑失败，请重试!')
@@ -199,7 +205,7 @@ const rules = {
 
             <!-- 封面 -->
             <el-form-item label="封面" :label-width="formLabelWidth">
-                <el-upload class="avatar-uploader" action="/actor/upload" :show-file-list="false"
+                <el-upload class="avatar-uploader" action="/api/actor/upload" :show-file-list="false"
                     :on-success="handleCoverUploadSuccess" :on-error="handleCoverUploadError"
                     :before-upload="beforeCoverUpload" :headers="uploadHeaders">
                     <img v-if="form.avatar" :src="form.avatar" class="avatar">

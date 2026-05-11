@@ -117,6 +117,8 @@ const rules = reactive({
             <el-form-item label="角色" :label-width="formLabelWidth" prop="role">
                 <el-select v-model="form.role" placeholder="请选择角色" >
                     <el-option label="管理员" value="admin" />
+                    <el-option label="数据分析员" value="viewer" />
+                    <el-option label="内容管理员" value="editor" />
                     <!-- <el-option label="内容管理员" value="内容管理员" />
                     <el-option label="数据分析员" value="数据分析员" />
                     <el-option label="互动审核员" value="互动审核员" /> -->

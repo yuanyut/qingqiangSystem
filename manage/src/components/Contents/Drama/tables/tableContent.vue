@@ -2,6 +2,7 @@
 import { reactive, ref, watch } from 'vue'
 import dialogVisible from '@/utils/dialogVisible.vue'
 import edit from '@/components/Contents/Drama/tables/edit.vue'
+import VideoPlayer from '@/components/Contents/Video/VideoPlayer.vue'
 
 const search = defineModel('search')
 const tableData: any = defineModel('tableData')
@@ -136,16 +137,11 @@ const formatViewCount = (count: number) => {
                 <!-- 视频播放列（核心） -->
                 <el-table-column label="视频预览" width="280">
                     <template #default="scope">
-                        <video 
-                            :id="`video-${scope.row.id}`"
-                            :src="scope.row.videoUrl" 
-                            controls 
-                            preload="metadata"
-                            style="width: 250px; height: 140px; border-radius: 8px; background: #000;"
-                            @play="handleVideoPlay(scope.row.id, $event)"
-                        >
-                            您的浏览器不支持 video 标签。
-                        </video>
+                        <VideoPlayer
+                            :src="scope.row.videoUrl"
+                            width="250px"
+                            height="140px"
+                        />
                     </template>
                 </el-table-column>
                 
