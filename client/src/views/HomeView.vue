@@ -9,7 +9,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 //如果没有，ruleForm可以随意添加字段，容易出错,纸本身不会占用空间，只是描述
 interface RuleForm {
   username: string    // 用户名必须是字符串
-  password?: string    // 密码必须是字符串  
+  password?: string    // 密码必须是字符串
   repassword?: string  // 确认密码必须是字符串
   newpassword?: string // 新密码必须是字符串
   nickname?:string
@@ -54,7 +54,7 @@ const checkRepassword = (rule: any, value: any, callback: any)=>{
     callback(new Error('确认密码需与新密码一致'));
     return;
   }
-  else 
+  else
     callback();
 }
 //FormRules 只能传类型，不能传变量
@@ -107,7 +107,7 @@ const rules3 = reactive<FormRules<typeof ruleFormFind>>({
   oldpassword: [
     { required: true, message: '请输入旧账号', trigger: 'blur' },
   ]
- 
+
 })
 //登录提交
 const submitLoginForm = async (formEl: FormInstance | undefined) => {
@@ -226,27 +226,27 @@ const exchangeTabs=(tab:any)=>{
         <!-- 头部标题区域 -->
         <div class="form-header">
           <div class="tab-buttons">
-            <button 
-              class="tab-btn" 
+            <button
+              class="tab-btn"
               :class="{ active: currentTab === 'login' }"
               @click="exchangeTabs('login')"
             >
               登录
             </button>
-            <button 
-              class="tab-btn" 
+            <button
+              class="tab-btn"
               :class="{ active: currentTab === 'register' }"
               @click="exchangeTabs('register')"
             >
               注册
             </button>
-            <button 
-              class="tab-btn" 
+            <!-- <button
+              class="tab-btn"
               :class="{ active: currentTab === 'findPassword' }"
               @click="exchangeTabs('findPassword')"
             >
               找回密码
-            </button>
+            </button> -->
           </div>
           <div class="header-subtitle">
             <template v-if="currentTab === 'login'">欢迎回来，请登录您的账号</template>
@@ -273,14 +273,14 @@ const exchangeTabs=(tab:any)=>{
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormLogin.username" 
+              <el-input
+                v-model="ruleFormLogin.username"
                 placeholder="请输入账号"
                 class="custom-input"
               />
             </div>
           </el-form-item>
-          
+
           <!-- 密码 -->
           <el-form-item prop="password">
             <div class="form-field">
@@ -290,8 +290,8 @@ const exchangeTabs=(tab:any)=>{
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormLogin.password" 
+              <el-input
+                v-model="ruleFormLogin.password"
                 type="password"
                 placeholder="请输入密码"
                 class="custom-input"
@@ -365,8 +365,8 @@ const exchangeTabs=(tab:any)=>{
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormRegister.password" 
+              <el-input
+                v-model="ruleFormRegister.password"
                 type="password"
                 placeholder="请输入密码"
                 class="custom-input"
@@ -440,8 +440,8 @@ const exchangeTabs=(tab:any)=>{
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormFind.oldpassword" 
+              <el-input
+                v-model="ruleFormFind.oldpassword"
                 type="password"
                 placeholder="请输入旧密码"
                 class="custom-input"
@@ -459,8 +459,8 @@ const exchangeTabs=(tab:any)=>{
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormFind.newpassword" 
+              <el-input
+                v-model="ruleFormFind.newpassword"
                 type="password"
                 placeholder="请输入新密码"
                 class="custom-input"
@@ -478,8 +478,8 @@ const exchangeTabs=(tab:any)=>{
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <el-input 
-                v-model="ruleFormFind.repassword" 
+              <el-input
+                v-model="ruleFormFind.repassword"
                 type="password"
                 placeholder="请再次确认密码"
                 class="custom-input"
@@ -807,24 +807,24 @@ const exchangeTabs=(tab:any)=>{
   .auth-container {
     flex-direction: column;
   }
-  
+
   .auth-decoration {
     padding: 40px 20px;
     min-height: 280px;
   }
-  
+
   .auth-form-container {
     width: 100%;
   }
-  
+
   .form-card {
     padding: 32px 24px;
   }
-  
+
   .decoration-quote p {
     font-size: 16px;
   }
-  
+
   .decoration-features {
     gap: 20px;
   }
