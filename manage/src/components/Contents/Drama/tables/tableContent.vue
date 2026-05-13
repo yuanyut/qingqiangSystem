@@ -133,7 +133,7 @@ const formatViewCount = (count: number) => {
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
                 <!-- 多选列 -->
                 <el-table-column type="selection" width="55" />
-                
+
                 <!-- 视频播放列（核心） -->
                 <el-table-column label="视频预览" width="280">
                     <template #default="scope">
@@ -144,43 +144,43 @@ const formatViewCount = (count: number) => {
                         />
                     </template>
                 </el-table-column>
-                
+
                 <!-- 视频标题 -->
                 <el-table-column property="title" label="视频标题" width="180" show-overflow-tooltip />
-                
+
                 <!-- 视频描述 -->
                 <el-table-column property="description" label="描述" width="160" show-overflow-tooltip />
-                
+
                 <!-- 关联内容 -->
-                
-                
+
+
                 <!-- 上传者/作者 -->
-                <el-table-column property="actor" label="演员" width="120" />
-                
+                <!-- <el-table-column property="actor" label="演员" width="120" /> -->
+
                 <!-- 视频分类 -->
                 <el-table-column property="category" label="分类" width="100" />
-                
+
                 <!-- 视频时长 -->
-                
-                
+
+
                 <!-- 播放量 -->
                 <el-table-column property="clickCount" label="点击量" width="100" />
-                
+
                 <!-- 点赞数 -->
                 <el-table-column property="likeCount" label="点赞数" width="100">
                     <template #default="scope">
                         {{ formatViewCount(scope.row.likeCount) }}
                     </template>
                 </el-table-column>
-                
+
                 <!-- 发布时间 -->
                 <!-- <el-table-column label="发布时间" width="160">
                     <template #default="scope">{{ scope.row.publishTime }}</template>
                 </el-table-column> -->
-                
+
                 <!-- 视频状态 -->
                 <el-table-column property="statusText" label="状态" width="100" />
-                
+
                 <!-- 操作列 -->
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
@@ -194,27 +194,27 @@ const formatViewCount = (count: number) => {
                 </el-table-column>
             </el-table>
         </div>
-        
+
         <!-- 分页 -->
         <div style="margin-top: 25px;">
-            <el-pagination 
-                v-model:currentPage="currentPage" 
-                v-model:page-size="pageSize" 
+            <el-pagination
+                v-model:currentPage="currentPage"
+                v-model:page-size="pageSize"
                 :small="small"
-                :disabled="disabled" 
-                :background="background" 
-                layout="prev, pager, next, jumper" 
+                :disabled="disabled"
+                :background="background"
+                layout="prev, pager, next, jumper"
                 :total="total"
-                @size-change="handleSizeChange" 
-                @current-change="handleCurrentChange" 
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
             />
         </div>
-        
+
         <!-- 删除确认弹窗 -->
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks"></dialog-visible>
         </div>
-        
+
         <!-- 编辑弹窗 -->
         <edit v-model:dialogFormVisible="editModul" v-model:content="editContent" :title="editContent?.id ? '编辑视频' : '新增视频'" :opear="editContent?.id ? '1' : '0'" @confirm="(data) => emit('confirm', data)"></edit>
     </div>

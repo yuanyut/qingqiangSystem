@@ -163,18 +163,18 @@ const handleEditConfirm = (data: any) => {
         <div>
             <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange" v-loading="loading">
                 <el-table-column type="selection" width="55" />
-                
+
                 <el-table-column label="头像" width="80">
                     <template #default="{ row }">
-                        <el-image 
-                            :src="row.avatar" 
+                        <el-image
+                            :src="row.avatar"
                             style="width: 50px; height: 50px; border-radius: 4px;"
                             fit="cover"
                             :preview-src-list="[row.avatar]"
                         />
                     </template>
                 </el-table-column>
-                
+
                 <el-table-column property="id" label="ID" width="60" />
                 <el-table-column property="name" label="姓名" min-width="100" show-overflow-tooltip />
                 <el-table-column property="roleName" label="角色名" width="100" />
@@ -184,14 +184,14 @@ const handleEditConfirm = (data: any) => {
                 <el-table-column property="intro" label="介绍" width="80"  show-overflow-tooltip />
                 <el-table-column property="viewCount" label="点击量" width="100" sortable />
                 <el-table-column property="likeCount" label="点赞" width="80" sortable />
-                <el-table-column property="joinDate" label="加入日期" width="120" sortable />
+                <!-- <el-table-column property="joinDate" label="加入日期" width="120" sortable /> -->
                 <el-table-column property="createTime" label="创建时间" width="120" sortable />
                 <el-table-column label="状态" width="100">
                     <template #default="scope">
                         {{ scope.row.status !== 1 ? '已上架': '已下架'  }}
                     </template>
                 </el-table-column>
-                
+
                 <el-table-column fixed="right" label="操作" min-width="120">
                     <template #default="scope">
                         <el-button link type="primary" size="small" @click="editClick(scope.row)" :disabled="loading">
@@ -203,17 +203,17 @@ const handleEditConfirm = (data: any) => {
                 </el-table-column>
             </el-table>
         </div>
-        
+
         <!-- <div style="margin-top: 25px;">
             <el-pagination v-model:currentPage="currentPage3" v-model:page-size="pageSize3" :small="small"
                 :disabled="disabled" :background="background" layout="prev, pager, next, jumper" :total="1000"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div> -->
-        
+
         <div>
             <dialog-visible v-model="deleteModul" @submit-fun="deleteClicks" :loading="loading"></dialog-visible>
         </div>
-        
+
         <edit v-model:editModul="editModul" v-model:content="editContent" title="编辑" opear="0" @confirm="handleEditConfirm"></edit>
     </div>
 </template>

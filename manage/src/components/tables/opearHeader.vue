@@ -68,9 +68,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
                     <el-input v-model="form.name" placeholder="请输入用户名" clearable prefix-icon="User" />
                 </el-form-item>
 
-                <el-form-item :label="props.lable.lable2" prop="phone" v-if="props.lable.lable2 ">
+                <!-- <el-form-item :label="props.lable.lable2" prop="phone" v-if="props.lable.lable2 ">
                     <el-input v-model="form.phone" placeholder="请输入手机号" clearable prefix-icon="Phone" />
-                </el-form-item>
+                </el-form-item> -->
             </div>
 
             <!-- <div class="form-row" v-if="props.lable.lable3 || props.lable.lable4">

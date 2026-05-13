@@ -197,13 +197,13 @@ const getBilibiliEmbedUrl = (url: string): string => {
   if (match) {
     return `//player.bilibili.com/player.html?bvid=${match[0]}&page=1`
   }
-  
+
   // 尝试从embed链接提取
   const embedMatch = url.match(/player\.bilibili\.com\/player\.html\?.*bvid=([^&]+)/)
   if (embedMatch) {
     return `//player.bilibili.com/player.html?bvid=${embedMatch[1]}&page=1`
   }
-  
+
   return url
 }
 
@@ -327,9 +327,9 @@ const rules = {
   videoUrl: [
     { required: true, message: '请上传视频或填写视频链接', trigger: 'change' }
   ],
-  actor: [
-    { required: true, message: '请输入演员名称', trigger: 'blur' }
-  ],
+  // actor: [
+  //   { required: true, message: '请输入演员名称', trigger: 'blur' }
+  // ],
   category: [
     { required: true, message: '请选择分类', trigger: 'change' }
   ],
@@ -411,9 +411,9 @@ const rules = {
       </el-form-item>
 
       <!-- 演员 -->
-      <el-form-item label="演员" :label-width="formLabelWidth" prop="actor">
+      <!-- <el-form-item label="演员" :label-width="formLabelWidth" prop="actor">
         <el-input v-model="form.actor" placeholder="请输入主要演员" />
-      </el-form-item>
+      </el-form-item> -->
 
       <!-- 描述 -->
       <el-form-item label="描述" :label-width="formLabelWidth" prop="description">

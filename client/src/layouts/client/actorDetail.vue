@@ -23,9 +23,9 @@ const loadActorDetail = async () => {
   try {
     loading.value = true
     actor.value = null // 清空旧数据
-    
+
     // 浏览次数由后端拦截器自动记录，无需手动调用
-    
+
     const res = await getActorDetail(actorId.value)
     if (res.code === 200) {
       actor.value = {
@@ -40,13 +40,13 @@ const loadActorDetail = async () => {
         viewCount: res.data.viewCount || 0,
         joinDate: res.data.joinDate || '未知'
       }
-      
+
       if (userStore.isLoggedIn) {
         const likeRes = await checkBehavior('actor', actorId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
         }
-        
+
         const favoriteRes = await checkBehavior('actor', actorId.value, 'favorite')
         if (favoriteRes.code === 200) {
           isFavorited.value = favoriteRes.data.isFavorited || false
@@ -66,7 +66,7 @@ const handleLike = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleLike('actor', actorId.value)
     if (res.code === 200) {
@@ -88,7 +88,7 @@ const handleFavorite = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleFavorite('actor', actorId.value)
     if (res.code === 200) {
@@ -142,8 +142,8 @@ onMounted(() => {
 
       <div class="detail-header">
         <div class="avatar-image">
-          <el-image 
-            :src="actor.avatar || '/home/banner1.png'" 
+          <el-image
+            :src="actor.avatar || '/home/banner1.png'"
             fit="cover"
             class="avatar-img"
           />
@@ -169,22 +169,22 @@ onMounted(() => {
             <h3>个人简介</h3>
             <p>{{ actor.bio }}</p>
           </div>
-          <div class="actor-dates">
+          <!-- <div class="actor-dates">
             <span class="date-item">
               <span class="date-label">入行时间：</span>
               <span class="date-value">{{ actor.joinDate }}</span>
             </span>
-          </div>
+          </div> -->
           <div class="action-buttons">
-            <el-button 
-              :type="isLiked ? 'primary' : 'default'" 
+            <el-button
+              :type="isLiked ? 'primary' : 'default'"
               @click="handleLike"
               class="action-button"
             >
               {{ isLiked ? '已点赞' : '点赞' }}
             </el-button>
-            <el-button 
-              :type="isFavorited ? 'warning' : 'default'" 
+            <el-button
+              :type="isFavorited ? 'warning' : 'default'"
               @click="handleFavorite"
               class="action-button"
             >
@@ -198,8 +198,8 @@ onMounted(() => {
         <h2 class="section-title">代表作品</h2>
         <div v-if="actor.works && actor.works.length > 0" class="works-list">
           <div v-for="work in actor.works" :key="work.id" class="work-item">
-            <el-image 
-              :src="work.cover ? work.cover.replace(/[`\s]/g, '') : '/home/banner1.png'" 
+            <el-image
+              :src="work.cover ? work.cover.replace(/[`\s]/g, '') : '/home/banner1.png'"
               fit="cover"
               class="work-cover"
             />

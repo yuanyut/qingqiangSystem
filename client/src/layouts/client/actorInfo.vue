@@ -111,7 +111,7 @@ const handleStyleChange=(index: number)=>{
       selectedStyle.value ='旦'
       break
     case 4:
-      selectedStyle.value = '旦'
+      selectedStyle.value = '净'
       break
   }
   loadActorList()
@@ -133,7 +133,7 @@ const filterActorList=()=>{
     totalcount.value = originalActorList.value.length
     return
   }
-  
+
   const keyword = input3.value.toLowerCase()
   actorList.value = originalActorList.value.filter(item => {
     const nameMatch = item.name ? item.name.toLowerCase().includes(keyword) : false
@@ -155,7 +155,7 @@ const loadActorList=async ()=>{
     if (res.code === 200) {
       console.log(res.data.total)
       total.value=res.data.total
-     
+
       originalActorList.value = (res.data.list || []).map((item: any) => ({
         id: item.id,
         name: item.name,
@@ -193,9 +193,9 @@ watch(() => route.path, (newPath) => {
   <!-- 搜索框 -->
   <div class="search-container">
     <div class="search-wrapper">
-      <el-input 
-        v-model="input3" 
-        placeholder="搜索名家..." 
+      <el-input
+        v-model="input3"
+        placeholder="搜索名家..."
         class="custom-search-input"
         @keyup.enter="search"
       >
@@ -212,47 +212,47 @@ watch(() => route.path, (newPath) => {
           <span class="label-text">荣誉</span>
         </div>
         <div class="filter-options">
-          <span 
-            v-for="(item, index) in rongYu.slice(1)" 
-            :key="index" 
+          <span
+            v-for="(item, index) in rongYu.slice(1)"
+            :key="index"
             @click="handleHonorChange(index)"
-            :class="{ active: honorIndex === index, disabled: isSearching }" 
+            :class="{ active: honorIndex === index, disabled: isSearching }"
             class="filter-tag"
           >
             {{ item.name }}
           </span>
         </div>
       </div> -->
-      
+
       <!-- 风格筛选 -->
       <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
           <span class="label-text">风格</span>
         </div>
         <div class="filter-options">
-          <span 
-            v-for="(item, index) in roleNameTypes.slice(1)" 
-            :key="index" 
+          <span
+            v-for="(item, index) in roleNameTypes.slice(1)"
+            :key="index"
             @click="handleStyleChange(index)"
-            :class="{ active: styleIndex === index, disabled: isSearching }" 
+            :class="{ active: styleIndex === index, disabled: isSearching }"
             class="filter-tag"
           >
             {{ item.name }}
           </span>
         </div>
       </div>
-      
+
       <!-- 排序 -->
       <!-- <div class="filter-item" :class="{ disabled: isSearching }">
         <div class="filter-label">
           <span class="label-text">排序</span>
         </div>
         <div class="filter-options">
-          <span 
-            v-for="(item, index) in paiXu.slice(1)" 
-            :key="index" 
+          <span
+            v-for="(item, index) in paiXu.slice(1)"
+            :key="index"
             @click="handleSortChange(index)"
-            :class="{ active: sortIndex === index, disabled: isSearching }" 
+            :class="{ active: sortIndex === index, disabled: isSearching }"
             class="filter-tag sort-tag"
           >
             {{ item.name }}
@@ -264,24 +264,24 @@ watch(() => route.path, (newPath) => {
   <div class="playlist-container">
     <div class="playlist-header">
       <div class="header-title">
-        
+
         <span class="title-count">共 {{ total }} 位名家</span>
       </div>
     </div>
 
     <div class="playlist-grid">
       <div v-for="actor in actorList" :key="actor.id" class="playlist-item" @click="goToDetail(actor.id)">
-        <actor_card 
-          :avatar="actor.avatar " 
-          :name="actor.name" 
-          :intro="actor.intro"  
+        <actor_card
+          :avatar="actor.avatar "
+          :name="actor.name"
+          :intro="actor.intro"
           :worksCount="actor.worksCount || 0"
           :viewCount="actor.viewCount || 0"
-          :likeCount="actor.likeCount || 0" 
-          
-          :is-liked="actor.isLiked || false" 
+          :likeCount="actor.likeCount || 0"
+
+          :is-liked="actor.isLiked || false"
           :is-favorited="actor.isFavorited || false"
-          @change-like="changeLike" 
+          @change-like="changeLike"
           @change-favorite="changeFav"
         />
       </div>
@@ -290,10 +290,10 @@ watch(() => route.path, (newPath) => {
       </div>
     </div>
     <div class="playlist-footer">
-      <el-pagination 
-        background 
-        layout="prev, pager, next" 
-        :total="total" 
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
         :current-page="currentPage"
         :page-size="pageSize"
         @current-change="handlePageChange"

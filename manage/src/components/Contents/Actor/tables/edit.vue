@@ -237,9 +237,9 @@ const rules = {
             </el-form-item>
 
             <!-- 加入日期 -->
-            <el-form-item label="加入日期" :label-width="formLabelWidth">
+            <!-- <el-form-item label="加入日期" :label-width="formLabelWidth">
                 <el-date-picker v-model="form.joinDate" type="date" placeholder="请选择加入日期" style="width: 100%" />
-            </el-form-item>
+            </el-form-item> -->
 
             <!-- 状态 -->
             <el-form-item label="状态" :label-width="formLabelWidth">

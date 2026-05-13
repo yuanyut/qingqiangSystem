@@ -24,7 +24,7 @@ const loadKnowledgeDetail = async () => {
     loading.value = true
     knowledgeItem.value = null // 清空旧数据
     const id = Number(route.params.id)
-    
+
     // 浏览次数由后端拦截器自动记录，无需手动调用
     const response = await getCultureDetail(id)
     if (response && response.code === 200 && response.data) {
@@ -40,13 +40,13 @@ const loadKnowledgeDetail = async () => {
         createTime: response.data.createTime || '',
         updateTime: response.data.updateTime || ''
       }
-      
+
       if (userStore.isLoggedIn) {
         const likeRes = await checkBehavior('culture', id, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
         }
-        
+
         const favoriteRes = await checkBehavior('culture', id, 'favorite')
         if (favoriteRes.code === 200) {
           isFavorited.value = favoriteRes.data.isFavorited || false
@@ -66,7 +66,7 @@ const handleLike = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleLike('culture', knowledgeItem.value?.id || 0)
     if (res.code === 200) {
@@ -90,7 +90,7 @@ const handleFavorite = async () => {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleFavorite('culture', knowledgeItem.value?.id || 0)
     if (res.code === 200) {
@@ -145,15 +145,15 @@ onMounted(() => {
           <span class="create-time">{{ knowledgeItem.createTime }}</span>
         </div>
         <div class="action-buttons">
-          <el-button 
-            :type="isLiked ? 'primary' : 'default'" 
+          <el-button
+            :type="isLiked ? 'primary' : 'default'"
             @click="handleLike"
             class="action-button"
           >
             {{ isLiked ? '已点赞' : '点赞' }}
           </el-button>
-          <el-button 
-            :type="isFavorited ? 'warning' : 'default'" 
+          <el-button
+            :type="isFavorited ? 'warning' : 'default'"
             @click="handleFavorite"
             class="action-button"
           >
@@ -162,9 +162,9 @@ onMounted(() => {
         </div>
       </div>
       <div class="detail-body">
-        <div v-if="knowledgeItem.cover" class="cover-image">
+        <!-- <div v-if="knowledgeItem.cover" class="cover-image">
           <img :src="knowledgeItem.cover" :alt="knowledgeItem.title" />
-        </div>
+        </div> -->
         <div class="content" v-html="knowledgeItem.content"></div>
       </div>
     </div>
