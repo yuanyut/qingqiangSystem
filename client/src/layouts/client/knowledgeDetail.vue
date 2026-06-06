@@ -62,7 +62,7 @@ const loadKnowledgeDetail = async () => {
 
 // 处理点赞/取消点赞
 const handleLike = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }
@@ -86,7 +86,7 @@ const handleLike = async () => {
 
 // 处理收藏/取消收藏
 const handleFavorite = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }

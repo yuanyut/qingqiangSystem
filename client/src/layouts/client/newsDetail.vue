@@ -38,13 +38,13 @@ const loadNewsDetail = async () => {
         likeCount: res.data.likeCount || 0,
         cover: res.data.cover || '/home/banner1.png'
       }
-      
+
       if (userStore.isLoggedIn) {
         const likeRes = await checkBehavior('news', newsId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
         }
-        
+
         const favoriteRes = await checkBehavior('news', newsId.value, 'favorite')
         if (favoriteRes.code === 200) {
           isFavorited.value = favoriteRes.data.isFavorited || false
@@ -60,11 +60,11 @@ const loadNewsDetail = async () => {
 
 // 处理点赞/取消点赞
 const handleLike = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleLike('news', newsId.value)
     if (res.code === 200) {
@@ -82,11 +82,11 @@ const handleLike = async () => {
 
 // 处理收藏/取消收藏
 const handleFavorite = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }
-  
+
   try {
     const res = await toggleFavorite('news', newsId.value)
     if (res.code === 200) {
@@ -142,15 +142,15 @@ onMounted(() => {
             <span class="meta-item">{{ news.likeCount }} 点赞</span>
           </div>
           <div class="action-buttons">
-            <el-button 
-              :type="isLiked ? 'primary' : 'default'" 
+            <el-button
+              :type="isLiked ? 'primary' : 'default'"
               @click="handleLike"
               class="action-button"
             >
               {{ isLiked ? '已点赞' : '点赞' }}
             </el-button>
-            <el-button 
-              :type="isFavorited ? 'warning' : 'default'" 
+            <el-button
+              :type="isFavorited ? 'warning' : 'default'"
               @click="handleFavorite"
               class="action-button"
             >
@@ -158,8 +158,8 @@ onMounted(() => {
             </el-button>
           </div>
         <div v-if="news.cover" class="news-cover">
-          <!-- <el-image 
-            :src="news.cover" 
+          <!-- <el-image
+            :src="news.cover"
             fit="cover"
             class="cover-img"
           /> -->

@@ -39,7 +39,7 @@ const loadDramaDetail = async () => {
         categoryName: res.data.categoryId === 1 ? '传统剧目' : '现代剧目'
       }
 
-      if (userStore.isLoggedIn) {
+      if (userStore.UserInfos.isLogin) {
         const likeRes = await checkBehavior('drama', dramaId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
@@ -59,7 +59,7 @@ const loadDramaDetail = async () => {
 }
 
 const handleLike = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }
@@ -80,7 +80,7 @@ const handleLike = async () => {
 }
 
 const handleFavorite = async () => {
-  if (!userStore.isLoggedIn) {
+  if (!userStore.UserInfos.isLogin) {
     ElMessage.warning('请先登录')
     return
   }
