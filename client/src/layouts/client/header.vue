@@ -4,6 +4,7 @@ import { useUserInfoStore } from '@/stores/userInfo'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {ElMessage} from 'element-plus'
+import { ArrowDown } from '@element-plus/icons-vue'
 const router = useRouter()
 const userInfoStore = useUserInfoStore()
 
@@ -57,7 +58,7 @@ const handleLogout = () => {
     localStorage.removeItem('token')
 
     // 实现登出逻辑
-    router.push('/login')
+   location.reload()
 }
 
 </script>
