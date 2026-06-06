@@ -41,7 +41,7 @@ const loadKnowledgeDetail = async () => {
         updateTime: response.data.updateTime || ''
       }
 
-      if (userStore.isLoggedIn) {
+      if (userStore.UserInfos.isLogin) {
         const likeRes = await checkBehavior('culture', id, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false

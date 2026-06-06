@@ -41,7 +41,7 @@ const loadActorDetail = async () => {
         joinDate: res.data.joinDate || '未知'
       }
 
-      if (userStore.isLoggedIn) {
+      if (userStore.UserInfos.isLogin) {
         const likeRes = await checkBehavior('actor', actorId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false

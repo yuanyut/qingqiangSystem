@@ -5,7 +5,7 @@ import {useRouter,useRoute} from 'vue-router'
 import {useUserInfoStore}  from '@/stores/userInfo'
 
 const userInfoStore = useUserInfoStore()
-//获取路由实例（用来跳转）  
+//获取路由实例（用来跳转）
 const router=useRouter();
 //获取当前路由信息（只读）
 const route=useRoute();
@@ -27,7 +27,7 @@ watch(()=>route.path,(newPath)=>{
   //   current.value=4;
   // }else if(newPath.includes('news')){
   //   current.value=5;
-  // }else if(newPath.includes('profile')&&userInfoStore.isLoggedIn){
+  // }else if(newPath.includes('profile')&&userInfoStore.UserInfos.isLogin){
   //   current.value=6;
   // }
      if(newPath.includes('drama')){
@@ -43,12 +43,12 @@ watch(()=>route.path,(newPath)=>{
   }
   else if(newPath.includes('news')){
     current.value=3;
-  }else if(newPath.includes('profile')&&userInfoStore.isLoggedIn){
+  }else if(newPath.includes('profile')&&userInfoStore.UserInfos.isLogin){
     current.value=4;
   }
 })
 //监听登录状态变化，重新计算 current
-watch(() => userInfoStore.isLoggedIn, (isLoggedIn) => {
+watch(() => userInfoStore.UserInfos.isLogin, (isLoggedIn) => {
   if (route.path.includes('profile')) {
     if (isLoggedIn) {
       current.value = 4;
@@ -66,9 +66,9 @@ current.value=routes.indexOf(route.path.replace('/',''));
 const changeTab =(n:number)=>{
   current.value=n;
     console.log("点击",routes[current.value]);
-    
+
     router.push(`/${routes[current.value]}`);
-    
+
 }
 </script>
 <template>
@@ -78,9 +78,9 @@ const changeTab =(n:number)=>{
       </el-header>
       <el-main style="padding: 0;">
         <router-view v-slot="{ Component }">
-        
+
           <component :is="Component" />
-       
+
       </router-view>
       </el-main>
     </el-container>

@@ -39,7 +39,7 @@ const loadNewsDetail = async () => {
         cover: res.data.cover || '/home/banner1.png'
       }
 
-      if (userStore.isLoggedIn) {
+      if (userStore.UserInfos.isLogin) {
         const likeRes = await checkBehavior('news', newsId.value, 'like')
         if (likeRes.code === 200) {
           isLiked.value = likeRes.data.isLiked || false
